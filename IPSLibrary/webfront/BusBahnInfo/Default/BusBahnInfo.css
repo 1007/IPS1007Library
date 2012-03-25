@@ -1,0 +1,180 @@
+body  {
+      color:#fff;font-size:12px;
+      font-family:arial,sans-serif;
+      margin:0;
+      padding:0;
+      overflow:hidden
+      }
+
+a:link 		{ text-decoration:none; font-weight:bold; color:#FFFFFF; }
+a:visited { text-decoration:none; font-weight:bold; color:#FFFFFF; }
+a:hover 	{ text-decoration:none; font-weight:bold; background-color:#0000FF; }
+a:active 	{ text-decoration:none; font-weight:bold; background-color:#FFFFFF; }
+a:focus 	{ text-decoration:none; font-weight:bold; background-color:#FFFFFF; }
+
+
+.titel_verkehrsmittel {
+        width:30px;
+        color:#6699FF;
+        font-size:10px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.titel_train {
+        width:50px;
+        color:#6699FF;
+        font-size:10px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.titel_srichtung {
+        width:50px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+     
+.titel_richtung {
+        width:200px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+                }  
+.titel_ankunft {
+        width:50px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.titel_plattform {
+        width:100px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;        
+        }      
+.titel_aktuelles {
+        width:100px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:left;
+        }      
+    
+.titel_diff {
+        width:50px;
+        color:#6699FF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;        
+        } 
+             
+.verkehrsmittel {
+        
+        color:#00FFFF;
+        font-size:10px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+
+.train {
+        
+        color:#FFFFFF;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+
+.abfahrt {
+        
+        color:#FFFFFF;
+        font-size:20px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+
+.diff_wird_erreicht {
+        
+        color:#FFFFFF;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.diff_wegezeit_zulang {
+       
+        color:#FFFF00;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.diff_abgefahren {
+        
+        color:#FF0000;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.richtung {
+        
+        color:#FFFFFF;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+
+.ankunft {
+        
+        color:#FFFFFF;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+
+.plattform {
+       
+        color:#FFFFFF;
+        font-size:15px;
+        border-style:solid;
+        border-width:0px;
+        text-align:center;
+        }      
+.aktuelles {
+        
+        color:#FFFFFF;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:left;
+        }      
+.route {
+        
+        color:#FF9933;
+        font-size:12px;
+        border-style:solid;
+        border-width:0px;
+        text-align:left;
+        }      
+.table {
+        width:100%;
+        border-style:solid;
+        border-width:0px;
+       }      
