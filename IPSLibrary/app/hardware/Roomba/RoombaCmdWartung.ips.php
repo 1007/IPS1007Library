@@ -1,8 +1,13 @@
 <?
+//******************************************************************************
+// Roomba auf Wartungsposition schicken
+//******************************************************************************
 
-  	require_once("RoombaFuncpool.ips.php");
+	IPSUtils_Include ("Roomba_Configuration.inc.php", 	"IPSLibrary::config::hardware::Roomba");
+	IPSUtils_Include ("RoombaFuncpool.inc.php",    		"IPSLibrary::app::hardware::Roomba");
 
 	go_wartung();
+
 
 
 ?>

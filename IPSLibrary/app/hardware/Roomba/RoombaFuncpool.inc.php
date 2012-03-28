@@ -3,193 +3,36 @@
 // Roomba
 //******************************************************************************
 
-	$root_id = 28678;
-
-//******************************************************************************
-//******************************************************************************
 
 
-	define   ("BUMP_AND_WHEEL_DROPS"	        					,35884);
-	define   ("BUMP_AND_WHEEL_DROPS_BUMP_RIGHT"       		,34381);
-	define   ("BUMP_AND_WHEEL_DROPS_BUMP_LEFT"        		,46269);
-	define   ("BUMP_AND_WHEEL_DROPS_WHEEL_DROP_RIGHT"		,27254);
-	define   ("BUMP_AND_WHEEL_DROPS_WHEEL_DROP_LEFT"		,52958);
-	define   ("WALL"                         					,13978 );
-	define   ("CLIFF_LEFT"                            		,35430);
-	define   ("CLIFF_FRONT_LEFT"                      		,49159);
-	define   ("CLIFF_FRONT_RIGHT"                     		,55485);
-	define   ("CLIFF_RIGHT"                           		,24858);
-	define   ("VIRTUAL_WALL"                          		,43898);
-	define   ("WHEEL_OVERCURRENTS"         					,32133);
-	define   ("WHEEL_OVERCURRENTS_SIDE_BRUSH"         		,15410);
-	define   ("WHEEL_OVERCURRENTS_MAIN_BRUSH"         		,37476);
-	define   ("WHEEL_OVERCURRENTS_RIGHT_WHEEL"        		,42906);
-	define   ("WHEEL_OVERCURRENTS_LEFT_WHEEL"         		,57748);
-	define   ("DIRT_DETECT"                           		,25078);
-	define   ("INFRARED_CHARACTER_OMNI"               		,16688);
-	define   ("BUTTONS"                               		,33936);
-	define   ("BUTTONS_CLEAN"                         		,16834);
-	define   ("BUTTONS_SPOT"                          		,34601);
-	define   ("BUTTONS_DOCK"                          		,45015);
-	define   ("BUTTONS_MINUTE"                        		,29582);
-	define   ("BUTTONS_HOUR"                          		,49353);
-	define   ("BUTTONS_DAY"                           		,41981);
-	define   ("BUTTONS_SCHEDULE"                      		,23940);
-	define   ("BUTTONS_CLOCK"                         		,31399);
-	define   ("DISTANCE"                              		,54806);
-	define   ("ANGLE"	                              		,53450);
-	define   ("CHARGING_STATE"                        		,25805);
-	define   ("CHARGING_STATE_NOT_CHARGING"           		,16599);
-	define   ("CHARGING_STATE_RECONDITIONING_CHARGING"		,13643);
-	define   ("CHARGING_STATE_FULL_CHARGING"          		,52691);
-	define   ("CHARGING_STATE_TRICKLE_CHARGING"       		,43458);
-	define   ("CHARGING_STATE_WAITING"                		,55240);
-	define   ("CHARGING_STATE_CHARGING_FAULT_CONDITION"	,27914);
-	define   ("TEMPERATURE"                              	,12752);
-	define   ("BATTERY_CHARGE"                           	,15634);
-	define   ("BATTERY_CAPACITY"                         	,35320);
-	define   ("WALL_SIGNAL"                              	,15208);
-	define   ("CLIFF_LEFT_SIGNAL"                        	,55070);
-	define   ("CLIFF_FRONT_LEFT_SIGNAL"                   ,45449);
-	define   ("CLIFF_FRONT_RIGHT_SIGNAL"                  ,51422);
-	define   ("CLIFF_RIGHT_SIGNAL"                        	,52415);
-	define   ("OI_MODE"                        					,42144);
-	define   ("OI_MODE_OFF"                        			,34157);
-	define   ("OI_MODE_PASSIVE"                        		,47095);
-	define   ("OI_MODE_SAFE"                        			,33477);
-	define   ("OI_MODE_FULL"                        			,56995);
-	define   ("SONG_PLAYING"                        			,17318);
-	define   ("NUMBER_OF_STREAM_PACKETS"                    ,28267);
-	define   ("REQUESTED_VELOCITY"                        	,56292);
-	define   ("REQUESTED_RIGHT_VELOCITY"                    ,52241);
-	define   ("REQUESTED_LEFT_VELOCITY"                     ,54480);
-	define   ("REQUESTED_RADIUS"                        		,38363);
-	define   ("RIGHT_ENCODER_COUNTS"                        ,26254);
-	define   ("LEFT_ENCODER_COUNTS"                        	,34913);
-	define   ("LIGHT_BUMPER"                        			,56249);
-	define   ("LIGHT_BUMPER_FRONT_RIGHT"                    ,56574);
-	define   ("LIGHT_BUMPER_RIGHT"                        	,15037);
-	define   ("LIGHT_BUMPER_CENTER_RIGHT"                   ,47541);
-	define   ("LIGHT_BUMPER_CENTER_LEFT"                    ,33191);
-	define   ("LIGHT_BUMPER_FRONT_LEFT"                     ,36514);
-	define   ("LIGHT_BUMPER_LEFT"                        	,13774);
-	define   ("LIGHT_BUMP_LEFT_SIGNAL"              			,15181);
-	define   ("LIGHT_BUMP_FRONT_LEFT_SIGNAL"        			,56463);
-	define   ("LIGHT_BUMP_CENTER_LEFT_SIGNAL"       			,36675);
-	define   ("LIGHT_BUMP_CENTER_RIGHT_SIGNAL"      			,24553);
-	define   ("LIGHT_BUMP_FRONT_RIGHT_SIGNAL"       			,33005);
-	define   ("LIGHT_BUMP_RIGHT_SIGNAL"             			,32735);
-	define   ("CHARGING_SOURCES_AVAILABLE"                  ,36081);
-	define   ("CHARGING_SOURCES_AVAILABLE_HOME_BASE"        ,20083);
-	define   ("CHARGING_SOURCES_AVAILABLE_INTERNAL_CHARGER" ,32060);
-	define   ("INFRARED_CHARACTER_LEFT"							,36715);
-	define   ("INFRARED_CHARACTER_RIGHT"							,33597);
-	define   ("LEFT_MOTOR_CURRENT"  								,15988);
-	define   ("RIGHT_MOTOR_CURRENT"  								,10568);
-	define   ("MAIN_BRUSH_MOTOR_CURRENT"  						,36611);
-	define   ("SIDE_BRUSH_MOTOR_CURRENT"  						,36137);
-	define   ("STASIS"                       					,10049);
-	define   ("VOLTAGE"                                   , 17953);
-	define   ("CURRENT"                                   ,40065);
-	define   ("SONG_NUMBER"                               ,18589);
-
-	// Lighthouse  ********************************************************************************************************
-	define   ("LH_VIRTUAL_WALL_FENCE"                      	,11139);
-
-	define   ("LH_CHARGER_160"			                     	,36751);
-	define   ("LH_CHARGER_FORCE_FIELD"                      	,22066);
-	define   ("LH_CHARGER_GREEN_BUOY"                       	,23768);
-	define   ("LH_CHARGER_RED_BUOY"                         	,28928);
-
-	define   ("LH_01_ID"			                     			,32698);
-	define   ("LH_01_FENCE"			                     		,33339);
-	define   ("LH_01_FORCE_FIELD"                      		,19709);
-	define   ("LH_01_GREEN_BUOY"                       		,11635);
-	define   ("LH_01_RED_BUOY"                         		,17528);
-
-	define   ("LH_02_ID"			                     			,21499);
-	define   ("LH_02_FENCE"			                     		,30295);
-	define   ("LH_02_FORCE_FIELD"                      		,52663);
-	define   ("LH_02_GREEN_BUOY"                       		,30419);
-	define   ("LH_02_RED_BUOY"                         		,50840);
-
-	// ********************************************************************************************************************
-
-
-	// Control
-	define   ("PACKET_REQUESTED"                            	,20865);
-	define   ("PACKET_COUNTER"											,56149);
-
-	// Data
-	define   ("KILOMETERZAEHLER"                          	,21762);
-	define   ("STARTZEIT"                                 	,58536);
-	define   ("ENDZEIT"                                 		,11341);
-	define   ("LAUFZEIT"                                		,51232);
-	define   ("BATTERIE"                                 		,20741);
-	define   ("STARTTIMESTAMP"                               ,24418);
-
-
-
-
-
-	define   ( 'ROOMBA_STATUS_CHARGING'   ,38068 );
-	define   ( 'ROOMBA_STATUS_MOVING'   	,17737 );
-	define   ( 'ROOMBA_STATUS_ONLINE'    	,30127 );
-	define   ( 'ROOMBA_STATUS_UNKNOWN'    ,12085 );
-
-	define   ( 'POLLING_STATUS'	        ,43726 );
-
-	define   ( 'ROOMBA_DISTANCE'          ,54806 );
-	define   ( 'ROOMBA_CHARGING'          ,36081 );
-	define	( 'TIMER'							,57289 );
-
-	define   ( 'POLLING_OFFLINE'          ,2);
-	define   ( 'POLLING_UNKNOWN'          ,2);
-	define   ( 'POLLING_MOVING'           ,2);
-	define   ( 'POLLING_CHARGING'         ,5);
-	define   ( 'POLLING_DEFAULT'          ,2);
-
-
-	define   ('XBEE_INSTANCE'       ,53848);
-
-	define   ('AKTIV'               ,16010);
-
-	define ('START'						,128);
+	define ('START'					,128);
 	define ('BAUD'						,129);
 	define ('SAFE'						,131);
 	define ('FULL'						,132);
-	define ('POWER'						,133);
+	define ('POWER'					,133);
 	define ('SPOT'						,134);
-	define ('CLEAN'						,135);
-	define ('MAX'							,136);
+	define ('CLEAN'					,135);
+	define ('MAX'						,136);
 	define ('DRIVE'  					,137);
 	define ('MOTORS' 					,138);
 	define ('LEDS'   					,139);
 	define ('SONG'   					,140);
 	define ('PLAY'   					,141);
 	define ('SENSORS'					,142);
-	define ('SEEK_DOCK'					,143);
+	define ('SEEK_DOCK'				,143);
 	define ('PWM_MOTORS'				,144);
 	define ('DRIVE_DIRECT' 			,145);
-	define ('DRIVE_PWM'					,146);
+	define ('DRIVE_PWM'				,146);
 	define ('STREAM' 					,148);
 	define ('QUERY_LIST'				,149);
 	define ('PAUSE_RESUME_STREAM'	,150);
-	define ('SCHEDULING_LEDS'			,162);
-	define ('DIGIT_LEDS_RAW'			,163);
+	define ('SCHEDULING_LEDS'		,162);
+	define ('DIGIT_LEDS_RAW'		,163);
 	define ('DIGIT_LEDS_ASCII'		,164);
-	define ('CMD_BUTTONS'					,165);
+	define ('CMD_BUTTONS'			,165);
 	define ('SCHEDULE'  				,167);
 	define ('SET_DAY_TIME' 			,168);
 
-	//test();
-	return;
-
-function test()
-	{
-
-	echo LH_02_RED_BUOY;
-	}
 
 //******************************************************************************
 // Daten senden

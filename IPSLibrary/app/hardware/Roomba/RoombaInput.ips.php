@@ -1,14 +1,15 @@
 <?
 
-	require_once("RoombaFuncpool.ips.php");
-	require_once("Funcpool.ips.php");
+	IPSUtils_Include ("Roomba_Configuration.inc.php", 	"IPSLibrary::config::hardware::Roomba");
+	IPSUtils_Include ("RoombaFuncpool.inc.php",    		"IPSLibrary::app::hardware::Roomba");
 
 
 //******************************************************************************
 // Im Moment nur einzelne Gruppen !!
 //******************************************************************************
-	$debug = false;
+	$debug = true;
 
+	IPS_LogMessage("ll","kkk");
   	$instr = $IPS_VALUE;
 
 	$laenge = strlen($instr);
