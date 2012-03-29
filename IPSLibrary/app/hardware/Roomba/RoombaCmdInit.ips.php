@@ -1,8 +1,7 @@
 <?
 
-  	require_once("RoombaFuncpool.ips.php");
-
-	go_wartung();
+	// Muss beim Neustart des Roomba einmal ausgefuehrt werden
+ 	command(START,0);
 
 
 ?>

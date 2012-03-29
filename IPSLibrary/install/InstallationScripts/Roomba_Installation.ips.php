@@ -22,6 +22,7 @@
 
   GLOBAL $roombas;
 	
+	
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
 
@@ -51,31 +52,54 @@
 
 
   $roomba_array = array();
+  // Gateway finden
+  $xbee_gateway = 0;
+  
   if ( AUTOSEARCH == true)
-    {
+    {   
     foreach ( IPS_GetInstanceListByModuleType(2) as $modul )
         {
 		    $instance = IPS_GetInstance($modul);
-		    if ( $instance['ModuleInfo']['ModuleName'] == "XBee Splitter" ) 
+		    print_r($instance);
+        if ( $instance['ModuleInfo']['ModuleName'] == "XBee Gateway" ) 
+          { 
+		      $xbee_gateway = $instance['InstanceID'];          
+          }  
+        }
+    }
+          
+  // Splitter finden
+  if ( AUTOSEARCH == true)
+    {   
+    foreach ( IPS_GetInstanceListByModuleType(2) as $modul )
+        {
+        
+		    $instance = IPS_GetInstance($modul);
+        if ( $instance['ModuleInfo']['ModuleName'] == "XBee Splitter" ) 
           { 
           $xbeesplitter_id = $modul; 
           $object = IPS_GetObject($xbeesplitter_id);
           $name = $object['ObjectName'];
-          array_push($roomba_array,array($name,$xbeesplitter_id,true));
+          if ( stripos($name,"Roomba") )
+            array_push($roomba_array,array($name,$xbeesplitter_id,true,0));
           }
+
         }
     }
   else
     {
    foreach ( $roombas as $roomba)
-      {
-      $name = $roomba[0];
-      $xbeesplitter_id = $roomba[1];
-      $aktiv = $roomba[2];
+      {  
+      $name             = $roomba[0];
+      $xbeesplitter_id  = $roomba[1];
+      $aktiv            = $roomba[2];
+      $xbeegateway_id   = $roomba[3];
+      
       if ( $aktiv )
-        array_push($roomba_array,array($name,$xbeesplitter_id,$aktiv));
+        array_push($roomba_array,array($name,$xbeesplitter_id,$aktiv,$xbeegateway_id));
       }     
     }
+
 
   if ( !$roomba_array )
     {
@@ -83,22 +107,26 @@
     return;
     }
 
-  print_r($roomba_array);
+  $pollingScriptId = IPS_GetScriptIDByName('RoombaPolling', $CategoryIdApp );
+  CreateTimer_CyclicBySeconds ("ScriptTimer",$pollingScriptId,POLLING_DEFAULT,true);
+  IPS_SetScriptTimer($pollingScriptId,POLLING_DEFAULT);
 
 
   $actionScriptId         = IPS_GetScriptIDByName('RoombaInput', $CategoryIdApp );
-  $CategoryRoombaData     = CreateCategoryPath($DataPath.".RoombaData");
-  $CategoryLighthouseData = CreateCategoryPath($DataPath.".LighthouseData");
-  $CategorySystemData     = CreateCategoryPath($DataPath.".SystemData");
 
   foreach ( $roomba_array as $roomba )
       {
-      $roomba_name = $roomba[0];
-      $roomba_instance = $roomba[1];
+      $roomba_name     = $roomba[0];
+      $roomba_splitter = $roomba[1];
+      $roomba_gateway  = $roomba[3];
       
-      $Id = CreateRegisterVariable($roomba_name, $CategoryIdHw, $actionScriptId,$roomba_instance, 0);
+      if ( $roomba_gateway == 0 )
+          if ( AUTOSEARCH == true)
+            $roomba_gateway = $xbee_gateway;
       
-      $CategoryRoombaData     = CreateCategoryPath($DataPath.".RoombaData.$roomba_name");
+      $roomba_rv_Id = CreateRegisterVariable($roomba_name, $CategoryIdHw, $actionScriptId,$roomba_splitter, 0);
+      
+      $CategoryRoombaData     = CreateCategoryPath($DataPath.".$roomba_name.RoombaData");
 
       $Id  = CreateVariable("ANGLE"                                       , 1 /*Integer*/,  $CategoryRoombaData,100,'', null, 0);
       $Id  = CreateVariable("BATTERY_CHARGE"                              , 1 /*Integer*/,  $CategoryRoombaData,100,'', null, 0);
@@ -184,49 +212,56 @@
       $Id  = CreateVariable("WHEEL_OVERCURRENTS_RIGHT_WHEEL"              , 0 /*Boolean*/,  $CategoryRoombaData,100,'', null, 0);
       $Id  = CreateVariable("WHEEL_OVERCURRENTS_LEFT_WHEEL"               , 0 /*Boolean*/,  $CategoryRoombaData,100,'', null, 0);                       
 
-      $CategorySystemData     = CreateCategoryPath($DataPath.".SystemData.$roomba_name");
+      $CategorySystemData     = CreateCategoryPath($DataPath.".$roomba_name.SystemData");
 
       $Id  = CreateVariable("PACKET_REQUESTED"                            , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("PACKET_COUNTER"                              , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("KILOMETERZAEHLER"                            , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("WEGMESSUNG"                                  , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("STARTZEIT"                                   , 3 /*String */,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("ENDZEIT"                                     , 3 /*String */,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("LAUFZEIT"                                    , 3 /*String */,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("BATTERIE"                                    , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("STARTTIMESTAMP"                              , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("ROOMBA_STATUS_CHARGING"                      , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("ROOMBA_STATUS_MOVING"                        , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("ROOMBA_STATUS_ONLINE"                        , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("ROOMBA_STATUS_UNKNOWN"                       , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("POLLING_STATUS"                              , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("ROOMBA_STATUS_CHARGING"                      , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("ROOMBA_STATUS_MOVING"                        , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("ROOMBA_STATUS_ONLINE"                        , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("ROOMBA_STATUS_UNKNOWN"                       , 0 /*Boolean*/,  $CategorySystemData,100,'', null, true);
+      $Id  = CreateVariable("POLLING_STATUS"                              , 0 /*Boolean*/,  $CategorySystemData,100,'', null, true);
       $Id  = CreateVariable("ROOMBA_DISTANCE"                             , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("ROOMBA_CHARGING"                             , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("ROOMBA_CHARGING"                             , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("TIMER"                                       , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
-      $Id  = CreateVariable("XBEE_INSTANCE"                               , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("AKTIV"                                       , 0 /*Boolean*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("POLLING"                                     , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("XBEE_GATEWAY"                                , 1 /*Integer*/,  $CategorySystemData,100,'', null, $roomba_gateway);
+      SetValueInteger($Id,$roomba_gateway);
+      $Id  = CreateVariable("XBEE_SPLITTER"                               , 1 /*Integer*/,  $CategorySystemData,100,'', null, $roomba_splitter);
+      SetValueInteger($Id,$roomba_splitter);
+      $Id  = CreateVariable("XBEE_REGISTERVARIABLE"                       , 1 /*Integer*/,  $CategorySystemData,100,'', null, $roomba_rv_Id);
+      SetValueInteger($Id,$roomba_rv_Id);
 
-      $CategoryLighthouseData = CreateCategoryPath($DataPath.".LighthouseData.$roomba_name");
+               
+      $CategoryLighthouseData = CreateCategoryPath($DataPath.".$roomba_name.LighthouseData");
 
       $Id  = CreateVariable("LH_CHARGER_160"                              , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
       $Id  = CreateVariable("LH_CHARGER_FORCE_FIELD"                      , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
       $Id  = CreateVariable("LH_CHARGER_GREEN_BUOY"                       , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
       $Id  = CreateVariable("LH_CHARGER_RED_BUOY"                         , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
 
-      }
+    
       
 
-  for ( $x=0;$x<LIGHTHOUSES_ANZAHL;$x++)
-      {
-      $CategoryLighthouseData = CreateCategoryPath($DataPath.".LighthouseData.LH_0$x");
+      for ( $x=0;$x<LIGHTHOUSES_ANZAHL;$x++)
+          {
+          $CategoryLighthouseData = CreateCategoryPath($DataPath.".$roomba_name.LighthouseData.LH_0$x");
 
-      $Id  = CreateVariable("LH_0".$x."_ID"                           , 1 /*Integer*/,  $CategoryLighthouseData,100,'', null, 0);
-      $Id  = CreateVariable("LH_0".$x."_FENCE"                        , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
-      $Id  = CreateVariable("LH_0".$x."_FORCE_FIELD"                  , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
-      $Id  = CreateVariable("LH_0".$x."_GREEN_BUOY"                   , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
-      $Id  = CreateVariable("LH_0".$x."_RED_BUOY"                     , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
+          $Id  = CreateVariable("LH_0".$x."_ID"                           , 1 /*Integer*/,  $CategoryLighthouseData,100,'', null, 0);
+          $Id  = CreateVariable("LH_0".$x."_FENCE"                        , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
+          $Id  = CreateVariable("LH_0".$x."_FORCE_FIELD"                  , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
+          $Id  = CreateVariable("LH_0".$x."_GREEN_BUOY"                   , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
+          $Id  = CreateVariable("LH_0".$x."_RED_BUOY"                     , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
       }
 
-
+      }
 
   //****************************************************************************
   //  Visu

@@ -37,14 +37,13 @@
 //******************************************************************************
 // Daten senden
 //******************************************************************************
-function xbee_send($command)
+function xbee_send($gateway_id,$xbee_id,$command)
 	{
-	$debug = false;
- 	$instance = XBEE_INSTANCE ;
-	$xbee_id = 2;
+	$debug = true;
+	
 	if ($debug) print_r($command);
 
-	//echo "\nAusgabe";
+	//echo "\nAusgabe" .$gateway_id;
 	//echo sizeof($command);
 
 	$string = "";
@@ -59,23 +58,27 @@ function xbee_send($command)
 
 	$len = strlen($string);
 	//echo "\n[$string]-$len";
-	XBee_SendBuffer($instance,$xbee_id,$string);
-
+	
+	XBee_SendBuffer($gateway_id,$xbee_id,$string);
+	
 	}
 
 //******************************************************************************
 // Kommando zusammensetzen
 //******************************************************************************
-function command($opcode,$databytes)
+function command($opcode,$databytes,$object_id,$DataPathId)
 	{
-	if ( GetValueBoolean(AKTIV)){ echo "\nScript ist gesperrt! Opcode:[$opcode]"; return false; }
-	SetValueBoolean(AKTIV,true);
+	
+	$aktiv_id = IPS_GetVariableIDByName('AKTIV',$DataPathId);
+	if ( GetValueBoolean($aktiv_id)){ echo "\nScript ist gesperrt! Opcode:[$opcode]"; return false; }
+	SetValueBoolean($aktiv_id,true);
 
+	$gateway_id = GetValueInteger(IPS_GetVariableIDByName('XBEE_GATEWAY',$DataPathId));
 
 	$sendbuffer = array();
 
 
-	$debug = false;
+	$debug = true;
 	if ($debug) echo "\nOpcode:$opcode";
 
 	switch($opcode)
@@ -246,13 +249,13 @@ function command($opcode,$databytes)
 			case 149 :
 							$anzahl = $databytes[0];
 			            if ( $anzahl > 1 ) break; // Im Moment nur eine Gruppe
-			            SetValueInteger(PACKET_REQUESTED,$databytes[1]);
+			            SetValueInteger(IPS_GetVariableIDByName('PACKET_REQUESTED',$DataPathId),$databytes[1]);
 
 							$sendbuffer[0] = 149;
 							for ($x=0;$x<=$anzahl;$x++)
 			               $sendbuffer[$x+1] = $databytes[$x];
 
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$object_id,$sendbuffer);
 
 							break;
 			// Stream
@@ -270,7 +273,7 @@ function command($opcode,$databytes)
 
 		}
 
-   SetValueBoolean(AKTIV,false);
+   SetValueBoolean($aktiv_id,false);
 
    return true;
 

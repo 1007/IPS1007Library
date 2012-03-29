@@ -28,24 +28,24 @@
   //****************************************************************************
   // Sollen XBees automatisch gesucht werden 
   //****************************************************************************
-  define ( 'AUTOSEARCH' , false);
+  define ( 'AUTOSEARCH' , true);
   
   //****************************************************************************
 	$roombas = array (
 	//***************************************************************************
-	//		Roombaname	XBeeInstance  aktiviert		    
+	//		Roombaname	 XBeeSplitter  aktiviert	XBeeGateway	    
 	//***************************************************************************
-	array("Roomba1",	23195             ,true),
-	array("Roomba2",	23195             ,true),
+	array("Roomba1"    , 23195         ,true   , 35422),
+	array("Roomba2"    , 56781         ,true   , 35422),
 	//***************************************************************************
-	array("",			0, false));
+	array("",			 0 , false , 0));
 	//***************************************************************************
 
    
   //****************************************************************************
-  // Anzahl der Lighthouses
+  // Anzahl der Lighthouses pro Roomba
   //****************************************************************************
-  define ( 'LIGHTHOUSES_ANZAHL' , 10 );
+  define ( 'LIGHTHOUSES_ANZAHL' , 5 );
 
   //****************************************************************************
   // Polling-Zeiten in Sekunden
@@ -69,14 +69,14 @@
   define ( 'SONG7' ,"Entertainer:d=4,o=5,b=140:8d,8d#,8e,c6,8e,c6,8e,2c.6,8c6,8d6,8d#6,8e6,8c6,8d6,e6,8b,d6,2c6,p,8d,8d#,8e,c6,8e,c6,8e,2c.6,8p,8a,8g,8f#,8a,8c6,e6,8d6,8c6,8a,2d6");
   define ( 'SONG8' ,"aadams:d=4,o=5,b=160:8c,f,8a,f,8c,b4,2g,8f,e,8g,e,8e4,a4,2f,8c,f,8a,f,8c,b4,2g,8f,e,8c,d,8e,1f,8c,8d,8e,8f,1p,8d,8e,8f#,8g,1p,8d,8e,8f#,8g,p,8d,8e,8f#,8g,p,8c,8d,8e,8f");
 
-  define ( 'EVENT_CLEAN' , 'SONG1');
-  define ( 'EVENT_SPOT' , 'SONG2');
-  define ( 'EVENT_MAX' , 'SONG3');
-  define ( 'EVENT_HOME' , 'SONG4');
-  define ( 'EVENT_INIT' , 'SONG5');
-  define ( 'EVENT_POWER' , 'SONG6');
-  define ( 'EVENT_WARTUNG1', 'SONG7');
-  define ( 'EVENT_WARTUNG2', 'SONG8');
+  define ( 'EVENT_CLEAN'    , 'SONG1');
+  define ( 'EVENT_SPOT'     , 'SONG2');
+  define ( 'EVENT_MAX'      , 'SONG3');
+  define ( 'EVENT_HOME'     , 'SONG4');
+  define ( 'EVENT_INIT'     , 'SONG5');
+  define ( 'EVENT_POWER'    , 'SONG6');
+  define ( 'EVENT_WARTUNG1' , 'SONG7');
+  define ( 'EVENT_WARTUNG2' , 'SONG8');
 
 ?>
   
