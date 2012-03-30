@@ -10,7 +10,7 @@
 	if ($_IPS['SENDER'] == "RegisterVariable")
       $instr = $IPS_VALUE;
 
-	if ($_IPS['SENDER'] == "Execute")
+	if ($_IPS['SENDER'] == "Execute" OR $_IPS['SENDER'] == "TimerEvent" )
 		{
 		$zu = rand(1,2);
 		echo $zu;
@@ -62,14 +62,18 @@
 	if ( $laenge == 9  and $packet == 107 )
 	   packet_group_107($instr);
 
-	 return;
-	// Batterie berechnen
-	$x = GetValueInteger(BATTERY_CHARGE);
-	$y = GetValueInteger(BATTERY_CAPACITY);
-	$s = strval(($x /$y)*100);
-	$bat = round($s);
+	// Ladezustand berechnen
+	$akt_mAh = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CHARGE',$RoombaDataPathId));
+	$max_mAh = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CAPACITY',$RoombaDataPathId));
+	$prozent = round(strval(($akt_mAh/$max_mAh)*100));
+	if ( $prozent > 100 ) $prozent = 100;
+	if ( $prozent < 0   ) $prozent = 0;
 
-	SetValueInteger(BATTERIE,$bat);
+	SetValueInteger(IPS_GetVariableIDByName('BATTERIE',$SystemDataPathId),$prozent);
+
+	//SetValueInteger(BATTERIE,$bat);
+
+	return;
 
 	$distance = GetValueInteger(DISTANCE);
 	$angle 	 = GetValueInteger(ANGLE);
@@ -140,7 +144,7 @@ function packet_9($Byte)
 	
 function packet_10($Byte)
 	{
-	GLOBAL $RoombaDataPathId;
+	GLOBAL $RoombaDataPathId; 
 	//Packet ID: 10	Cliff Front Left
 	$b1 = u_0bis1(10,$Byte[0]);
 	$b2 = GetValueBoolean(IPS_GetVariableIDByName('CLIFF_FRONT_LEFT',$RoombaDataPathId));
@@ -152,11 +156,11 @@ function packet_10($Byte)
 	
 function packet_11($Byte)
 	{
-	GLOBAL $RoombaDataPathId;
+	GLOBAL $RoombaDataPathId; 
 	//Packet ID: 11	Cliff Front Right
 	$b1 = u_0bis1(11,$Byte[0]);
 	$b2 = GetValueBoolean(IPS_GetVariableIDByName('CLIFF_FRONT_RIGHT',$RoombaDataPathId));
-
+	
 	if ( $b1 != $b2 )
 			SetValueBoolean(IPS_GetVariableIDByName('CLIFF_FRONT_RIGHT',$RoombaDataPathId),$b1);
 
@@ -198,17 +202,25 @@ function packet_14($Byte)
 			SetValueInteger(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS',$RoombaDataPathId),$b1);else return;
 
 	if ( ($b1 & 1) != ($b2 & 1))
-		if ( ($b1 & 1) == 1 ) SetValueBoolean(WHEEL_OVERCURRENTS_SIDE_BRUSH		,true);
-		else SetValueBoolean(WHEEL_OVERCURRENTS_SIDE_BRUSH	,false);
+		if ( ($b1 & 1) == 1 )
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_SIDE_BRUSH',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_SIDE_BRUSH',$RoombaDataPathId),false);
 	if ( ($b1 & 4) != ($b2 & 4))
-		if ( ($b1 & 4) == 4 ) SetValueBoolean(WHEEL_OVERCURRENTS_MAIN_BRUSH		,true);
-		else SetValueBoolean(WHEEL_OVERCURRENTS_MAIN_BRUSH	,false);
+		if ( ($b1 & 4) == 4 )
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_MAIN_BRUSH',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_MAIN_BRUSH',$RoombaDataPathId),false);
 	if ( ($b1 & 8) != ($b2 & 8))
-		if ( ($b1 & 8) == 8 ) SetValueBoolean(WHEEL_OVERCURRENTS_RIGHT_WHEEL	,true);
-		else SetValueBoolean(WHEEL_OVERCURRENTS_RIGHT_WHEEL	,false);
+		if ( ($b1 & 8) == 8 )
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_RIGHT_WHEEL',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_RIGHT_WHEEL',$RoombaDataPathId),false);
 	if ( ($b1 &16) != ($b2 &16))
-		if ( ($b1 &16) ==16 ) SetValueBoolean(WHEEL_OVERCURRENTS_LEFT_WHEEL		,true);
-		else SetValueBoolean(WHEEL_OVERCURRENTS_LEFT_WHEEL	,false);
+		if ( ($b1 &16) ==16 )
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_LEFT_WHEEL',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('WHEEL_OVERCURRENTS_LEFT_WHEEL',$RoombaDataPathId),false);
 
 	}
 
@@ -217,10 +229,10 @@ function packet_15($Byte)
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 15   Dirt Detect
 	$b1 = u_0bis255(15,$Byte[0]);
-	$b2 = GetValueBoolean(IPS_GetVariableIDByName('DIRT_DETECT',$RoombaDataPathId));
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('DIRT_DETECT',$RoombaDataPathId));
 
 	if ( $b1 != $b2 )
-			SetValueBoolean(IPS_GetVariableIDByName('DIRT_DETECT',$RoombaDataPathId),$b1);
+			SetValueInteger(IPS_GetVariableIDByName('DIRT_DETECT',$RoombaDataPathId),$b1);
 
 	}
 
@@ -234,26 +246,59 @@ function packet_17($Byte)
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 17	Infrared Character Omni
 	$b1 = u_0bis255(17,$Byte[0]);
-	$b2 = GetValueInteger(INFRARED_CHARACTER_OMNI);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_OMNI',$RoombaDataPathId));
 	if ( $b1 == $b2 ) return;
-	SetValueInteger(INFRARED_CHARACTER_OMNI,$b1);
-	lighthouse(INFRARED_CHARACTER_OMNI,$b1);
+	SetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_OMNI',$RoombaDataPathId),$b1);
+	//lighthouse(INFRARED_CHARACTER_OMNI,$b1);
 	}
 function packet_18($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 18   Buttons
 	$b1 = u_0bis255(18,$Byte[0]);
-	$b2 = GetValueInteger(BUTTONS);
-	if ( $b1 != $b2 )SetValueInteger(BUTTONS,$b1);else return;
-	if ( ($b1 & 1) != ($b2 & 1))if ( ($b1 & 1) == 1 ) SetValueBoolean(BUTTONS_CLEAN		,true); else SetValueBoolean(BUTTONS_CLEAN		,false);
-	if ( ($b1 & 2) != ($b2 & 2))if ( ($b1 & 2) == 2 ) SetValueBoolean(BUTTONS_SPOT		,true); else SetValueBoolean(BUTTONS_SPOT			,false);
-	if ( ($b1 & 4) != ($b2 & 4))if ( ($b1 & 4) == 4 ) SetValueBoolean(BUTTONS_DOCK		,true); else SetValueBoolean(BUTTONS_DOCK			,false);
-	if ( ($b1 & 8) != ($b2 & 8))if ( ($b1 & 8) == 8 ) SetValueBoolean(BUTTONS_MINUTE		,true); else SetValueBoolean(BUTTONS_MINUTE		,false);
-	if ( ($b1 &16) != ($b2 &16))if ( ($b1 &16) ==16 ) SetValueBoolean(BUTTONS_HOUR		,true); else SetValueBoolean(BUTTONS_HOUR			,false);
-	if ( ($b1 &32) != ($b2 &32))if ( ($b1 &32) ==32 ) SetValueBoolean(BUTTONS_DAY			,true); else SetValueBoolean(BUTTONS_DAY			,false);
-	if ( ($b1 &64) != ($b2 &64))if ( ($b1 &64) ==64 ) SetValueBoolean(BUTTONS_SCHEDULE	,true); else SetValueBoolean(BUTTONS_SCHEDULE	,false);
-	if ( ($b1 &128)!= ($b2&128))if ( ($b1&128) ==128) SetValueBoolean(BUTTONS_CLOCK		,true); else SetValueBoolean(BUTTONS_CLOCK		,false);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('BUTTONS',$RoombaDataPathId));
+	if ( $b1 != $b2 )SetValueInteger(IPS_GetVariableIDByName('BUTTONS',$RoombaDataPathId),$b1);else return;
+	
+	if ( ($b1 & 1) != ($b2 & 1))
+		if ( ($b1 & 1) == 1 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_CLEAN',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_CLEAN',$RoombaDataPathId),false);
+	if ( ($b1 & 2) != ($b2 & 2))
+		if ( ($b1 & 2) == 2 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_SPOT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_SPOT',$RoombaDataPathId),false);
+	if ( ($b1 & 4) != ($b2 & 4))
+		if ( ($b1 & 4) == 4 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_DOCK',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_DOCK',$RoombaDataPathId),false);
+	if ( ($b1 & 8) != ($b2 & 8))
+		if ( ($b1 & 8) == 8 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_MINUTE',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_MINUTE',$RoombaDataPathId),false);
+	if ( ($b1 &16) != ($b2 &16))
+		if ( ($b1 &16) ==16 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_HOUR',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_HOUR',$RoombaDataPathId),false);
+	if ( ($b1 &32) != ($b2 &32))
+		if ( ($b1 &32) ==32 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_DAY',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_DAY',$RoombaDataPathId),false);
+	if ( ($b1 &64) != ($b2 &64))
+		if ( ($b1 &64) ==64 )
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_SCHEDULE',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_SCHEDULE',$RoombaDataPathId),false);
+	if ( ($b1 &128)!= ($b2&128))
+		if ( ($b1&128) ==128)
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_CLOCK',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('BUTTONS_CLOCK',$RoombaDataPathId),false);
 	}
 
 function packet_19($Byte)
@@ -261,15 +306,15 @@ function packet_19($Byte)
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 19   DISTANCE
 	$b1 = u_32768bis32767(19,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(DISTANCE);
-	if ( $b1 != $b2 ) SetValueInteger(DISTANCE,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('DISTANCE',$RoombaDataPathId));
 
-	//echo "\nerg:" . $b1 . " byte0:". ord($Byte[0]) . "byte1:" .ord($Byte[1]);
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('DISTANCE',$RoombaDataPathId),$b1);
 
-	$km = GetValueInteger(KILOMETERZAEHLER);
-	$km = $km + abs($b1);
+	//$km = GetValueInteger(KILOMETERZAEHLER);
+	//$km = $km + abs($b1);
 
-	SetValueInteger(KILOMETERZAEHLER,$km);
+	//SetValueInteger(KILOMETERZAEHLER,$km);
 
 	}
 function packet_20($Byte)
@@ -277,103 +322,148 @@ function packet_20($Byte)
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 20   ANGLE
 	$b1 = u_32768bis32767(20,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(ANGLE);
-	if ( $b1 != $b2 )SetValueInteger(ANGLE,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('ANGLE',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('ANGLE',$RoombaDataPathId),$b1);
 	}
+	
 function packet_21($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 21	Ladestatus
 	$b1 = u_0bis255(21,$Byte[0]);
-	$b2 = GetValueInteger(CHARGING_STATE);
-	if ( $b1 != $b2 )SetValueInteger(CHARGING_STATE,$b1);else return;
-	if ( $b1	== 0 ) SetValueBoolean(CHARGING_STATE_NOT_CHARGING					,true); else SetValueBoolean(CHARGING_STATE_NOT_CHARGING					,false);
-	if ( $b1 == 1 ) SetValueBoolean(CHARGING_STATE_RECONDITIONING_CHARGING	,true); else SetValueBoolean(CHARGING_STATE_RECONDITIONING_CHARGING	,false);
-	if ( $b1 == 2 ) SetValueBoolean(CHARGING_STATE_FULL_CHARGING				,true); else SetValueBoolean(CHARGING_STATE_FULL_CHARGING				,false);
-	if ( $b1 == 3 ) SetValueBoolean(CHARGING_STATE_TRICKLE_CHARGING			,true); else SetValueBoolean(CHARGING_STATE_TRICKLE_CHARGING			,false);
-	if ( $b1 == 4 ) SetValueBoolean(CHARGING_STATE_WAITING						,true); else SetValueBoolean(CHARGING_STATE_WAITING						,false);
-	if ( $b1 == 5 ) SetValueBoolean(CHARGING_STATE_CHARGING_FAULT_CONDITION	,true); else SetValueBoolean(CHARGING_STATE_CHARGING_FAULT_CONDITION	,false);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CHARGING_STATE',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CHARGING_STATE',$RoombaDataPathId),$b1);else return;
+
+	if ( $b1	== 0 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_NOT_CHARGING',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_NOT_CHARGING',$RoombaDataPathId),false);
+	if ( $b1 == 1 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_RECONDITIONING_CHARGING',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_RECONDITIONING_CHARGING',$RoombaDataPathId),false);
+	if ( $b1 == 2 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_FULL_CHARGING',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_FULL_CHARGING',$RoombaDataPathId),false);
+	if ( $b1 == 3 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_TRICKLE_CHARGING',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_TRICKLE_CHARGING',$RoombaDataPathId),false);
+	if ( $b1 == 4 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_WAITING',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_WAITING',$RoombaDataPathId),false);
+	if ( $b1 == 5 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_CHARGING_FAULT_CONDITION',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_STATE_CHARGING_FAULT_CONDITION',$RoombaDataPathId),false);
+
 	}
+
 function packet_22($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 22	Batteriespannung
 	$b1 = u_0bis65535(23,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(VOLTAGE);
-	if ( $b1 != $b2 )SetValueInteger(VOLTAGE,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('VOLTAGE',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('VOLTAGE',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_23($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 23	Batteriestrom
 	$b1 = u_32768bis32767(23,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(CURRENT);
-	if ( $b1 != $b2 )SetValueInteger(CURRENT,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CURRENT',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CURRENT',$RoombaDataPathId),$b1);
 	}
+
 function packet_24($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 24	Batterietemperatur
 	$b1 = u_128bis127(24,$Byte[0]);
-	$b2 = GetValueInteger(TEMPERATURE);
-	if ( $b1 != $b2 )SetValueInteger(TEMPERATURE,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('TEMPERATURE',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('TEMPERATURE',$RoombaDataPathId),$b1);
 	}
+	
 function packet_25($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 25	Batterieaufladung
 	$b1 = u_0bis65535(25,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(BATTERY_CHARGE);
-	if ( $b1 != $b2 )SetValueInteger(BATTERY_CHARGE,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CHARGE',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('BATTERY_CHARGE',$RoombaDataPathId),$b1);
 	}
+
 function packet_26($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 26	Batteriekapazitaet
 	$b1 = u_0bis65535(26,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(BATTERY_CAPACITY);
-	if ( $b1 != $b2 )SetValueInteger(BATTERY_CAPACITY,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CAPACITY',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('BATTERY_CAPACITY',$RoombaDataPathId),$b1);
 	}
+
 function packet_27($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 27	Wall Signal
 	$b1 = u_0bis65535(27,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(WALL_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(WALL_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('WALL_SIGNAL',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('WALL_SIGNAL',$RoombaDataPathId),$b1);
 	}
+
 function packet_28($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 28	Cliff Left Signal
 	$b1 = u_0bis65535(28,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(CLIFF_LEFT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(CLIFF_LEFT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CLIFF_LEFT_SIGNAL',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CLIFF_LEFT_SIGNAL',$RoombaDataPathId),$b1);
 	}
+
 function packet_29($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 29	Cliff Front Left Signal
 	$b1 = u_0bis65535(29,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(CLIFF_FRONT_LEFT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(CLIFF_FRONT_LEFT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CLIFF_FRONT_LEFT_SIGNAL',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CLIFF_FRONT_LEFT_SIGNAL',$RoombaDataPathId),$b1);
 	}
+
 function packet_30($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 30	Cliff Front Right Signal
 	$b1 = u_0bis65535(30,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(CLIFF_FRONT_RIGHT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(CLIFF_FRONT_RIGHT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CLIFF_FRONT_RIGHT_SIGNAL',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CLIFF_FRONT_RIGHT_SIGNAL',$RoombaDataPathId),$b1);
 	}
+
 function packet_31($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 31	Cliff Right Signal
 	$b1 = u_0bis65535(31,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(CLIFF_RIGHT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(CLIFF_RIGHT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CLIFF_RIGHT_SIGNAL',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CLIFF_RIGHT_SIGNAL',$RoombaDataPathId),$b1);
 	}
+
 function packet_32($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
@@ -391,88 +481,141 @@ function packet_34($Byte)
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 34	Ladequelle
 	$b1 = u_0bis255(34,$Byte[0]);
-	$b2 = GetValueInteger(CHARGING_SOURCES_AVAILABLE);
-	if ( $b1 != $b2 )SetValueInteger(CHARGING_SOURCES_AVAILABLE,$b1); else return;
-	if ( ($b1 & 1) == 1 ) SetValueBoolean(CHARGING_SOURCES_AVAILABLE_INTERNAL_CHARGER,true); else SetValueBoolean(CHARGING_SOURCES_AVAILABLE_INTERNAL_CHARGER,false);
-	if ( ($b1 & 2) == 2 ) SetValueBoolean(CHARGING_SOURCES_AVAILABLE_HOME_BASE			,true); else SetValueBoolean(CHARGING_SOURCES_AVAILABLE_HOME_BASE			,false);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId),$b1);else return;
+		
+	if ( ($b1 & 1) == 1 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE_INTERNAL_CHARGER',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE_INTERNAL_CHARGER',$RoombaDataPathId),false);
+	if ( ($b1 & 2) == 2 )
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE_HOME_BASE',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE_HOME_BASE',$RoombaDataPathId),false);
+
 	}
+
 function packet_35($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 35	OI Mode
 
 	$b1 = u_0bis255(35,$Byte[0]);
-	$b2 = GetValueInteger(OI_MODE);
-	if ( $b1 != $b2 )SetValueInteger(OI_MODE,$b1); else return;
-	if ( $b1 == 0 ) SetValueBoolean(OI_MODE_OFF		,true); else SetValueBoolean(OI_MODE_OFF		,false);
-	if ( $b1 == 1 ) SetValueBoolean(OI_MODE_PASSIVE	,true); else SetValueBoolean(OI_MODE_PASSIVE	,false);
-	if ( $b1 == 2 ) SetValueBoolean(OI_MODE_SAFE		,true); else SetValueBoolean(OI_MODE_SAFE		,false);
-	if ( $b1 == 3 ) SetValueBoolean(OI_MODE_FULL		,true); else SetValueBoolean(OI_MODE_FULL		,false);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('OI_MODE',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('OI_MODE',$RoombaDataPathId),$b1);else return;
+	
+	if ( $b1 == 0 )
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_OFF',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_OFF',$RoombaDataPathId),false);
+	if ( $b1 == 1 )
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_PASSIVE',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_PASSIVE',$RoombaDataPathId),false);
+	if ( $b1 == 2 )
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_SAFE',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_SAFE',$RoombaDataPathId),false);
+	if ( $b1 == 3 )
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_FULL',$RoombaDataPathId),true);
+	else
+		SetValueBoolean(IPS_GetVariableIDByName('OI_MODE_FULL',$RoombaDataPathId),false);
+
 	}
+	
 function packet_36($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 36	Lied Nummer
 	$b1 = u_0bis255(36,$Byte[0]);
-	$b2 = GetValueInteger(SONG_NUMBER);
-	if ( $b1 != $b2 )SetValueInteger(SONG_NUMBER,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('SONG_NUMBER',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('SONG_NUMBER',$RoombaDataPathId),$b1);
 	}
+	
 function packet_37($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 37	Lied
 	$b1 = u_0bis255(37,$Byte[0]);
-	$b2 = GetValueInteger(SONG_PLAYING);
-	if ( $b1 != $b2 )SetValueInteger(SONG_PLAYING,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('SONG_PLAYING',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('SONG_PLAYING',$RoombaDataPathId),$b1);
+
 	}
+	
 function packet_38($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 38	Anzahl Stream Pakete
 	$b1 = u_0bis255(38,$Byte[0]);
-	$b2 = GetValueInteger(NUMBER_OF_STREAM_PACKETS);
-	if ( $b1 != $b2 )SetValueInteger(NUMBER_OF_STREAM_PACKETS,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('NUMBER_OF_STREAM_PACKETS',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('NUMBER_OF_STREAM_PACKETS',$RoombaDataPathId),$b1);
 	}
+	
 function packet_39($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 39	Request Velocity
 	$b1 = u_32768bis32767(39,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(REQUESTED_VELOCITY);
-	if ( $b1 != $b2 )SetValueInteger(REQUESTED_VELOCITY,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('REQUESTED_VELOCITY',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('REQUESTED_VELOCITY',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_40($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 40	Request Radius
 	$b1 = u_32768bis32767(40,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(REQUESTED_RADIUS);
-	if ( $b1 != $b2 )SetValueInteger(REQUESTED_RADIUS,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('REQUESTED_RADIUS',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('REQUESTED_RADIUS',$RoombaDataPathId),$b1);
+
 	}
+	
 function packet_41($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 41	Request Right Velocity
 	$b1 = u_32768bis32767(41,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(REQUESTED_RIGHT_VELOCITY);
-	if ( $b1 != $b2 )SetValueInteger(REQUESTED_RIGHT_VELOCITY,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('REQUESTED_RIGHT_VELOCITY',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('REQUESTED_RIGHT_VELOCITY',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_42($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 42	Request Left Velocity
 	$b1 = u_32768bis32767(42,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(REQUESTED_LEFT_VELOCITY);
-	if ( $b1 != $b2 )SetValueInteger(REQUESTED_LEFT_VELOCITY,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('REQUESTED_LEFT_VELOCITY',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('REQUESTED_LEFT_VELOCITY',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_43($Byte)
 	{
    GLOBAL $RoombaDataPathId;
 	//Packet ID: 43	Right Encoder Counts
 	$b1 = u_0bis65535(43,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(RIGHT_ENCODER_COUNTS);
-	if ( $b1 != $b2 )SetValueInteger(RIGHT_ENCODER_COUNTS,$b1);
-	//echo "rechts counter = $b1";
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('RIGHT_ENCODER_COUNTS',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('RIGHT_ENCODER_COUNTS',$RoombaDataPathId),$b1);
+
 
 	}
 function packet_44($Byte)
@@ -480,134 +623,213 @@ function packet_44($Byte)
 	GLOBAL $RoombaDataPathId;
    //Packet ID: 44	Left Encoder Counts
 	$b1 = u_0bis65535(44,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LEFT_ENCODER_COUNTS);
-	if ( $b1 != $b2 )SetValueInteger(LEFT_ENCODER_COUNTS,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LEFT_ENCODER_COUNTS',$RoombaDataPathId));
 
-	//echo "links counter = $b1";
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LEFT_ENCODER_COUNTS',$RoombaDataPathId),$b1);
 
 	}
+
 function packet_45($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 45	Light Bumper
 	$b1 = u_0bis255(45,$Byte[0]);
-	$b2 = GetValueInteger(LIGHT_BUMPER);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMPER,$b1);else return;
-	if ( ($b1 & 1) != ($b2 & 1))if ( ($b1 & 1) == 1 ) SetValueBoolean(LIGHT_BUMPER_LEFT				,true); else SetValueBoolean(LIGHT_BUMPER_LEFT			,false);
-	if ( ($b1 & 2) != ($b2 & 2))if ( ($b1 & 2) == 2 ) SetValueBoolean(LIGHT_BUMPER_FRONT_LEFT		,true); else SetValueBoolean(LIGHT_BUMPER_FRONT_LEFT	,false);
-	if ( ($b1 & 4) != ($b2 & 4))if ( ($b1 & 4) == 4 ) SetValueBoolean(LIGHT_BUMPER_CENTER_LEFT	,true); else SetValueBoolean(LIGHT_BUMPER_CENTER_LEFT	,false);
-	if ( ($b1 & 8) != ($b2 & 8))if ( ($b1 & 8) == 8 ) SetValueBoolean(LIGHT_BUMPER_CENTER_RIGHT	,true); else SetValueBoolean(LIGHT_BUMPER_CENTER_RIGHT,false);
-	if ( ($b1 &16) != ($b2 &16))if ( ($b1 &16) ==16 ) SetValueBoolean(LIGHT_BUMPER_FRONT_RIGHT	,true); else SetValueBoolean(LIGHT_BUMPER_FRONT_RIGHT	,false);
-	if ( ($b1 &32) != ($b2 &32))if ( ($b1 &32) ==32 ) SetValueBoolean(LIGHT_BUMPER_RIGHT			,true); else SetValueBoolean(LIGHT_BUMPER_RIGHT			,false);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMPER',$RoombaDataPathId));
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMPER',$RoombaDataPathId),$b1);else return;
+
+	if ( ($b1 & 1) != ($b2 & 1))
+		if ( ($b1 & 1) == 1 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_LEFT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_LEFT',$RoombaDataPathId),false);
+	if ( ($b1 & 2) != ($b2 & 2))
+		if ( ($b1 & 2) == 2 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_FRONT_LEFT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_FRONT_LEFT',$RoombaDataPathId),false);
+	if ( ($b1 & 4) != ($b2 & 4))
+		if ( ($b1 & 4) == 4 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_CENTER_LEFT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_CENTER_LEFT',$RoombaDataPathId),false);
+	if ( ($b1 & 8) != ($b2 & 8))
+		if ( ($b1 & 8) == 8 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_CENTER_RIGHT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_CENTER_RIGHT',$RoombaDataPathId),false);
+	if ( ($b1 &16) != ($b2 &16))
+		if ( ($b1 &16) ==16 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_FRONT_RIGHT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_FRONT_RIGHT',$RoombaDataPathId),false);
+	if ( ($b1 &32) != ($b2 &32))
+		if ( ($b1 &32) ==32 )
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_RIGHT',$RoombaDataPathId),true);
+		else
+			SetValueBoolean(IPS_GetVariableIDByName('LIGHT_BUMPER_RIGHT',$RoombaDataPathId),false);
+
 	}
+
 function packet_46($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 46	Light Bump Left Signal
 	$b1 = u_0bis65535(46,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_LEFT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_LEFT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_LEFT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_LEFT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
+	
 function packet_47($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 47	Light Bump Front Left Signal
 	$b1 = u_0bis65535(47,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_FRONT_LEFT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_FRONT_LEFT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_FRONT_LEFT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_FRONT_LEFT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
 function packet_48($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 48	Light Bump Center Left Signal
 	$b1 = u_0bis65535(48,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_CENTER_LEFT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_CENTER_LEFT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_CENTER_LEFT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_CENTER_LEFT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_49($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 49	Light Bump Center Right Signal
 	$b1 = u_0bis65535(49,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_CENTER_RIGHT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_CENTER_RIGHT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_CENTER_RIGHT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_CENTER_RIGHT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_50($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 50	Light Bump Front Right Signal
 	$b1 = u_0bis65535(50,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_FRONT_RIGHT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_FRONT_RIGHT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_FRONT_RIGHT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 );
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_FRONT_RIGHT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_51($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 51	Light Bump Right Signal
 	$b1 = u_0bis65535(51,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LIGHT_BUMP_RIGHT_SIGNAL);
-	if ( $b1 != $b2 )SetValueInteger(LIGHT_BUMP_RIGHT_SIGNAL,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_RIGHT_SIGNAL',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LIGHT_BUMP_RIGHT_SIGNAL',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_52($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 52	Infrared Character Left"
 	$b1 = u_0bis255(52,$Byte[0]);
-	$b2 = GetValueInteger(INFRARED_CHARACTER_LEFT);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_LEFT',$RoombaDataPathId));
+
 	if ( $b1 == $b2 ) return;
-	SetValueInteger(INFRARED_CHARACTER_LEFT,$b1);
-	lighthouse(INFRARED_CHARACTER_LEFT,$b1);
+
+	SetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_LEFT',$RoombaDataPathId),$b1);
+	//lighthouse(INFRARED_CHARACTER_LEFT,$b1);
+
 	}
+	
 function packet_53($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 53	Infrared Character Right
 	$b1 = u_0bis255(53,$Byte[0]);
-	$b2 = GetValueInteger(INFRARED_CHARACTER_RIGHT);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_RIGHT',$RoombaDataPathId));
+
 	if ( $b1 == $b2 ) return;
-	SetValueInteger(INFRARED_CHARACTER_RIGHT,$b1);
-	lighthouse(INFRARED_CHARACTER_RIGHT,$b1);
+
+	SetValueInteger(IPS_GetVariableIDByName('INFRARED_CHARACTER_RIGHT',$RoombaDataPathId),$b1);
+
+	//lighthouse(INFRARED_CHARACTER_RIGHT,$b1);
+
 	}
+
 function packet_54($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 54	Left Motor Current
 	$b1 = u_32768bis32767(54,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(LEFT_MOTOR_CURRENT);
-	if ( $b1 != $b2 )SetValueInteger(LEFT_MOTOR_CURRENT,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('LEFT_MOTOR_CURRENT',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('LEFT_MOTOR_CURRENT',$RoombaDataPathId),$b1);
 
 	}
+	
 function packet_55($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 55	Right Motor Current
 	$b1 = u_32768bis32767(55,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(RIGHT_MOTOR_CURRENT);
-	if ( $b1 != $b2 )SetValueInteger(RIGHT_MOTOR_CURRENT,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('RIGHT_MOTOR_CURRENT',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('RIGHT_MOTOR_CURRENT',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_56($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 56	Main Brush Motor Current
 	$b1 = u_32768bis32767(56,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(MAIN_BRUSH_MOTOR_CURRENT);
-	if ( $b1 != $b2 )SetValueInteger(MAIN_BRUSH_MOTOR_CURRENT,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('MAIN_BRUSH_MOTOR_CURRENT',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('MAIN_BRUSH_MOTOR_CURRENT',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_57($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 57	Side Brush Motor Current
 	$b1 = u_32768bis32767(57,$Byte[0],$Byte[1]);
-	$b2 = GetValueInteger(SIDE_BRUSH_MOTOR_CURRENT);
-	if ( $b1 != $b2 )SetValueInteger(SIDE_BRUSH_MOTOR_CURRENT,$b1);
+	$b2 = GetValueInteger(IPS_GetVariableIDByName('SIDE_BRUSH_MOTOR_CURRENT',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueInteger(IPS_GetVariableIDByName('SIDE_BRUSH_MOTOR_CURRENT',$RoombaDataPathId),$b1);
+
 	}
+
 function packet_58($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 58	Stasis
 	$b1 = u_0bis1(58,$Byte[0]);
-	$b2 = GetValueBoolean(STASIS);
-	if ( $b1 != $b2 )SetValueBoolean(STASIS,$b1);
+	$b2 = GetValueBoolean(IPS_GetVariableIDByName('STASIS',$RoombaDataPathId));
+
+	if ( $b1 != $b2 )
+		SetValueBoolean(IPS_GetVariableIDByName('STASIS',$RoombaDataPathId),$b1);
+
 	}
 
 
@@ -1079,7 +1301,7 @@ function u_32768bis32767($id,$b1,$b2)
 function u_128bis127($id,$b1)
 	{
 	$b1 = ord($b1);
-	if ( $b1 & 128 ){$b1 = ($b1 & 127)-128; echo $b1;}
+	if ( $b1 & 128 ){$b1 = ($b1 & 127)-128; }
 	return $b1;
 	}
 //******************************************************************************
@@ -1299,6 +1521,9 @@ function create_zufallspaket()
 	for($x=0;$x<80;$x++)
 		{
 		$zufall = rand(0,255);
+		if ( $x == 16 )
+			$zufall = rand(1,5);
+
 	   $s = $s . chr($zufall);
 	   }
 	

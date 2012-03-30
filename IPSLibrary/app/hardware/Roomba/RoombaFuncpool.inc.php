@@ -43,21 +43,14 @@ function xbee_send($gateway_id,$xbee_id,$command)
 	
 	if ($debug) print_r($command);
 
-	//echo "\nAusgabe" .$gateway_id;
-	//echo sizeof($command);
-
 	$string = "";
 	for ( $x = 0 ; $x< sizeof($command) ; $x++)
 	   {
 	   $c = chr($command[$x]);
-	   //echo "\n[".ord($c)."]";
 	   $string =  $string . $c   ;
-
-
 	   }
 
 	$len = strlen($string);
-	//echo "\n[$string]-$len";
 	
 	XBee_SendBuffer($gateway_id,$xbee_id,$string);
 	
@@ -66,7 +59,7 @@ function xbee_send($gateway_id,$xbee_id,$command)
 //******************************************************************************
 // Kommando zusammensetzen
 //******************************************************************************
-function command($opcode,$databytes,$object_id,$DataPathId)
+function command($opcode,$databytes,$xbee_id,$DataPathId)
 	{
 	
 	$aktiv_id = IPS_GetVariableIDByName('AKTIV',$DataPathId);
@@ -255,7 +248,7 @@ function command($opcode,$databytes,$object_id,$DataPathId)
 							for ($x=0;$x<=$anzahl;$x++)
 			               $sendbuffer[$x+1] = $databytes[$x];
 
-							xbee_send($gateway_id,$object_id,$sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 
 							break;
 			// Stream
@@ -279,17 +272,7 @@ function command($opcode,$databytes,$object_id,$DataPathId)
 
 	}
 
-//******************************************************************************
-//	Berechnung der Restbatteriekapazität in %
-//******************************************************************************
-function get_batterie()
-	{
 
-	$x = GetValueInteger(BATTERY_CHARGE);
-	$y = GetValueInteger(BATTERY_CAPACITY);
-	$s = strval(($x /$y)*100);
-	return  $s;
-	}
 
 //******************************************************************************
 // Ausgabe von Text auf dem LCD
@@ -304,11 +287,35 @@ function show_lcd_text($string)
 	}
 
 
+function cmd_init($roomba_id)
+	{
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+	echo $xbee_id;
 
-function go_clean()
+	}
+	
+function cmd_max($roomba_id)
+	{
+	
+	
+	}
+	
+function cmd_spot($roomba_id)
+	{
+	
+	
+	
+	}
+function cmd_power($roomba_id)
+	{
+	
+	
+	}
+	
+function cmd_clean($roomba_id)
 	{
 
-
+	return;
 	go_wartung();
 
 	reset_data();
@@ -329,32 +336,11 @@ function go_clean()
 
 	}
 
-function go_test_1()
+
+function cmd_wartung($roomba_id)
 	{
 
-	reset_data();
-   command(SAFE,0);
-	command(DRIVE_DIRECT,speed_to_byte(-50,-50));  	// 50 mm/s
-	sleep(40);
-	command(DRIVE_DIRECT,speed_to_byte(0,0));   		// Stop
-
-	}
-
-function go_test_2()
-	{
-
-	reset_data();
-   command(SAFE,0);
-	command(DRIVE_DIRECT,speed_to_byte(50,50));  	// 50 mm/s
-	sleep(20);
-	command(DRIVE_DIRECT,speed_to_byte(0,0));   		// Stop
-
-	}
-
-
-function go_wartung()
-	{
-
+	return;
 	reset_data();
 	startzeit();
 
@@ -387,9 +373,11 @@ function go_wartung()
 
 	}
 
-function go_home()
+function cmd_home($roomba_id)
 	{
 
+	return;
+	
    SetValueBoolean(POLLING_STATUS,false);
 
 	command(SAFE,0);	sleep(2);
