@@ -11,7 +11,7 @@
 *
 * @file       BusBahnInfo_Configuration.inc.php
 * @author     1007
-* @version    Version 1.0.0
+* @version    Version 1.0.1
 * @date       04.03.2012
 *
 * @brief Stationen definieren  

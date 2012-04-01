@@ -4,7 +4,7 @@
 * @{
 * @file          busbahninforefresh.ips.php
 * @author        1007
-* @version       1.0.0
+* @version       1.0.1
 *
 * @brief Script zur Anzeige von Abfahrtstafeln im Webfront
 * @details Dieses Script liest das dazugehoerige Configurationfile und holt
@@ -28,11 +28,11 @@
 	IPSUtils_Include ("BusBahnInfo_Configuration.inc.php", "IPSLibrary::config::modules::Informationen::BusBahnInfo");
 	IPSUtils_Include ("busbahninfo.class.php", "IPSLibrary::app::modules::Informationen::BusBahnInfo");
 
-  $CategoryPath = "Program.IPSLibrary.data.modules.Informationen.BusBahnInfo";
+  	$CategoryPath = "Program.IPSLibrary.data.modules.Informationen.BusBahnInfo";
 	$VisuPath     = "Visualization.WebFront.Informationen.BusBahnInfo";
 
-  $CategoryData = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.BusBahnInfo");
-  $VisuData 	  = IPSUtil_ObjectIDByPath("Visualization.WebFront.Informationen.BusBahnInfo");
+  	$CategoryData = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.BusBahnInfo");
+  	$VisuData 	  = IPSUtil_ObjectIDByPath("Visualization.WebFront.Informationen.BusBahnInfo");
 
 	$imagepath  = "/user/BusBahnInfo/images/";
 	$csspath    = "/user/BusBahnInfo/";
@@ -103,9 +103,10 @@ function check_unused($stationen)
 	// nicht mehr definierte Variablen in Datapath loeschen
    foreach(IPS_GetChildrenIDs($CategoryData) as $child)
       {
-
+      $object = IPS_GetObject($child);
+ 		//print_r(IPS_GetObject($child));
       $name = IPS_GetName($child);
-
+		//echo "\n" .$name;
 		$gefunden = false;
 		foreach($stationen as $station )
 		   {
@@ -114,12 +115,21 @@ function check_unused($stationen)
 			$station_richtung = $station[2];    // Ankunft / Abfahrt
 			$vardataname      = $station_richtung . " " . $station_name;
 			$vardataname      = $station_alias;
+			$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
+
 			$tabname = $station_name . " " . $station_richtung;
 			if ( $name == $vardataname )
 				$gefunden = true;
 		   }
 		if ( !$gefunden )
-		   { IPS_DeleteVariable($child); if ($debug ) echo "\nData " . $child . "geloescht"; }
+		   {
+		   //echo "------nicht gefunden !";
+		   if ( $object['ObjectType'] == 0 )
+		      IPS_DeleteCategory($child);
+		   if ( $object['ObjectType'] == 2 )
+				{ IPS_DeleteVariable($child); if ($debug ) echo "\nData " . $child . "geloescht\n"; }
+
+			}
 
       }
 
@@ -127,9 +137,12 @@ function check_unused($stationen)
 	// nicht mehr definierte Variablen in Visupath loeschen
    foreach(IPS_GetChildrenIDs($VisuData) as $child)
       {
+      $object = IPS_GetObject($child);
+		//print_r($object);
       $name = IPS_GetName($child);
 
-		if ( $name != "Skripte" )
+
+		if ( $object['ObjectType'] != 2 )
 		   {
 			$gefunden = false;
 			foreach($stationen as   $station)
@@ -138,20 +151,26 @@ function check_unused($stationen)
 				$station_name  	= $station[1];    // Name Bahnhof
 				$station_richtung = $station[2];    // Ankunft / Abfahrt
 				$vardataname      = $station_richtung . " " . $station_name;
-				$vardataname      = $station_alias;
+				$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
 
 				$tabname = $station_name . " " . $station_richtung;
-				if ( $name == $station_alias )
+				if ( $name == $vardataname )
 					$gefunden = true;
 
 		   	}
+
 			if ( !$gefunden )
 		   	{
 				if ($debug ) echo "\nVisu " . $child . "geloescht";
    			foreach(IPS_GetChildrenIDs($child) as $subchild)
+   			   {
 					IPS_DeleteLink($subchild);
-		   	IPS_DeleteCategory($child);
+
+					}
+				IPS_DeleteCategory($child);
+				IPS_DeleteLink($child);
 				}
+
 
 
 			// teste ob mehr als ein child
@@ -179,6 +198,7 @@ function check_unused($stationen)
 function anzeige($bahn,$station,$sort_nummer)
 	{
 	GLOBAL   $CategoryData;
+	GLOBAL   $CategoryPath;
 	GLOBAL   $VisuPath;
 	GLOBAL   $VisuData;
 	GLOBAL 	 $debug;
@@ -191,8 +211,8 @@ function anzeige($bahn,$station,$sort_nummer)
 	$station_richtung = $station[2];    // Ankunft / Abfahrt
 	$station_wegezeit = $station[3];    // Wegezeit zum Bahnhof
 	$auswahl_string   = "";             // Ausgewaehlte Verkehrsmittel
-	$vardataname      = $station_richtung . " " . $station_name;
-	$vardataname      = $station_alias;
+	$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
+	//$vardataname      = $station_alias;
 	//***************************************************************************
 	// HTML Kopf
 	//***************************************************************************
@@ -357,19 +377,25 @@ function anzeige($bahn,$station,$sort_nummer)
 	// HTML Ende
 	//***************************************************************************
 
-
-
 	// schreibt Daten in Datapath.Wenn Variable nicht vorhanden wird sie erstellt
-   $varid = CreateVariable($vardataname,3,$CategoryData,$sort_nummer,"~HTMLBox",false,false,"");
+   $id = CreateCategoryPath($CategoryPath);
+	
+   $varid = CreateVariable($vardataname,3,$id,$sort_nummer,"~HTMLBox",false,false,"");
    SetValue($varid, $str);
 
 	// wenn Tab in Visu nicht vorhanden wird er erstellt
 	$tabname = $station_alias;
-  	$tabid = CreateCategoryPath($VisuPath.".$tabname",$sort_nummer);
+  	$tabid = CreateCategoryPath($VisuPath);
 
 	// wenn Link nicht vorhanden wird er erstellt
-	$linkname = $vardataname . verkehrsmittel($station);
-	CreateLink ($linkname, $varid, $tabid, 10);
+	$linkname = $vardataname ;
+
+	$exist = IPS_GetLinkIDByName($linkname,$VisuData);
+	if ( ! $exist )
+	   {
+		$id = CreateLink ($linkname, $varid, $tabid, 10);
+		IPS_SetHidden($id, true);
+		}
 
 }
 
