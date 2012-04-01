@@ -41,7 +41,7 @@ function script_timing($DataPathId)
    
 	$debug = false;
 
-	$poll 		= 0;
+
 	$online 		= false;
 	$charging 	= false;
 	$moving 		= false;
@@ -53,7 +53,7 @@ function script_timing($DataPathId)
 
    $t2 = $array["VariableUpdated"];
 	$diff = $t1 - $t2;
-	$diff = 10;
+	//$diff = 10;
 	if ( $diff < POLLING_OFFLINE )
 	   {
 		$online = true;

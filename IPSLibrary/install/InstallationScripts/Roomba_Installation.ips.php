@@ -183,7 +183,7 @@
       
       $CategoryRoombaData     = CreateCategoryPath($DataPath.".$roomba_name.RoombaData");
 
-      $Id  = CreateVariable("ANGLE"                                       , 1 /*Integer*/,  $CategoryRoombaData,100,'Roomba_winkel', null, 0);
+      $Id  = CreateVariable("ANGLE"                                       , 1 /*Integer*/,  $CategoryRoombaData,100,'Roomba_Winkel', null, 0);
       $Id  = CreateVariable("BATTERY_CHARGE"                              , 1 /*Integer*/,  $CategoryRoombaData,100,'Roomba_mAh', null, 0);
       $Id  = CreateVariable("BATTERY_CAPACITY"                            , 1 /*Integer*/,  $CategoryRoombaData,100,'Roomba_mAh', null, 0);  
       $Id  = CreateVariable("BUMP_AND_WHEEL_DROPS"                        , 1 /*Integer*/,  $CategoryRoombaData,100,'', null, 0);

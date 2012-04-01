@@ -19,13 +19,13 @@
 
 	switch ( $name )
 	   {
-	   case "CMD_INIT"   	: 	cmd_init($splitter_id);		break ;
-	   case "CMD_POWER"   	: 	cmd_power($splitter_id);	break ;
-	   case "CMD_CLEAN"   	: 	cmd_clean($splitter_id);	break ;
-	   case "CMD_SPOT"   	: 	cmd_spot($splitter_id);		break ;
-	   case "CMD_MAX"   		: 	cmd_max($splitter_id);  	break ;
-	   case "CMD_HOME"   	: 	cmd_home($splitter_id); 	break ;
-	   case "CMD_WARTUNG"   :	cmd_wartung($splitter_id); break;
+	   case "CMD_INIT"   	: 	cmd_init($splitter_id,$parent);		break ;
+	   case "CMD_POWER"   	: 	cmd_power($splitter_id,$parent);	break ;
+	   case "CMD_CLEAN"   	: 	cmd_clean($splitter_id,$parent);	break ;
+	   case "CMD_SPOT"   	: 	cmd_spot($splitter_id,$parent,"4848");		break ;
+	   case "CMD_MAX"   		: 	cmd_max($splitter_id,$parent);  	break ;
+	   case "CMD_HOME"   	: 	cmd_home($splitter_id,$parent); 	break ;
+	   case "CMD_WARTUNG"   :	cmd_wartung($splitter_id,$parent); break;
 		default 					:   									break;
 	   }
 	   

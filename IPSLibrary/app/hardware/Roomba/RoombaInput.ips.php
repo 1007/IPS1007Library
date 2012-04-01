@@ -6,14 +6,16 @@
 
 	$instr = "";
 	
-	echo $_IPS['SENDER'];
 	if ($_IPS['SENDER'] == "RegisterVariable")
-      $instr = $IPS_VALUE;
-
+	   {
+		$absender = $_IPS['INSTANCE'];
+		$instr = $IPS_VALUE;
+		}
+		
 	if ($_IPS['SENDER'] == "Execute" OR $_IPS['SENDER'] == "TimerEvent" )
 		{
 		$zu = rand(1,2);
-		echo $zu;
+		
 		$absender = 25727;
 		if ( $zu == 2 )
 			$absender = 32601;
@@ -21,8 +23,8 @@
       $instr = create_zufallspaket();
 		}
 
-	$debug = true;
-
+	$debug = false;
+	
 	$object = IPS_GetObject($absender);
 	$name = $object['ObjectName'];
 	$SystemDataPathId 		= get_ObjectIDByPath("Program.IPSLibrary.data.hardware.Roomba.$name.SystemData");
@@ -838,7 +840,7 @@ function packet_58($Byte)
 //******************************************************************************
 function packet_group_0($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:0";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
@@ -887,7 +889,7 @@ function packet_group_0($Byte)
 //******************************************************************************
 function packet_group_1($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:1";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
@@ -915,7 +917,7 @@ function packet_group_1($Byte)
 //******************************************************************************
 function packet_group_2($Byte)
 	{
-	$debug = true;
+	$debug = false;
 
 	if ($debug) echo "\nPacketgruppe:2";
 
@@ -934,7 +936,7 @@ function packet_group_2($Byte)
 //******************************************************************************
 function packet_group_3($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:3";
 	//BYTE 0    	Packet ID: 21	Ladestatus
 	packet_21(array($Byte[0]));
@@ -955,7 +957,7 @@ function packet_group_3($Byte)
 //******************************************************************************
 function packet_group_4($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:4";
 	//BYTE 0-1		Packet ID: 27	Wall Signal
 	packet_27(array($Byte[0],$Byte[1]));
@@ -977,7 +979,7 @@ function packet_group_4($Byte)
 //******************************************************************************
 function packet_group_5($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:5";
 	//BYTE 0      	Packet ID: 35	OI Mode
 	packet_35(array($Byte[0]));
@@ -1191,7 +1193,7 @@ function packet_group_100($Byte)
 //******************************************************************************
 function packet_group_101($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:101";
 
    //BYTE 0-1   	Packet ID: 43	Right Encoder Counts
@@ -1233,7 +1235,7 @@ function packet_group_101($Byte)
 //******************************************************************************
 function packet_group_106($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:106";
 
 	//BYTE 0-1   	Packet ID: 46	Light Bump Left Signal
@@ -1256,7 +1258,7 @@ function packet_group_106($Byte)
 //******************************************************************************
 function packet_group_107($Byte)
 	{
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nPacketgruppe:107";
 
 	//BYTE 0-1  	Packet ID: 54	Left Motor Current

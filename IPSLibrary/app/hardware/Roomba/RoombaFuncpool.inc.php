@@ -34,14 +34,16 @@
 	define ('SET_DAY_TIME' 			,168);
 
 
+	
 //******************************************************************************
 // Daten senden
 //******************************************************************************
 function xbee_send($gateway_id,$xbee_id,$command)
 	{
-	$debug = true;
+	$debug = false;
 	
 	if ($debug) print_r($command);
+
 
 	$string = "";
 	for ( $x = 0 ; $x< sizeof($command) ; $x++)
@@ -51,9 +53,11 @@ function xbee_send($gateway_id,$xbee_id,$command)
 	   }
 
 	$len = strlen($string);
-	
-	XBee_SendBuffer($gateway_id,$xbee_id,$string);
-	
+	//if ($debug) echo "\nGateway':".$gateway_id;
+	//if ($debug) echo "\nXBee':".$xbee_id;
+
+	$ok = XBee_SendBuffer($gateway_id,$xbee_id,$string);
+	//if ($debug) echo "\nOK=".$ok;
 	}
 
 //******************************************************************************
@@ -71,7 +75,7 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 	$sendbuffer = array();
 
 
-	$debug = true;
+	$debug = false;
 	if ($debug) echo "\nOpcode:$opcode";
 
 	switch($opcode)
@@ -80,7 +84,7 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 			// Start
 	      case 128 :
 							$sendbuffer[0] = 128;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Baud
 	      case 129 :
@@ -91,19 +95,19 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 			// Safe
 	      case 131 :
 							$sendbuffer[0] = 131;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Full
 	      case 132 :
 	      				$sendbuffer[0] = 132;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 
 		// Cleaning Commands
 			// Clean
 	   	case 135 :
 							$sendbuffer[0] = 135;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Max
 	   	case 136 :  xbee_send(136); break;
@@ -115,7 +119,7 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 			// Seek Dock
 	      case 143 :
 							$sendbuffer[0] = 143;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Schedule
 			case 167 :	xbee_send(167);
@@ -210,7 +214,7 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							$sendbuffer[3] = $databytes[2];
 							$sendbuffer[4] = $databytes[3];
 
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 
 
 							break;
@@ -219,19 +223,30 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							xbee_send($databytes[0]);
 							break;
 			// Song
-			case 140 :  xbee_send(140);
-			            $song = $databytes[0];
+			case 140 :	$sendbuffer[0] = 140;
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
+							//xbee_send(140);
+							//$sendbuffer[0] = 140;
+							$sendbuffer = array_merge($sendbuffer,$databytes);
+			            $song   = $databytes[0];
 			            $laenge = $databytes[1];
 			            $laenge = ($laenge*2)+2;
-			            //echo "\nSong:$song-$laenge";
+			            echo "\nSong:$song";
+							echo "\nLaenge:".$laenge;
 			            for ($x=0;$x<$laenge;$x++)
-			               	{//echo "\n$databytes[$x]";
-			            		xbee_send($databytes[$x]);}
+			               	{//echo "\n".$databytes[$x];
+			            		xbee_send($gateway_id,$xbee_id,array($databytes[$x]));
+									}
+									
+                     //xbee_send($gateway_id,$xbee_id,$sendbuffer);
+							//print_r($databytes);
 							break;
 
 			// Play
-			case 141 :  xbee_send(141);
-							xbee_send($databytes[0]);
+			case 141 :  $sendbuffer[0] = 141;
+							$sendbuffer[1] = $databytes[0];
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
+
 							break;
 		// Input Commands
 			// Sensors
@@ -277,21 +292,24 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 //******************************************************************************
 // Ausgabe von Text auf dem LCD
 //******************************************************************************
-function show_lcd_text($string)
+function show_lcd_text($roomba_id,$DataPathId,$string)
 	{
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+	
 	$byte1 = ord($string[0]);
 	$byte2 = ord($string[1]);
 	$byte3 = ord($string[2]);
 	$byte4 = ord($string[3]);
-	command(DIGIT_LEDS_ASCII,array($byte1,$byte2,$byte3,$byte4));
+	command(DIGIT_LEDS_ASCII,array($byte1,$byte2,$byte3,$byte4),$xbee_id,$DataPathId);
 	}
 
 
-function cmd_init($roomba_id)
+function cmd_init($roomba_id,$DataPathId)
 	{
+	
 	$xbee_id = XBee_GetDeviceID($roomba_id);
-	echo $xbee_id;
-
+ 	command(START,0,$xbee_id,$DataPathId);
+ 
 	}
 	
 function cmd_max($roomba_id)
@@ -300,20 +318,44 @@ function cmd_max($roomba_id)
 	
 	}
 	
-function cmd_spot($roomba_id)
+function cmd_spot($roomba_id,$DataPathId,$string)
 	{
-	
-	
-	
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+
+ 	command(SAFE,0,$xbee_id,$DataPathId);
+
+	show_lcd_text($roomba_id,$DataPathId,$string);
+	sleep(2);
+ 	command(START,0,$xbee_id,$DataPathId);
+
 	}
-function cmd_power($roomba_id)
+	
+	
+function cmd_power($roomba_id,$DataPathId)
 	{
-	
-	
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+
+
 	}
-	
-function cmd_clean($roomba_id)
+
+function cmd_song($roomba_id,$DataPathId)
 	{
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+
+	$song = decode(0,SONG3);
+
+ 	command(SAFE,0,$xbee_id,$DataPathId);
+	command(SONG,$song,$xbee_id,$DataPathId);       // Lied ueberspielen
+	command(PLAY,array(0),$xbee_id,$DataPathId);   	// Melodie ausgeben
+
+
+	}
+
+function cmd_clean($roomba_id,$DataPathId)
+	{
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+
+ 	command(CLEAN,0,$xbee_id,$DataPathId);
 
 	return;
 	go_wartung();
@@ -373,8 +415,10 @@ function cmd_wartung($roomba_id)
 
 	}
 
-function cmd_home($roomba_id)
+function cmd_home($roomba_id,$DataPathId)
 	{
+	$xbee_id = XBee_GetDeviceID($roomba_id);
+ 	command(SEEK_DOCK,0,$xbee_id,$DataPathId);
 
 	return;
 	
@@ -481,6 +525,69 @@ function laufzeit()
 
 	SetValueString(LAUFZEIT,$s);
 
+	}
+
+function decode($nr,$s)
+	{
+
+	$song 	= array($nr,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+	$s 		= str_replace(':',',',$s);
+	$array 	= explode(',',$s);
+
+	$titel 	= $array[0];
+	$duration= intval(strrev($array[1]));
+	$scale 	= intval(strrev($array[2]));
+	$beats 	= $array[3];
+
+	$beats = preg_replace('![^0-9]!','',$beats);
+	$beats   = $beats/60;
+	$counter = 2;
+
+	for ( $x=4;$x<20;$x++ )
+	   {
+		$d = $duration;
+		$s = $scale;
+		$n = $array[$x];
+		$b1 = intval($n);
+		$s1 = intval(strrev($n));
+		if ( $b1 > 0 ) $d = $b1;
+		if ( $s1 > 0 ) $s = intval($s1);
+   	$n1 = preg_replace('/[^A-Za-z#]*/','',strtoupper($n));
+		$b1 = note($s,$n1);
+		$song[$counter] = $b1;
+		$counter++;
+		$song[$counter] = intval($d*$beats);
+		$counter++;
+	   }
+
+	return $song;
+	}
+
+function note($scale,$note)
+	{
+
+	$b = 0;
+
+	if ( $note == "C" ) $b = 0;
+	if ( $note == "C#" )$b = 1;
+	if ( $note == "D" ) $b = 2;
+	if ( $note == "D#" )$b = 3;
+	if ( $note == "E" ) $b = 4;
+	if ( $note == "F" ) $b = 5;
+	if ( $note == "F#" )$b = 6;
+	if ( $note == "G" ) $b = 7;
+	if ( $note == "G#" )$b = 8;
+	if ( $note == "A" ) $b = 9;
+	if ( $note == "A#" )$b = 10;
+	if ( $note == "B" ) $b = 11;
+
+	$b = ($scale*12) + $b;
+
+	if ( $note == "P" ) $b = 0;
+
+	$b = intval($b);
+
+	return $b;
 	}
 
 
