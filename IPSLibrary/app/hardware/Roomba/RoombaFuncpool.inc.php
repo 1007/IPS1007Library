@@ -7,6 +7,7 @@
 
 	define ('START'					,128);
 	define ('BAUD'						,129);
+	define ('CONTROL'					,130);
 	define ('SAFE'						,131);
 	define ('FULL'						,132);
 	define ('POWER'					,133);
@@ -53,11 +54,11 @@ function xbee_send($gateway_id,$xbee_id,$command)
 	   }
 
 	$len = strlen($string);
-	//if ($debug) echo "\nGateway':".$gateway_id;
-	//if ($debug) echo "\nXBee':".$xbee_id;
+	if ($debug) echo "\nGateway':".$gateway_id;
+	if ($debug) echo "\nXBee':".$xbee_id;
 
 	$ok = XBee_SendBuffer($gateway_id,$xbee_id,$string);
-	//if ($debug) echo "\nOK=".$ok;
+	if ($debug) echo "\nOK=".$ok;
 	}
 
 //******************************************************************************
@@ -67,7 +68,11 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 	{
 	
 	$aktiv_id = IPS_GetVariableIDByName('AKTIV',$DataPathId);
-	if ( GetValueBoolean($aktiv_id)){ echo "\nScript ist gesperrt! Opcode:[$opcode]"; return false; }
+	if ( GetValueBoolean($aktiv_id))
+		{
+		echo "\nScript ist gesperrt! Opcode:[$opcode]";
+		return false;
+		}
 	SetValueBoolean($aktiv_id,true);
 
 	$gateway_id = GetValueInteger(IPS_GetVariableIDByName('XBEE_GATEWAY',$DataPathId));
@@ -89,8 +94,14 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 			// Baud
 	      case 129 :
 	      				$sendbuffer[0] = 129;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
+      	// Control
+	      case 130 :
+	      				$sendbuffer[0] = 130;
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
+							break;
+
 		// Mode Commands
 			// Safe
 	      case 131 :
@@ -110,11 +121,16 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Max
-	   	case 136 :  xbee_send(136); break;
+	   	case 136 :  
+	   					$sendbuffer[0] = 136;
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
+							break;
+
+	   	
 			// Spot
 		   case 134 :
 							$sendbuffer[0] = 134;
-							xbee_send($sendbuffer);
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 			// Seek Dock
 	      case 143 :
@@ -146,7 +162,11 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							xbee_send($databytes[2]);
 							break;
 			// Power
-			case 133 :	xbee_send(133); break;
+			case 133 :
+							$sendbuffer[0] = 133;
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
+							break;
+
 		// Actuator Commands
 			// Drive
 			case 137 :  xbee_send(137);
@@ -231,8 +251,8 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 			            $song   = $databytes[0];
 			            $laenge = $databytes[1];
 			            $laenge = ($laenge*2)+2;
-			            echo "\nSong:$song";
-							echo "\nLaenge:".$laenge;
+			            //echo "\nSong:$song";
+							//echo "\nLaenge:".$laenge;
 			            for ($x=0;$x<$laenge;$x++)
 			               	{//echo "\n".$databytes[$x];
 			            		xbee_send($gateway_id,$xbee_id,array($databytes[$x]));
@@ -250,9 +270,10 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							break;
 		// Input Commands
 			// Sensors
-			case 142 :  xbee_send(142);
-							xbee_send($databytes[0]);
+			case 142 :  $sendbuffer[0] = 142;
+							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
+
 			// Query List
 			case 149 :
 							$anzahl = $databytes[0];
@@ -309,7 +330,9 @@ function cmd_init($roomba_id,$DataPathId)
 	
 	$xbee_id = XBee_GetDeviceID($roomba_id);
  	command(START,0,$xbee_id,$DataPathId);
- 
+	sleep(1);
+	command(CONTROL,0,$xbee_id,$DataPathId);
+
 	}
 	
 function cmd_max($roomba_id)
@@ -334,19 +357,32 @@ function cmd_spot($roomba_id,$DataPathId,$string)
 function cmd_power($roomba_id,$DataPathId)
 	{
 	$xbee_id = XBee_GetDeviceID($roomba_id);
+ 	command(POWER,0,$xbee_id,$DataPathId);
 
 
 	}
 
-function cmd_song($roomba_id,$DataPathId)
+function cmd_song($roomba_id,$DataPathId,$song)
 	{
 	$xbee_id = XBee_GetDeviceID($roomba_id);
 
-	$song = decode(0,SONG3);
+	$songx = "";
+	if ( $song == 1 ) $songx = decode(0,SONG1);
+	if ( $song == 2 ) $songx = decode(0,SONG2);
+	if ( $song == 3 ) $songx = decode(0,SONG3);
+	if ( $song == 4 ) $songx = decode(0,SONG4);
+	if ( $song == 5 ) $songx = decode(0,SONG5);
+	if ( $song == 6 ) $songx = decode(0,SONG6);
+	if ( $song == 7 ) $songx = decode(0,SONG7);
+	if ( $song == 8 ) $songx = decode(0,SONG8);
 
+	if ( $songx == '' ) return;
+	
  	command(SAFE,0,$xbee_id,$DataPathId);
-	command(SONG,$song,$xbee_id,$DataPathId);       // Lied ueberspielen
+	command(SONG,$songx,$xbee_id,$DataPathId);       // Lied ueberspielen
 	command(PLAY,array(0),$xbee_id,$DataPathId);   	// Melodie ausgeben
+	sleep(8);
+ 	command(START,0,$xbee_id,$DataPathId);
 
 
 	}

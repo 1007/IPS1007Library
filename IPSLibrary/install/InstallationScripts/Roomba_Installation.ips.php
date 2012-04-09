@@ -50,18 +50,6 @@
 	$CategoryIdHw   = CreateCategoryPath($HardwarePath);
 	$CategoryIdVisu = CreateCategoryPath($VisuPath);
 
-  $WFC10_Enabled        = $moduleManager->GetConfigValue('Enabled', 'WFC10');
-  $WFC10_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 'WFC10', GetWFCIdDefault()); echo $WFC10_ConfigId;
-  $WFC10_Path           = $moduleManager->GetConfigValue('Path', 'WFC10');
-  $WFC10_TabPaneItem    = $moduleManager->GetConfigValue('TabPaneItem', 'WFC10');
-  $WFC10_TabPaneParent  = $moduleManager->GetConfigValue('TabPaneParent', 'WFC10');
-  $WFC10_TabPaneName    = $moduleManager->GetConfigValue('TabPaneName', 'WFC10');
-  $WFC10_TabPaneIcon    = $moduleManager->GetConfigValue('TabPaneIcon', 'WFC10');
-  $WFC10_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder', 'WFC10');
-  $WFC10_TabItem        = $moduleManager->GetConfigValue('TabItem1', 'WFC10');
-  $WFC10_TabName        = $moduleManager->GetConfigValue('TabName1', 'WFC10');
-  $WFC10_TabIcon        = $moduleManager->GetConfigValue('TabIcon1', 'WFC10');
-  $WFC10_TabOrder       = $moduleManager->GetConfigValueInt('TabOrder1', 'WFC10');
 
   $roomba_array = array();
   // Gateway finden
@@ -191,6 +179,7 @@
       $Id  = CreateVariable("BUMP_AND_WHEEL_DROPS_BUMP_LEFT"              , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
       $Id  = CreateVariable("BUMP_AND_WHEEL_DROPS_WHEEL_DROP_RIGHT"       , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
       $Id  = CreateVariable("BUMP_AND_WHEEL_DROPS_WHEEL_DROP_LEFT"        , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
+      $Id  = CreateVariable("BUMP_AND_WHEEL_DROPS_WHEEL_DROP_CASTER"      , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
       $Id  = CreateVariable("BUTTONS"                                     , 1 /*Integer*/,  $CategoryRoombaData,100,'', null, 0);
       $Id  = CreateVariable("BUTTONS_CLEAN"                               , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
       $Id  = CreateVariable("BUTTONS_SPOT"                                , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_ON_OFF', null, 0);
@@ -266,6 +255,7 @@
       $Id  = CreateVariable("WHEEL_OVERCURRENTS_MAIN_BRUSH"               , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_Overcurrents', null, 0);
       $Id  = CreateVariable("WHEEL_OVERCURRENTS_RIGHT_WHEEL"              , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_Overcurrents', null, 0);
       $Id  = CreateVariable("WHEEL_OVERCURRENTS_LEFT_WHEEL"               , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_Overcurrents', null, 0);                       
+      $Id  = CreateVariable("WHEEL_OVERCURRENTS_VACCUM"                   , 0 /*Boolean*/,  $CategoryRoombaData,100,'Roomba_Overcurrents', null, 0);                       
 
       $CategorySystemData     = CreateCategoryPath($DataPath.".$roomba_name.SystemData");
 
@@ -293,13 +283,6 @@
       SetValueInteger($Id,$roomba_splitter);
       $Id  = CreateVariable("XBEE_REGISTERVARIABLE"                       , 1 /*Integer*/,  $CategorySystemData,902,'', null, $roomba_rv_Id);
       SetValueInteger($Id,$roomba_rv_Id);
-      $cmd_init_Id    = CreateVariable("CMD_INIT"                           , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_home_Id    = CreateVariable("CMD_HOME"                           , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_clean_Id   = CreateVariable("CMD_CLEAN"                          , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_spot_Id    = CreateVariable("CMD_SPOT"                           , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_max_Id     = CreateVariable("CMD_MAX"                            , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_power_Id   = CreateVariable("CMD_POWER"                          , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
-      $cmd_wartung_Id = CreateVariable("CMD_WARTUNG"                        , 1 /*Integer*/,  $CategorySystemData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
 
                
       $CategoryLighthouseData = CreateCategoryPath($DataPath.".$roomba_name.LighthouseData");
@@ -323,40 +306,151 @@
           $Id  = CreateVariable("LH_0".$x."_RED_BUOY"                     , 0 /*Boolean*/,  $CategoryLighthouseData,100,'', null, 0);
           }
 
+
+      $CategoryWebFrontData = CreateCategoryPath($DataPath.".$roomba_name.WebFrontData");
+
       //****************************************************************************
       //  Visu
       //****************************************************************************
-      $CategoryIDScripts = CreateCategoryPath($VisuPath.".Scripts.$roomba_name");
-      CreateLink ("Roomba Init" ,   $cmd_init_Id, $CategoryIDScripts, 10);
-      CreateLink ("Roomba Clean",   $cmd_clean_Id, $CategoryIDScripts, 20);
-      CreateLink ("Roomba Max",     $cmd_max_Id, $CategoryIDScripts, 30);
-      CreateLink ("Roomba Spot",    $cmd_spot_Id, $CategoryIDScripts, 40);
-      CreateLink ("Roomba Home",    $cmd_home_Id, $CategoryIDScripts, 50);
-      CreateLink ("Roomba Wartung", $cmd_wartung_Id, $CategoryIDScripts, 60);
-      CreateLink ("Roomba Power",   $cmd_power_Id, $CategoryIDScripts, 70);
+      $cmd_init_Id    = CreateVariable("CMD_INIT"         , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_home_Id    = CreateVariable("CMD_HOME"         , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_clean_Id   = CreateVariable("CMD_CLEAN"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_spot_Id    = CreateVariable("CMD_SPOT"         , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_max_Id     = CreateVariable("CMD_MAX"          , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_power_Id   = CreateVariable("CMD_POWER"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_wartung_Id = CreateVariable("CMD_WARTUNG"      , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song1      = CreateVariable("CMD_SONG1"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song2      = CreateVariable("CMD_SONG2"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song3      = CreateVariable("CMD_SONG3"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song4      = CreateVariable("CMD_SONG4"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song5      = CreateVariable("CMD_SONG5"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song6      = CreateVariable("CMD_SONG6"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song7      = CreateVariable("CMD_SONG7"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+      $cmd_song8      = CreateVariable("CMD_SONG8"        , 1 /*Integer*/,  $CategoryWebFrontData,950,'Roomba_cmdbutton', $webfrontScriptId, 0);
+
+      $varid          = CreateVariable("MOTORS_MAINBRUSH" , 3 /*String */,  $CategoryWebFrontData,100,"~HTMLBox",false,false,"");
+
+
+
+      $CategoryIDScriptsSystem = CreateCategoryPath($VisuPath.".$roomba_name.Scripts.System");
+      $CategoryIDScriptsRoomba = CreateCategoryPath($VisuPath.".$roomba_name.Scripts.Roomba");
+      $CategoryIDScriptsSongs  = CreateCategoryPath($VisuPath.".$roomba_name.Scripts.Songs");
+      CreateLink ("System Init" ,   $cmd_init_Id    , $CategoryIDScriptsSystem, 10);      
+      CreateLink ("Roomba Clean",   $cmd_clean_Id   , $CategoryIDScriptsRoomba, 20);
+      CreateLink ("Roomba Max",     $cmd_max_Id     , $CategoryIDScriptsRoomba, 30);
+      CreateLink ("Roomba Spot",    $cmd_spot_Id    , $CategoryIDScriptsRoomba, 40);
+      CreateLink ("Roomba Home",    $cmd_home_Id    , $CategoryIDScriptsRoomba, 50);
+      CreateLink ("Roomba Wartung", $cmd_wartung_Id , $CategoryIDScriptsRoomba, 60);
+      CreateLink ("Roomba Power",   $cmd_power_Id   , $CategoryIDScriptsRoomba, 70);
+
+      CreateLink ("Song 1", $cmd_song1 , $CategoryIDScriptsSongs, 10);
+      CreateLink ("Song 2", $cmd_song2 , $CategoryIDScriptsSongs, 20);
+      CreateLink ("Song 3", $cmd_song3 , $CategoryIDScriptsSongs, 30);
+      CreateLink ("Song 4", $cmd_song4 , $CategoryIDScriptsSongs, 40);
+      CreateLink ("Song 5", $cmd_song5 , $CategoryIDScriptsSongs, 50);
+      CreateLink ("Song 6", $cmd_song6 , $CategoryIDScriptsSongs, 60);
+      CreateLink ("Song 7", $cmd_song7 , $CategoryIDScriptsSongs, 70);
+      CreateLink ("Song 8", $cmd_song8 , $CategoryIDScriptsSongs, 80);
+
+
+      $CategoryIDMotorenSystem = CreateCategoryPath($VisuPath.".$roomba_name.Motoren.Left");
+      $CategoryIDMotorenSystem = CreateCategoryPath($VisuPath.".$roomba_name.Motoren.Right");
+      $CategoryIDMotorenSystem = CreateCategoryPath($VisuPath.".$roomba_name.Motoren.MainBrush");
+      $CategoryIDMotorenSystem = CreateCategoryPath($VisuPath.".$roomba_name.Motoren.SideBrush");
+      $CategoryIDMotorenSystem = CreateCategoryPath($VisuPath.".$roomba_name.Motoren.Vacuum");
+
+      $CategoryIDSensorenSystem      = CreateCategoryPath($VisuPath.".$roomba_name.Sensoren");
+      $CategoryIDAkkuSystem          = CreateCategoryPath($VisuPath.".$roomba_name.Akku");
+      $CategoryIDOverviewSystem      = CreateCategoryPath($VisuPath.".$roomba_name.Uebersicht");
+      $CategoryIDInfraredSystem      = CreateCategoryPath($VisuPath.".$roomba_name.Infrarot");
+      $CategoryIDCommunicationSystem = CreateCategoryPath($VisuPath.".$roomba_name.Kommunikation");
 
 
       }
 
+	echo "\n--- Create Webfront -----------------------------------------------\n";
+  $WFC10_Enabled        = $moduleManager->GetConfigValue('Enabled', 		 'WFC10');
+  $WFC10_Path           = $moduleManager->GetConfigValue('Path', 			   'WFC10');
+  $WFC10_WebFrontID     = $moduleManager->GetConfigValueInt('WebFrontID','WFC10');
+  $WFC10_TabPaneParent  = $moduleManager->GetConfigValue('TabParent', 	 'WFC10');
+  $WFC10_TabPaneName    = $moduleManager->GetConfigValue('TabName', 		 'WFC10');
+  $WFC10_TabPaneItem    = $moduleManager->GetConfigValue('TabItem', 		 'WFC10');
+  $WFC10_TabPaneIcon    = $moduleManager->GetConfigValue('TabIcon', 		 'WFC10');
+  $WFC10_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabOrder',  'WFC10');
+  $WFC10_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 	   'WFC10', GetWFCIdDefault());
+	if ( $WFC10_WebFrontID > 0 )
+      $WFC10_ConfigId = $WFC10_WebFrontID;
 
+  DeleteWFCItems($WFC10_ConfigId, $WFC10_TabPaneItem);
+  
   if ($WFC10_Enabled) 
     {
-    $categoryId_WebFront         = CreateCategoryPath($WFC10_Path);
-    $categoryId_WebFrontTopLeft  = CreateCategory(  'TopLeft',  $categoryId_WebFront, 10);
-    $categoryId_WebFrontTopRight = CreateCategory(  'TopRight', $categoryId_WebFront, 20);
-    $categoryId_WebFrontBottom   = CreateCategory(  'Bottom',   $categoryId_WebFront, 30);
-    $categoryId_WebFrontRight    = CreateCategory(  'Right',    $categoryId_WebFront, 40);
+    $src  = IPS_GetKernelDir() ."\\webfront\\user\\Roomba\\images\\Roomba.png";
+    $dest = IPS_GetKernelDir() ."\\webfront\\img\\icons\\Roomba.png";
+      
+    copy($src,$dest);
+    $categoryId_WebFront = CreateCategoryPath($WFC10_Path);
 
-    $tabItem = $WFC10_TabPaneItem.$WFC10_TabItem;
-    DeleteWFCItems($WFC10_ConfigId, $tabItem);
+    
+
     CreateWFCItemTabPane   ($WFC10_ConfigId, $WFC10_TabPaneItem, $WFC10_TabPaneParent,  $WFC10_TabPaneOrder, $WFC10_TabPaneName, $WFC10_TabPaneIcon);
-    CreateWFCItemSplitPane ($WFC10_ConfigId, $tabItem,           $WFC10_TabPaneItem,    $WFC10_TabOrder,     $WFC10_TabName,     $WFC10_TabIcon, 1 /*Vertical*/, 300 /*Width*/, 1 /*Target=Pane2*/, 1/*UsePixel*/, 'true');
-    CreateWFCItemSplitPane ($WFC10_ConfigId,   $tabItem.'_Left',        $tabItem,          10, '', '', 0 /*Horicontal*/, 205 /*Height*/, 0 /*Target=Pane1*/, 1 /*UsePixel*/, 'true');
-    CreateWFCItemCategory  ($WFC10_ConfigId,   $tabItem.'_Right',        $tabItem,         20, '', '', $categoryId_WebFrontRight    /*BaseId*/, 'false' /*BarBottomVisible*/);
-    CreateWFCItemSplitPane ($WFC10_ConfigId,     $tabItem.'_Top',        $tabItem.'_Left', 10, '', '', 1 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
-    CreateWFCItemCategory  ($WFC10_ConfigId,     $tabItem.'_Bottom',     $tabItem.'_Left', 20, '', '', $categoryId_WebFrontBottom   /*BaseId*/, 'false' /*BarBottomVisible*/);
-    CreateWFCItemCategory  ($WFC10_ConfigId,       $tabItem.'_TopLeft',  $tabItem.'_Top',  10, '', '', $categoryId_WebFrontTopLeft  /*BaseId*/, 'false' /*BarBottomVisible*/);
-    CreateWFCItemCategory  ($WFC10_ConfigId,       $tabItem.'_TopRight', $tabItem.'_Top',  20, '', '', $categoryId_WebFrontTopRight /*BaseId*/, 'false' /*BarBottomVisible*/);
+
+    $order = 10 ;
+    foreach ( $roomba_array as $roomba )
+        {
+        $roomba_name     = $roomba[0];
+        
+        CreateWFCItemTabPane   ($WFC10_ConfigId, 'Roomba1007'.$roomba_name, $WFC10_TabPaneItem ,  $order , $roomba_name, $WFC10_TabPaneIcon);
+        $order = $order + 10 ;
+
+        $CategoryIDScriptsSystem = get_ObjectIDByPath($VisuPath.".$roomba_name.Scripts.System");
+        $CategoryIDScriptsRoomba = get_ObjectIDByPath($VisuPath.".$roomba_name.Scripts.Roomba");
+        $CategoryIDScriptsSongs  = get_ObjectIDByPath($VisuPath.".$roomba_name.Scripts.Songs");
+
+
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'overview'       , 'Roomba1007'.$roomba_name , 10 , 'Übersicht'      , '', 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+
+        // Webfront Motoren
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'motors'                       , 'Roomba1007'.$roomba_name             , 20 , 'Antriebe'   , ''  , 0 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'motors_top'                   , 'Roomba1007'.$roomba_name.'motors'    , 10 , ''           , ''  , 1 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'motors_bottom_right'          , 'Roomba1007'.$roomba_name.'motors'    , 20 , ''           , ''  , 1 /*Vertical*/, 66 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'motors_bottom_left_right'     , 'Roomba1007'.$roomba_name.'motors_bottom_right'    , 1 , ''           , ''  , 1 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+
+
+        // Webfront Sensoren
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'sensoren'       , 'Roomba1007'.$roomba_name , 30 , 'Sensoren'       , '', 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'akku'           , 'Roomba1007'.$roomba_name , 40 , 'Akku'           , '', 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'infrared'       , 'Roomba1007'.$roomba_name , 50 , 'Infrarot'       , '', 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'communication'  , 'Roomba1007'.$roomba_name , 60 , 'Kommunikation'  , '', 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+
+        // Webfront Kommandos
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'commands'                     , 'Roomba1007'.$roomba_name             , 70 , 'Kommandos'  , '' , 1 /*Vertical*/, 33 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+        CreateWFCItemSplitPane ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'commands_scripts_right'       , 'Roomba1007'.$roomba_name.'commands'  , 10 , ''           , '' , 1 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+
+        CreateWFCItemCategory  ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'commands_scripts_left'        , 'Roomba1007'.$roomba_name.'commands'                , 1, '', '', $CategoryIDScriptsSystem /*BaseId*/, 'false' /*BarBottomVisible*/);
+        CreateWFCItemCategory  ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'commands_scripts_right_right' , 'Roomba1007'.$roomba_name.'commands_scripts_right'  , 1, '', '', $CategoryIDScriptsRoomba /*BaseId*/, 'false' /*BarBottomVisible*/);
+        CreateWFCItemCategory  ($WFC10_ConfigId, 'Roomba1007'.$roomba_name.'commands_scripts_right_left'  , 'Roomba1007'.$roomba_name.'commands_scripts_right'  , 2, '', '', $CategoryIDScriptsSongs  /*BaseId*/, 'false' /*BarBottomVisible*/);
+ 
+
+
+        }
+
+//    $categoryId_WebFront         = CreateCategoryPath($WFC10_Path);
+//    $categoryId_WebFrontTopLeft  = CreateCategory(  'TopLeft',  $categoryId_WebFront, 10);
+//    $categoryId_WebFrontTopRight = CreateCategory(  'TopRight', $categoryId_WebFront, 20);
+//    $categoryId_WebFrontBottom   = CreateCategory(  'Bottom',   $categoryId_WebFront, 30);
+//    $categoryId_WebFrontRight    = CreateCategory(  'Right',    $categoryId_WebFront, 40);
+
+//    $tabItem = $WFC10_TabPaneItem.$WFC10_TabItem;
+//    DeleteWFCItems($WFC10_ConfigId, $tabItem);
+//    CreateWFCItemTabPane   ($WFC10_ConfigId, $WFC10_TabPaneItem, $WFC10_TabPaneParent,  $WFC10_TabPaneOrder, $WFC10_TabPaneName, $WFC10_TabPaneIcon);
+//    CreateWFCItemSplitPane ($WFC10_ConfigId, $tabItem,           $WFC10_TabPaneItem,    $WFC10_TabOrder,     $WFC10_TabName,     $WFC10_TabIcon, 1 /*Vertical*/, 300 /*Width*/, 1 /*Target=Pane2*/, 1/*UsePixel*/, 'true');
+//    CreateWFCItemSplitPane ($WFC10_ConfigId,   $tabItem.'_Left',        $tabItem,          10, '', '', 0 /*Horicontal*/, 205 /*Height*/, 0 /*Target=Pane1*/, 1 /*UsePixel*/, 'true');
+//    CreateWFCItemCategory  ($WFC10_ConfigId,   $tabItem.'_Right',        $tabItem,         20, '', '', $categoryId_WebFrontRight    /*BaseId*/, 'false' /*BarBottomVisible*/);
+//    CreateWFCItemSplitPane ($WFC10_ConfigId,     $tabItem.'_Top',        $tabItem.'_Left', 10, '', '', 1 /*Vertical*/, 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+//    CreateWFCItemCategory  ($WFC10_ConfigId,     $tabItem.'_Bottom',     $tabItem.'_Left', 20, '', '', $categoryId_WebFrontBottom   /*BaseId*/, 'false' /*BarBottomVisible*/);
+//    CreateWFCItemCategory  ($WFC10_ConfigId,       $tabItem.'_TopLeft',  $tabItem.'_Top',  10, '', '', $categoryId_WebFrontTopLeft  /*BaseId*/, 'false' /*BarBottomVisible*/);
+//    CreateWFCItemCategory  ($WFC10_ConfigId,       $tabItem.'_TopRight', $tabItem.'_Top',  20, '', '', $categoryId_WebFrontTopRight /*BaseId*/, 'false' /*BarBottomVisible*/);
 
 
 

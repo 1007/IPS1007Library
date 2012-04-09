@@ -11,17 +11,6 @@
 		$absender = $_IPS['INSTANCE'];
 		$instr = $IPS_VALUE;
 		}
-		
-	if ($_IPS['SENDER'] == "Execute" OR $_IPS['SENDER'] == "TimerEvent" )
-		{
-		$zu = rand(1,2);
-		
-		$absender = 25727;
-		if ( $zu == 2 )
-			$absender = 32601;
-
-      $instr = create_zufallspaket();
-		}
 
 	$debug = false;
 	
@@ -482,9 +471,11 @@ function packet_34($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 34	Ladequelle
+	echo "\nCharging sourve" ;
+	print_r( $Byte);
 	$b1 = u_0bis255(34,$Byte[0]);
 	$b2 = GetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId));
-
+	echo $RoombaDataPathId."--".$b1,$b2;
 	if ( $b1 != $b2 )
 		SetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId),$b1);else return;
 		
@@ -1082,7 +1073,7 @@ function packet_group_6($Byte)
 //******************************************************************************
 function packet_group_100($Byte)
 	{
-	$debug = false;
+	$debug = true;
 
 	if ($debug) echo "\nPacketgruppe:100";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops

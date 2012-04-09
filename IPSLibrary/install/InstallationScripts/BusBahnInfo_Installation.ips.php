@@ -21,7 +21,7 @@
 * - IPSModuleManager >= 2.50.1
 *
 *******************************************************************************/
-
+  
 	if (!isset($moduleManager))
     {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
@@ -85,8 +85,8 @@
 		
    $Id  = CreateVariable("Bahnhof/Station", 1 /* */,  $CategoryIdVisu,1,"BusBahnInfo_Stationen", $webfrontScriptId, 0);
 
-   $Id  = CreateVariable("Anzeigetafel", 1 /* */,  $CategoryIdVisu,2,"BusBahnInfo_Anzeigetafeln", $webfrontScriptId, 0);
-
+   $Id  = CreateVariable("Anzeigetafel", 1 /* */,  $CategoryIdVisu,2,"BusBahnInfo_Anzeigetafeln", $webfrontScriptId, 1);
+    
 
 
   	if ( file_exists($cssFile))
@@ -119,17 +119,19 @@
     	$categoryId_WebFront = CreateCategoryPath($WFC10_Path);
 
     	DeleteWFCItems($WFC10_ConfigId, $WFC10_TabItem);
-
-		CreateWFCItemCategory ($WFC10_ConfigId, $WFC10_TabItem, $WFC10_TabParent,$WFC10_TabOrder, $WFC10_TabName, $WFC10_TabIcon, $CategoryIdVisu ) ;
+      
+		  CreateWFCItemCategory ($WFC10_ConfigId, $WFC10_TabItem, $WFC10_TabParent,$WFC10_TabOrder, $WFC10_TabName, $WFC10_TabIcon, $CategoryIdVisu ) ;
 
 		}
 
 
 	IPS_RunScript($refreshScriptId);
-  IPS_RunScript($webfrontScriptId);
+  //IPS_RunScript($webfrontScriptId);
 
+  
+  
 	ReloadAllWebFronts();
-
+  
 /***************************************************************************//**
 * Ein Profil erstellen
 *******************************************************************************/
