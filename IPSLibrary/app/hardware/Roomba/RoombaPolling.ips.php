@@ -10,31 +10,81 @@
 
 	$register_array = IPS_GetChildrenIDs($HardwarePathId);
 
-
+	$one_moving   = false;
+	$one_charging = false;
+	$poll = POLLING_DEFAULT;
+	
 	foreach ( $register_array as $register_variable )
 	   {
 	   $object = IPS_GetObject($register_variable);
 	   
 	   $device_id = XBee_GetDeviceID(IPS_GetInstanceParentID($register_variable));
 
-		$name = $object['ObjectName'];
+		$name      = $object['ObjectName'];
 		$object_id = $object['ObjectID'];
 
 		$DataPathId = get_ObjectIDByPath("Program.IPSLibrary.data.hardware.Roomba.$name.SystemData");
 
+		if ( GetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_CHARGING',$DataPathId))  )
+			$one_charging = true;
+		if ( GetValueInteger(IPS_GetVariableIDByName('ROOMBA_DISTANCE',$DataPathId)) != 0 )
+			$one_moving = true;
 
-		$objecttyp = $object['ObjectType'];
-		if ( $objecttyp == 1 )
-		   {
-			$polling_id = IPS_GetVariableIDByName('POLLING_STATUS',$DataPathId);
-			if ( GetValueBoolean($polling_id))
+		if ( GetValueBoolean(IPS_GetVariableIDByName('POLLING_AKTIV',$DataPathId)))   // ist Polling aktiviert ?
+		if ( GetValueBoolean(IPS_GetVariableIDByName('POLLING_STATUS',$DataPathId)))  // ist Polling noch aktiv ?
+
+		if ( polling_timing($DataPathId) )
 			   {
+			   echo "\nPolling";
 			   command(QUERY_LIST,array(1,100),$device_id,$DataPathId);
-				script_timing($DataPathId);
 			   }
-	      }
-	   }
+			   
+		if ( !GetValueBoolean(IPS_GetVariableIDByName('POLLING_AKTIV',$DataPathId)))   // ist Polling aktiviert ?
+   			SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_ONLINE'		,$DataPathId),false);
 
+
+		}
+
+
+	if ( $one_charging )
+		$poll = POLLING_CHARGING;
+	if ( $one_moving )
+		$poll = POLLING_MOVING;
+
+	$timer = IPS_GetScriptTimer($_IPS['SELF']);
+	if ( $poll != $timer )
+		IPS_SetScriptTimer($_IPS['SELF'],$poll);
+
+
+function polling_timing($DataPathId)
+	{
+	$status 	 = false;
+	$online 	 = false;
+	$charging = false;
+	$moving 	 = false;
+
+   $t1 = time() ;
+
+	$array = IPS_GetVariable(IPS_GetVariableIDByName('PACKET_COUNTER',$DataPathId));
+
+   $t2 = $array["VariableUpdated"];
+	$diff = $t1 - $t2;
+	
+	if ( $diff < POLLING_OFFLINE )
+	   {
+		$online = true;
+		}
+
+
+   SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_CHARGING'	,$DataPathId),$charging);
+   SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_ONLINE'		,$DataPathId),$online);
+   SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_MOVING'		,$DataPathId),$moving);
+
+
+	$status = true;
+	return $status;
+	
+	}
 
 function script_timing($DataPathId)
 	{
@@ -74,7 +124,6 @@ function script_timing($DataPathId)
    SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_CHARGING'	,$DataPathId),$charging);
    SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_ONLINE'		,$DataPathId),$online);
    SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_MOVING'		,$DataPathId),$moving);
-   SetValueBoolean(IPS_GetVariableIDByName('ROOMBA_STATUS_UNKNOWN'	,$DataPathId),$unknown);
 
 	$poll = POLLING_OFFLINE;
 	if ( $online == true and $charging == true and $moving == false )

@@ -277,6 +277,10 @@
       $Id  = CreateVariable("TIMER"                                       , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
       $Id  = CreateVariable("AKTIV"                                       , 0 /*Boolean*/,  $CategorySystemData,10 ,'', null, 0);
       $Id  = CreateVariable("POLLING"                                     , 1 /*Integer*/,  $CategorySystemData,100,'', null, 0);
+      $Id  = CreateVariable("POLLING_AKTIV"                               , 0 /*Boolean*/,  $CategorySystemData,1  ,'', null, 0);
+      $Id  = CreateVariable("POLLING_TIMER_IST"                           , 1 /*Integer*/,  $CategorySystemData,13 ,'', null, 0);
+      $Id  = CreateVariable("POLLING_TIMER_SOLL"                          , 1 /*Integer*/,  $CategorySystemData,12 ,'', null, 30);
+
       $Id  = CreateVariable("XBEE_GATEWAY"                                , 1 /*Integer*/,  $CategorySystemData,900,'', null, $roomba_gateway);
       SetValueInteger($Id,$roomba_gateway);
       $Id  = CreateVariable("XBEE_SPLITTER"                               , 1 /*Integer*/,  $CategorySystemData,901,'', null, $roomba_splitter);
