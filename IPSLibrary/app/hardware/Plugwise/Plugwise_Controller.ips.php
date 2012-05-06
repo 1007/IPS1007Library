@@ -113,7 +113,7 @@ Switch ($_IPS['SENDER'])
 						if ($myCat == false) createCircle($macplus, $idCatCircles);
 					   
 					   PRINT "PW MC+:".$macplus.", Now searching for Circles...";
-						for ($i = 0; $i < 50; $i++) {
+						for ($i = 0; $i < 40; $i++) {
 						   PW_SendCommand("0018".$macplus.str_pad($i, 2 ,'0', STR_PAD_LEFT));
 						}
 						break;
@@ -217,7 +217,7 @@ Switch ($_IPS['SENDER'])
 				// echo IPS_GetName ($myCat).": ".substr($buf,41,1);
 				SetValue(CreateVariable("Status", 0, $myCat, 0, "~Switch", $IPS_SELF), substr($buf,41,1));
 
-				SetValueInteger(CreateVariable("LogAddress", 1, $myCat,0,""),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
+				SetValueInteger(CreateVariable("LogAddress", 1, $myCat,0,"",0,0),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
 				
 				// PRINT "LogAddress ".IPS_GetName($myCat).": ".intval((hexdec(substr($buf,32,8)) - 278528) / 32);
 				// PRINT "LogAddress ".IPS_GetName($myCat).": Hex ".substr($buf,32,8).", Dez ".((hexdec(substr($buf,32,8)) - 278528) / 32);
@@ -362,10 +362,13 @@ Switch ($_IPS['SENDER'])
 	}
 
 function createCircle($mac, $parentID){
+	GLOBAL $IPS_SELF;
+	
 	print "PW Create Circle: ".$mac;
 	$item = CreateInstance($mac, $parentID, "{485D0419-BE97-4548-AA9C-C083EB82E61E}", $Position=0);
 	$id_info = IPS_GetObject($item);
 	IPS_SetIdent ($item, $mac);
+	
 	
 	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
 

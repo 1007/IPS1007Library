@@ -149,5 +149,20 @@ function findRegVar($id) {
 		}
 	}
 }
+function unixtime2pwtime() {
 
+	// Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zurück (Zeitzone UTC!)
+
+	$vorstellen = 1;
+
+	$jahr=str_pad(strtoupper(dechex(gmdate("y"))), 2 ,'0', STR_PAD_LEFT);
+	$monat=str_pad(strtoupper(dechex(gmdate("m"))), 2 ,'0', STR_PAD_LEFT);
+	$mingesamt=str_pad(strtoupper(dechex(((gmdate("j")-1)*24+(gmdate("G")))*60+(gmdate("i")+$vorstellen))), 4 ,'0', STR_PAD_LEFT);
+	$logzurueck = 'FFFFFFFF';
+	$h=str_pad(strtoupper(dechex(gmdate("G"))), 2 ,'0', STR_PAD_LEFT);
+	$m=str_pad(strtoupper(dechex(gmdate("i")+$vorstellen)), 2 ,'0', STR_PAD_LEFT);
+	$s=str_pad(strtoupper(dechex(gmdate("s"))), 2 ,'0', STR_PAD_LEFT);
+	$dow=str_pad(strtoupper(dechex(gmdate("N"))), 2 ,'0', STR_PAD_LEFT);
+	return($jahr.$monat.($mingesamt).$logzurueck.$h.$m.$s.$dow);
+}
 ?>
