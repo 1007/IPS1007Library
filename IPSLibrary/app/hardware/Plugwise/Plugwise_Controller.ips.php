@@ -19,7 +19,8 @@ Noch zu lösende Probleme der Plugwise-Skripte:
 */
 
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
-  	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+  IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
 	//$idCatCircles = CreateCategory("Circles",IPS_GetParent($IPS_SELF),0);
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
@@ -363,18 +364,56 @@ Switch ($_IPS['SENDER'])
 
 function createCircle($mac, $parentID){
 	GLOBAL $IPS_SELF;
+	GLOBAL $CircleGroups;
 	
 	print "PW Create Circle: ".$mac;
 	$item = CreateInstance($mac, $parentID, "{485D0419-BE97-4548-AA9C-C083EB82E61E}", $Position=0);
 	$id_info = IPS_GetObject($item);
 	IPS_SetIdent ($item, $mac);
+
+ 	$gruppe = "";
+	$name   = "";
 	
+	foreach( $CircleGroups as $circle )
+	   {
+		if ( $circle[0] == $mac )
+		   {
+		   $name   = $circle[1];
+		   $gruppe = $circle[2];
+		   break;
+		   }
+	   }
+
 	
+	                
 	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
 
-	CreateVariable("Status", 0, $item, 0, "~Switch", $IPS_SELF, false);
-	CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
-	CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
+	$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", $IPS_SELF, false);
+	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
+
+  if ( $name != "" )
+    if ( $gruppe != "" )
+        {
+        $VisuPath   = get_ObjectIDByPath("Visualization.WebFront.Hardware.Plugwise.$gruppe.$name");
+        $MobilePath = get_ObjectIDByPath("Visualization.Mobile.Hardware.Plugwise.$gruppe.$name");
+        
+        if ( $VisuPath )
+          {
+          CreateLink ("Status",         $id1, $VisuPath, 0, "");
+          CreateLink ("Leistung",       $id2, $VisuPath, 0, "");
+          CreateLink ("Gesamtverbrauch",$id3, $VisuPath, 0, "");
+          CreateLink ("Status",         $id1, $MobilePath, 0, "");
+          CreateLink ("Leistung",       $id2, $MobilePath, 0, "");
+          CreateLink ("Gesamtverbrauch",$id3, $MobilePath, 0, "");
+        
+          }
+        }
+
+	
+	
+	
+	
 	// $myVar = CreateVariable("Pulses Stunde", 2, $item, 0, "", 0);
 	// IPS_SetHidden($myVar, True);
 	// $myVar = CreateVariable("LogAddress", 3, $item, 0, "", "");

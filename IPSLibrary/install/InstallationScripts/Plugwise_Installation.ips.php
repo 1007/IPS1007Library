@@ -13,7 +13,7 @@
 * @brief Installation fuer Plugwise
 * 
 *******************************************************************************/
-
+  GLOBAL $CircleGroups;
 
 	
 	if (!isset($moduleManager)) {
@@ -48,6 +48,9 @@
 	$CategoryIdMobile = CreateCategoryPath($MobilePath,100);
 	$CategoryIdHw     = CreateCategoryPath($HardwarePath);
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
+
+  EmptyCategory($CategoryIdVisu);
+  EmptyCategory($CategoryIdMobile);
 
   // Serial Port erstellen
   $comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
@@ -113,8 +116,26 @@
   $id = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,60,true);
   IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,60/*Minutes*/);
   IPS_SetEventCyclicTimeBounds($id,mktime(0,59,30),0);
+
   //****************************************************************************
-  // Am Ende Cycles suchen
+  //  CycleGroups im Webfront erstellen
+  //****************************************************************************
+  foreach ( $CircleGroups as $cycle )
+      {
+      if ( $cycle[0] != "" )
+        {
+        
+        $id   = CreateCategory($cycle[2],$CategoryIdVisu,0);
+        $id   = CreateCategory($cycle[1],$id,0);
+
+        $id   = CreateCategory($cycle[2],$CategoryIdMobile,0);
+        $id   = CreateCategory($cycle[1],$id,0);
+        
+        }
+      } 
+  
+  //****************************************************************************
+  // Jetzt Cycles suchen
   //****************************************************************************
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
   PW_SendCommand("0008");
