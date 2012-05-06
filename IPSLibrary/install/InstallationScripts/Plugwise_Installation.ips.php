@@ -108,7 +108,11 @@
   $id = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,REFRESH_TIME,true);
   IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,REFRESH_TIME/*Minutes*/);
   
-  
+
+  $ScriptId = IPS_GetScriptIDByName('Plugwise_ReadBuffer', $CategoryIdApp );
+  $id = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,60,true);
+  IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,60/*Minutes*/);
+  IPS_SetEventCyclicTimeBounds($id,mktime(0,59,30),0);
   //****************************************************************************
   // Am Ende Cycles suchen
   //****************************************************************************
