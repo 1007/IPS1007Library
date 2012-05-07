@@ -8,8 +8,11 @@ function PW_SendCommand($cmd)
 	//$REGVAR = findRegVar($IPS_SELF);
 
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
+	$i = (IPS_GetInstance($comid));
+	$i = $i['InstanceStatus'];
 
-	if ( !IPS_GetInstance($comid) != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+	if ( $i != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+
 	
 	
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
