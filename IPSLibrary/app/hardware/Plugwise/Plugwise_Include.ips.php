@@ -7,6 +7,11 @@ function PW_SendCommand($cmd)
 	//$REGVAR = 38691; // ID der Registervariable
 	//$REGVAR = findRegVar($IPS_SELF);
 
+	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
+
+	if ( !IPS_GetInstance($comid) != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+	
+	
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
 
 	$ausgabe=strtoupper(dechex(calculate_common_crc16c($cmd)));
@@ -164,5 +169,84 @@ function unixtime2pwtime() {
 	$s=str_pad(strtoupper(dechex(gmdate("s"))), 2 ,'0', STR_PAD_LEFT);
 	$dow=str_pad(strtoupper(dechex(gmdate("N"))), 2 ,'0', STR_PAD_LEFT);
 	return($jahr.$monat.($mingesamt).$logzurueck.$h.$m.$s.$dow);
+}
+
+
+
+function createCircle($mac, $parentID){
+	GLOBAL $IPS_SELF;
+	GLOBAL $CircleGroups;
+
+	print "PW Create Circle: ".$mac;
+	$item = CreateInstance($mac, $parentID, "{485D0419-BE97-4548-AA9C-C083EB82E61E}", $Position=0);
+	$id_info = IPS_GetObject($item);
+	IPS_SetIdent ($item, $mac);
+
+ 	$gruppe = "";
+	$name   = "";
+
+	foreach( $CircleGroups as $circle )
+	   {
+		if ( $circle[0] == $mac )
+		   {
+		   $name   = $circle[1];
+		   $gruppe = $circle[2];
+		   break;
+		   }
+	   }
+
+
+
+	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
+
+	$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", $IPS_SELF, false);
+	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
+
+  if ( $name != "" )
+    if ( $gruppe != "" )
+        {
+        $VisuPath   = get_ObjectIDByPath("Visualization.WebFront.Hardware.Plugwise.$gruppe.$name");
+        $MobilePath = get_ObjectIDByPath("Visualization.Mobile.Hardware.Plugwise.$gruppe.$name");
+
+        if ( $VisuPath )
+          {
+          CreateLink ("Status",         $id1, $VisuPath, 0, "");
+          CreateLink ("Leistung",       $id2, $VisuPath, 0, "");
+          CreateLink ("Gesamtverbrauch",$id3, $VisuPath, 0, "");
+          CreateLink ("Status",         $id1, $MobilePath, 0, "");
+          CreateLink ("Leistung",       $id2, $MobilePath, 0, "");
+          CreateLink ("Gesamtverbrauch",$id3, $MobilePath, 0, "");
+
+          }
+        }
+
+
+
+
+
+	// $myVar = CreateVariable("Pulses Stunde", 2, $item, 0, "", 0);
+	// IPS_SetHidden($myVar, True);
+	// $myVar = CreateVariable("LogAddress", 3, $item, 0, "", "");
+	// IPS_SetHidden($myVar, True);
+	$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+	$myVar = CreateVariable("gainb",2,$item,0,"", 0,0);
+	IPS_SetHidden($myVar, True);
+	$myVar = CreateVariable("offTotal",2,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+	$myVar = CreateVariable("offNoise",2,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+
+	// Kalibrierungsdaten vom Circle abrufen
+	PW_SendCommand("0026".$mac);
+
+	// Zeit stellen
+ 	PW_SendCommand("0016".$mac.unixtime2pwtime());
+
+	// Status abfragen
+	PW_SendCommand("0012".$mac);
+	PW_SendCommand("0023".$mac);
+
 }
 ?>

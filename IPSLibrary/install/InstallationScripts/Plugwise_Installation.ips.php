@@ -30,6 +30,7 @@
   IPSUtils_Include ("IPSInstaller.inc.php",                "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("IPSMessageHandler.class.php",         "IPSLibrary::app::core::IPSMessageHandler");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php",      "IPSLibrary::config::hardware::Plugwise");
+	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
 
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$DataPath       = "Program.IPSLibrary.data.hardware.Plugwise";
@@ -66,7 +67,7 @@
       COMPort_SetPort($comid,COMPORT);
       COMPort_SetOpen($comid,true);
       
-      IPS_ApplyChanges($comid);
+      @IPS_ApplyChanges($comid);
      }
   else
     echo "\nCOM-Port konnte nicht angelegt werden ";
@@ -127,12 +128,14 @@
         
         $id   = CreateCategory($cycle[2],$CategoryIdVisu,0);
         $id   = CreateCategory($cycle[1],$id,0);
-
+        
         $id   = CreateCategory($cycle[2],$CategoryIdMobile,0);
         $id   = CreateCategory($cycle[1],$id,0);
-        
+ 
+        createCircle($cycle[0],$CategoryIdCData);        
         }
       } 
+ 
   
   //****************************************************************************
   // Jetzt Cycles suchen
