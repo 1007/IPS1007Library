@@ -118,6 +118,10 @@
   IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,60/*Minutes*/);
   IPS_SetEventCyclicTimeBounds($id,mktime(0,59,30),0);
 
+
+  $ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
+  $id = CreateTimer_OnceADay ("REFRESH",$ScriptId,3,0);
+
   //****************************************************************************
   //  CycleGroups im Webfront erstellen
   //****************************************************************************
@@ -136,7 +140,7 @@
         }
       } 
  
-  
+   sleep(2);
   //****************************************************************************
   // Jetzt Cycles suchen
   //****************************************************************************

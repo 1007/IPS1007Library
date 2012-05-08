@@ -8,8 +8,11 @@ function PW_SendCommand($cmd)
 	//$REGVAR = findRegVar($IPS_SELF);
 
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
+	$i = (IPS_GetInstance($comid));
+	$i = $i['InstanceStatus'];
 
-	if ( !IPS_GetInstance($comid) != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+	if ( $i != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+
 	
 	
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
@@ -174,13 +177,23 @@ function unixtime2pwtime() {
 
 
 function createCircle($mac, $parentID){
-	GLOBAL $IPS_SELF;
+	
 	GLOBAL $CircleGroups;
+
+      //  Archive ID ermitteln
+  foreach ( IPS_GetInstanceListByModuleType(0) as $modul )
+    {
+		$instance = IPS_GetInstance($modul);
+		if ( $instance['ModuleInfo']['ModuleName'] == "Archive Control" ) { $archive_id = $modul; break; }
+	  }
+  if ( !isset($archive_id) ) { echo "\nArchive Control nicht gefunden!"; die(); }
+
 
 	print "PW Create Circle: ".$mac;
 	$item = CreateInstance($mac, $parentID, "{485D0419-BE97-4548-AA9C-C083EB82E61E}", $Position=0);
 	$id_info = IPS_GetObject($item);
 	IPS_SetIdent ($item, $mac);
+
 
  	$gruppe = "";
 	$name   = "";
@@ -198,10 +211,20 @@ function createCircle($mac, $parentID){
 
 
 	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
+	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
+	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
+	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
 
-	$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", $IPS_SELF, false);
+	$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", $ScriptId, false);
 	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
 	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
+
+  AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
+  AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+  AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
+  AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+
+
 
   if ( $name != "" )
     if ( $gruppe != "" )
@@ -237,6 +260,11 @@ function createCircle($mac, $parentID){
 	IPS_SetHidden($myVar, True);
 	$myVar = CreateVariable("offNoise",2,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
+   $myVar = CreateVariable("LogAddress", 1,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+
+
+
 
 	// Kalibrierungsdaten vom Circle abrufen
 	PW_SendCommand("0026".$mac);
