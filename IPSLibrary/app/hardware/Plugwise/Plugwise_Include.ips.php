@@ -219,13 +219,16 @@ function createCircle($mac, $parentID){
 	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
 	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
+	$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+	$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+
   AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
   AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
   AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
   AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
 
 
-
+  /*
   if ( $name != "" )
     if ( $gruppe != "" )
         {
@@ -244,7 +247,7 @@ function createCircle($mac, $parentID){
           }
         }
 
-
+  */
 
 
 
