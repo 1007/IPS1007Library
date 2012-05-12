@@ -9,6 +9,11 @@
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1   = get_ObjectIDByPath($VisuPath);
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2   = get_ObjectIDByPath($VisuPath);
+
 	//echo $IPS_SENDER;
  	//echo $IPS_VARIABLE ;
   	//echo $IPS_VALUE ;
@@ -48,21 +53,22 @@
 
 		// alle Cirles durchgehen
 		$childs = IPS_GetChildrenIDs($CircleIdCData);
-		if ( $hidecircles )
+		if ( $hidecircles )  // wenn Circles versteckt werden sollen
 		   {
-			IPS_SetHidden($CircleIdCData,true);
-
+			IPS_SetHidden($CircleIdCData,true); // Ueberschrift verstecken
+			show_main($IdData1,$IdData2);
   			foreach ( $childs as $child )
   			   	{
-  					IPS_SetHidden($child,true);
-					SetValue($child,0);
+  					IPS_SetHidden($child,true);   // Circles verstecken
+					SetValue($child,0);           // und auf 0
 					}
 			}
 		else
 		   {
-			IPS_SetHidden($CircleIdCData,false);
+			IPS_SetHidden($CircleIdCData,false);   // Ueberschrift anzeigen
 			}
 			
+		// Circles anzeigen die in der angewaehlten Gruppe sind
 		$gruppenname = IPS_GetObject($IPS_VARIABLE);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
@@ -77,8 +83,15 @@
 
 					if ( $gruppenname == $cycle[2] and !$hidecircles)
 						{
-						//echo $x ;
-						if ( $x < 1 ) SetValue($id,1);
+						
+						//ersten Eintrag anwaehlen
+						if ( $x < 1 )
+							{
+							hide_data1data2($IdData1,$IdData2);
+							SetValue($id,1);
+							show_data1data2($id,$IdData1,$IdData2);
+
+							}
 						$x++;
 						IPS_SetHidden($id,false);
 						
@@ -106,35 +119,68 @@
 	   		SetValue($child, 0);
 	   		}
       SetValue($IPS_VARIABLE, $IPS_VALUE);
-      //print_R(IPS_GetObject($IPS_VARIABLE));
-
-	   $VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
-      $IdData1   = get_ObjectIDByPath($VisuPath);
-	   $VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
-      $IdData2   = get_ObjectIDByPath($VisuPath);
-
       
-      $object2 = IPS_GetObject($IPS_VARIABLE);
-		foreach ( IPS_GetChildrenIDs($IdData1) as $child )
-		   {
-		   $object1 = IPS_GetObject($child);
-			if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
-				IPS_SetHidden($child,false);
-			else
-		   	IPS_SetHidden($child,true);
-		   }
-		foreach ( IPS_GetChildrenIDs($IdData2) as $child )
-		   {
-		   $object1 = IPS_GetObject($child);
-			if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
-				IPS_SetHidden($child,false);
-			else
-		   	IPS_SetHidden($child,true);
-		   }
-
-
+      show_data1data2($IPS_VARIABLE,$IdData1,$IdData2);
 
 
 		}
 	//***************************************************************************
+	
+
+
+function show_main($IdData1,$IdData2)
+	{
+	hide_data1data2($IdData1,$IdData2);
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectInfo'] == 'Script' )
+			IPS_SetHidden($child,false);
+		}
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectInfo'] == 'Script' )
+			IPS_SetHidden($child,false);
+		}
+
+	}
+	
+function hide_data1data2($IdData1,$IdData2)
+	{
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		IPS_SetHidden($child,true);
+		}
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		IPS_SetHidden($child,true);
+		}
+	}
+	
+	
+	
+function show_data1data2($id,$IdData1,$IdData2)
+	{
+
+   $object2 = IPS_GetObject($id);
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object1 = IPS_GetObject($child);
+		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
+			IPS_SetHidden($child,false);
+		else
+		   IPS_SetHidden($child,true);
+		}
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object1 = IPS_GetObject($child);
+		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
+			IPS_SetHidden($child,false);
+		else
+		   IPS_SetHidden($child,true);
+		}
+
+	
+	}
 ?>

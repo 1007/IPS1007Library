@@ -1,6 +1,6 @@
 <?
 
-
+update_data1data2();
 
 function PW_SendCommand($cmd)
 {
@@ -189,7 +189,7 @@ function createCircle($mac, $parentID){
   if ( !isset($archive_id) ) { echo "\nArchive Control nicht gefunden!"; die(); }
 
 
-	print "PW Create Circle: ".$mac;
+	print "\nPW Create Circle: ".$mac;
 	$item = CreateInstance($mac, $parentID, "{485D0419-BE97-4548-AA9C-C083EB82E61E}", $Position=0);
 	$id_info = IPS_GetObject($item);
 	IPS_SetIdent ($item, $mac);
@@ -197,13 +197,15 @@ function createCircle($mac, $parentID){
 
  	$gruppe = "";
 	$name   = "";
-
+  $einaus = "";
+  
 	foreach( $CircleGroups as $circle )
 	   {
 		if ( $circle[0] == $mac )
 		   {
 		   $name   = $circle[1];
 		   $gruppe = $circle[2];
+		   $einaus = $circle[3];
 		   break;
 		   }
 	   }
@@ -214,8 +216,14 @@ function createCircle($mac, $parentID){
 	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
 	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
-
-	$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", $ScriptId, false);
+ 
+  $id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
+  if ( $einaus == "1" )
+    {
+    echo "\nBei $id1 Actionscript setzen"; 
+    IPS_SetVariableCustomAction($id1,$ScriptId);
+    }
+   
 	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
 	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
@@ -280,4 +288,115 @@ function createCircle($mac, $parentID){
 	PW_SendCommand("0023".$mac);
 
 }
+
+function update_data1data2()
+	{
+	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
+	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+
+
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+
+   $IdData   = get_ObjectIDByPath($CircleDataPath);
+	
+	foreach ( IPS_GetChildrenIDs($IdData) as $parent )
+		{
+		$data1id    = IPS_GetVariableIDByName('WebData1',$parent);
+		$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
+		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
+		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
+
+		$leistung = round(GetValue($leistungid),1);
+      $gesamt   = round(GetValue($gesamtid),1);
+      
+		$hintergrundfarbe = "#003366";
+		$fontsize = "17px";
+
+      
+		$html1 = "";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='210' cellspacing='10'  >";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:15px;'>Leistung</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$leistung</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>Watt</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px'>Verbrauch</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px'>$gesamt</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>kWh</span></td>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px;'>Kosten</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>€</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "</table>";
+
+      SetValueString($data1id,$html1);
+
+		$html1 = "";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='210'>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch gestern</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Verbrauch Woche</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Monat</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Jahr</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Kosten gestern</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Woche</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Monat</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Jahr</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "</tr>";
+
+		$html1 = $html1 . "</table>";
+
+      SetValueString($data2id,$html1);
+
+		//$object = IPS_GetObject($child);
+      //echo "\n--".$leistung;
+
+      
+
+/*
+		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
+			IPS_SetHidden($child,false);
+		else
+		   IPS_SetHidden($child,true);
+
+*/
+		}
+
+
+	}
+	
 ?>

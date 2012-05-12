@@ -216,7 +216,7 @@ Switch ($_IPS['SENDER'])
 			   $mcID = substr($buf,8,16);
 				$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
 				// echo IPS_GetName ($myCat).": ".substr($buf,41,1);
-				SetValue(CreateVariable("Status", 0, $myCat, 0, "~Switch", $IPS_SELF), substr($buf,41,1));
+				SetValue(CreateVariable("Status", 0, $myCat, 0, "~Switch"), substr($buf,41,1));
 
 				SetValueInteger(CreateVariable("LogAddress", 1, $myCat,0,"",0,0),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
 				
