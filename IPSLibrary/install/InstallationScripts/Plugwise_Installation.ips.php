@@ -194,7 +194,7 @@
    $VisuID_data2 = CreateCategory("DATA2",$CategoryIdVisu,10);
    $VisuID_graph = CreateCategory("GRAPH",$CategoryIdVisu,10);
 
-  //$graphid = CreateVariable("Highcharts", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
+  $graphid = CreateVariable("Highcharts", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
 
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Circles",$VisuID_menu,20);
@@ -209,8 +209,8 @@
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2", $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
   $PageUri = WEBSERVER . "user/Plugwise/Plugwise_Highcharts_index.htm";
-  //CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $graphid , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-  CreateWFCItemExternalPage ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 50, "Titel", $Icon="", $PageUri, $BarBottomVisible='true' /*'true' or 'false'*/);
+  CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $graphid , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+  //CreateWFCItemExternalPage ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 50, "Titel", $Icon="", $PageUri, $BarBottomVisible='true' /*'true' or 'false'*/);
 
 
 	CreateProfile_Associations ("Plugwise_MenuItem", array(

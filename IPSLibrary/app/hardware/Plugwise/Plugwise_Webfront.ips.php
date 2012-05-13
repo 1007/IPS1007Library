@@ -1,5 +1,5 @@
 <?
-
+	
 	if ( $IPS_SENDER != 'WebFront' ) return;
 	
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
@@ -8,7 +8,10 @@
 
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
+	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 
+	$IdApp     = get_ObjectIDByPath($AppPath);
+	
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1   = get_ObjectIDByPath($VisuPath);
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
@@ -126,6 +129,9 @@
 		}
 	//***************************************************************************
 	
+	
+	$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
+	IPS_RunScript($id);
 
 
 function show_main($IdData1,$IdData2)
