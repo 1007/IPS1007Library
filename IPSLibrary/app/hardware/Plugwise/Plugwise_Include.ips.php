@@ -302,6 +302,9 @@ function update_data1data2()
 		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
 		$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 		
+		$dateleistung = IPS_GetVariable($leistungid);
+		$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
+		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
       
@@ -312,7 +315,9 @@ function update_data1data2()
 		$html1 = "";
 		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='210' cellspacing='10'  >";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:15px;'>Leistung</span></td>";
+		$html1 = $html1 . "<td style='text-align:left;'>";
+		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:10px;'>$dateleistung<br></span>";
+		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:15px;'>Leistung</span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$leistung</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>Watt</span></td>";
 		$html1 = $html1 . "</tr>";

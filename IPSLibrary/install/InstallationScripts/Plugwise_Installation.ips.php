@@ -194,7 +194,7 @@
    $VisuID_data2 = CreateCategory("DATA2",$CategoryIdVisu,10);
    $VisuID_graph = CreateCategory("GRAPH",$CategoryIdVisu,10);
 
-  $graphid = CreateVariable("Highcharts", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
+  $graphid = CreateVariable("Leistungsverlauf", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
 
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Circles",$VisuID_menu,20);
@@ -228,8 +228,8 @@
 	//***************************************************************************
 	// Gruppenmenu erstellen
 	//***************************************************************************
-	$groups = $CircleGroups[2];
-	$groups = array_unique($groups);
+	//$groups = $CircleGroups[2];
+	//$groups = array_unique($groups);
    $array = array();
    foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
    $groups = array_unique($array);

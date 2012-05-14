@@ -33,16 +33,9 @@
 	//***************************************************************************
 	//		    CircleID			   Name 		Gruppe       Ein/Aus   Watt     kWh
 	//***************************************************************************
-	array("000D6F0000B81B6E","Circle+",	"Keller",      "1",    "100",  "5"),
-	array("000D6F0000C3B1DA","Circle1",	"Keller",      "0",    "",     ""),
-	array("000D6F0000B81B6B","Circle2",	"Wohnzimmer",  "0",    "",     ""),
-	array("000D6F0000C3B1DC","Circle3",	"Wohnzimmer",  "0",    "",     ""),
-	array("000D6F0000B81B6D","Circle4",	"Wohnzimmer",  "0",    "",     ""),
-	array("000D6F0000C3B1DE","Circle5",	"Buero",       "0",    "",     ""),
-	array("000D6F0000B81B6F","Circle6",	"Buero",       "0",    "",     ""),
-	array("000D6F0000C3B10A","Circle7",	"Buero",       "0",    "",     ""),
-	array("000D6F0000B81B1E","Circle8",	"Kueche",      "0",    "",     ""),
-	array("000D6F0000C3B12A","Circle9",	"Kueche",      "0",    "",     ""),
+	array("000D6F0000B81B6E","Plasma TV",	"Wohnzimmer",    "1",    "500",  "5"),
+	array("000D6F0000C3B1DA","Server",	  "Arbeitszimmer", "0",    "200",  ""),
+//	array("000D6F0000B81B6B","Circle2",	  "Wohnzimmer",    "0",    "",     ""),
   );
 
 	//***************************************************************************
@@ -53,26 +46,26 @@
 	// Stromtarife
 	//***************************************************************************
   	$Stromtarife = array(array("01.01.2011","31.12.2011",array(
-                                          array("Tarif1","22:00","06:00","0,22"),
-														array("Tarif2","22:00","06:00","0,22"),
-														array("Tarif3","","",""),
-                     							array("Tarif4","","",""))),
-							   array("01.01.2012","31.12.2012",array(
-                                          array("Tarif1","22:00","06:00","0,22"),
-														array("Tarif2","22:00","06:00","0,22"),
-														array("Tarif3","","",""),
-                     							array("Tarif4","","",""))),
-							   array("01.01.2013","31.12.2013",array(
-                                          array("Tarif1","22:00","06:00","0,22"),
-														array("Tarif2","22:00","06:00","0,22"),
-														array("Tarif3","","",""),
-                     							array("Tarif4","","",""))),
-							   array("01.01.2014","31.12.2014",array(
-                                          array("Tarif1","22:00","06:00","0,22"),
-														array("Tarif2","22:00","06:00","0,22"),
-														array("Tarif3","","",""),
-                     							array("Tarif4","","","")))
-														);
+                                array("Nachttarif","06:30","22:30","18,78"),
+                                array("Tagtarif"  ,"22:30","06:30","26,05"),
+                                array("","","",""),
+                                array("","","",""))),
+                        array("01.06.2012","01.06.2013",array(
+                                array("Nachttarif","06:30","22:30","18,78"),
+                                array("Tagtarif"  ,"22:30","06:30","26,05"),
+                                array("","","",""),
+                                array("","","",""))),
+                        array("01.01.2013","31.12.2013",array(
+                                array("Nachttarif","06:30","22:30","18,78"),
+                                array("Tagtarif"  ,"22:30","06:30","26,05"),
+                                array("","","",""),
+                                array("","","",""))),
+                        array("01.01.2014","31.12.2014",array(
+                                array("Nachttarif","06:30","22:30","18,78"),
+                                array("Tagtarif"  ,"22:30","06:30","26,05"),
+                                array("","","",""),
+                                array("","","","")))
+														    );
 
 
 

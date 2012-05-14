@@ -11,7 +11,7 @@
 
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Highcharts";
+	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Leistungsverlauf";
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
@@ -62,6 +62,10 @@
 	// Zeitraum welcher dargestellt werden soll (kann durch die Zeitvorgaben in den Serien verändert werden)
 	$CfgDaten['StartTime'] = mktime(0,0,0, date("m", time()), date("d",time())-1, date("Y",time())); // ab heute 00:00 Uhr
 	$CfgDaten['EndTime'] = mktime(23,59,59, date("m", time()), date("d",time()), date("Y",time())); // ab heute 23:59 Uhr, oder //$CfgDaten['EndTime'] = time();   // = bis jetzt
+
+	$CfgDaten['StartTime'] = time() - (60*60*24*2 );   // letzten 2 Tage
+   $CfgDaten['EndTime']   = time();
+
 
 	// damit wird die Art des Aufrufes festgelegt
 	$CfgDaten['RunMode'] = "script"; 	// file, script oder popup
