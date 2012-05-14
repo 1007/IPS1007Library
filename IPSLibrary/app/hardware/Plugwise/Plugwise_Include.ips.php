@@ -300,7 +300,7 @@ function update_data1data2()
 		$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
 		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
 		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
-		$error      = GetValue(IPS_GetVariableIDByName('Error',$parent));
+		$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
