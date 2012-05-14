@@ -16,19 +16,20 @@
 // Debug und Logging
 //******************************************************************************
 	define ( 'DEBUG_MODE' , TRUE );
-  define ( 'LOG_MODE'   , TRUE );
+	define ( 'LOG_MODE'   , TRUE );
 
 //******************************************************************************
 // Comport Plugwise-Stick
 //******************************************************************************
 
 	define ( 'COMPORT' , 'COM6' );       // COM-Port des Sticks	
-  define ( 'REFRESH_TIME',1);         // Refreshzeit in Minuten
-  define ( 'CALIBRATION_TIME',3);     // Uhrzeit fuer Recalibration 
+	define ( 'REFRESH_TIME',1);         // Refreshzeit in Minuten
+	define ( 'CALIBRATION_TIME',3);     // Uhrzeit fuer Recalibration
   
-  GLOBAL $CircleGroups;
-    
-  $CircleGroups = array(
+	GLOBAL $CircleGroups;
+	GLOBAL $Stromtarife;
+      
+	$CircleGroups = array(
 	//***************************************************************************
 	//		    CircleID			   Name 		Gruppe       Ein/Aus   Watt     kWh
 	//***************************************************************************
@@ -47,12 +48,40 @@
 	//***************************************************************************
 	//array("",			           "",				"",      "","",""));
 	//***************************************************************************
-  
+
 	//***************************************************************************
+	// Stromtarife
+	//***************************************************************************
+  	$Stromtarife = array(array("01.01.2011","31.12.2011",array(
+                                          array("Tarif1","22:00","06:00","0,22"),
+														array("Tarif2","22:00","06:00","0,22"),
+														array("Tarif3","","",""),
+                     							array("Tarif4","","",""))),
+							   array("01.01.2012","31.12.2012",array(
+                                          array("Tarif1","22:00","06:00","0,22"),
+														array("Tarif2","22:00","06:00","0,22"),
+														array("Tarif3","","",""),
+                     							array("Tarif4","","",""))),
+							   array("01.01.2013","31.12.2013",array(
+                                          array("Tarif1","22:00","06:00","0,22"),
+														array("Tarif2","22:00","06:00","0,22"),
+														array("Tarif3","","",""),
+                     							array("Tarif4","","",""))),
+							   array("01.01.2014","31.12.2014",array(
+                                          array("Tarif1","22:00","06:00","0,22"),
+														array("Tarif2","22:00","06:00","0,22"),
+														array("Tarif3","","",""),
+                     							array("Tarif4","","","")))
+														);
+
+
+
+  	//***************************************************************************
 	// Highcharts
 	//***************************************************************************
-  define ( 'HIGHCHARTS' , true ) ;
-  define ( 'WEBSERVER' ,'http://192.168.10.8:82/' ) ;
+	define ( 'HIGHCHARTS' , true ) ;
+
+
   
 
 ?>

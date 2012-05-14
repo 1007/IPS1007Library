@@ -1069,7 +1069,7 @@
 				$dataArray[] = CreateDataItem($curValue['TimeStamp'], $curValue['Value'], $Serie);
 			}
 
-		
+		//print_r($dataArray);
 		return $dataArray ;
 	}
 

@@ -16,6 +16,8 @@
    $IdData1   = get_ObjectIDByPath($VisuPath);
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
    $IdData2   = get_ObjectIDByPath($VisuPath);
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = get_ObjectIDByPath($VisuPath);
 
 	//echo $IPS_SENDER;
  	//echo $IPS_VARIABLE ;
@@ -168,8 +170,17 @@ function hide_data1data2($IdData1,$IdData2)
 	
 function show_data1data2($id,$IdData1,$IdData2)
 	{
-
+	GLOBAL $IdGraph;
    $object2 = IPS_GetObject($id);
+
+	/*
+	foreach ( IPS_GetChildrenIDs($IdGraph) as $child )
+		{
+		echo $object2['ObjectName'];
+		IPS_SetName($child,$object2['ObjectName']);
+		//IPS_ApplyChanges($child);
+		}
+	*/
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
 		$object1 = IPS_GetObject($child);

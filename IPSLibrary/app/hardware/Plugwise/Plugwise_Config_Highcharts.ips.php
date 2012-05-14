@@ -22,6 +22,35 @@
 
 	Global $CfgDaten; // damit kann der Script auch von anderen Scripten aufgerufen werden und bereits mit CfgDaten vorkonfiguriert werden
 
+	$id = 0;
+	$childs = IPS_GetChildrenIDs($CircleIdCData);
+	foreach ( $childs as $child )
+	   {
+	   $object = IPS_GetObject($child);
+
+	   if ( GetValueInteger($child) == 1 )
+	      {
+	      $info = $object['ObjectInfo'];
+	      $objectname = $object['ObjectName'];
+	      $parent = IPS_GetObjectIDByName($info,$CircleIdData);
+			$id = IPS_GetObjectIDByName('Leistung',$parent);
+
+	      break;
+	      }
+	   }
+	if ( $id == 0 )
+	   return;
+
+	foreach ($CircleGroups as $circle )
+	   {
+	    if ( $info == $circle[0] )
+			{
+			$maxleistung = $circle[4];
+	      break;
+	      }
+
+		}
+
 	// IPS Variablen ID´s
 	$CfgDaten['ContentVarableId']= $ContentId;  // ID der String Variable in welche die Daten geschrieben werden (-1 oder überhaupt nicht angeben wenn die Content Variable das übergordnete Element ist)
 	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts_V2.01', $CategoryIdApp );  				// ID des Highcharts Scripts
@@ -31,7 +60,7 @@
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
 	
 	// Zeitraum welcher dargestellt werden soll (kann durch die Zeitvorgaben in den Serien verändert werden)
-	$CfgDaten['StartTime'] = mktime(0,0,0, date("m", time()), date("d",time())-4, date("Y",time())); // ab heute 00:00 Uhr
+	$CfgDaten['StartTime'] = mktime(0,0,0, date("m", time()), date("d",time())-1, date("Y",time())); // ab heute 00:00 Uhr
 	$CfgDaten['EndTime'] = mktime(23,59,59, date("m", time()), date("d",time()), date("Y",time())); // ab heute 23:59 Uhr, oder //$CfgDaten['EndTime'] = time();   // = bis jetzt
 
 	// damit wird die Art des Aufrufes festgelegt
@@ -39,13 +68,13 @@
 
 
 	// Serienübergreifende Einstellung für das Laden von Werten
-	$CfgDaten['AggregatedValues']['HourValues'] = 5;      // ist der Zeitraum größer als X Tage werden Stundenwerte geladen
-	$CfgDaten['AggregatedValues']['DayValues'] = -1;       // ist der Zeitraum größer als X Tage werden Tageswerte geladen
-	$CfgDaten['AggregatedValues']['WeekValues'] = -1;      // ist der Zeitraum größer als X Tage werden Wochenwerte geladen
-	$CfgDaten['AggregatedValues']['MonthValues'] = -1;      // ist der Zeitraum größer als X Tage werden Monatswerte geladen
-	$CfgDaten['AggregatedValues']['YearValues'] = -1;      	// ist der Zeitraum größer als X Tage werden Jahreswerte geladen
-	$CfgDaten['AggregatedValues']['NoLoggedValues'] = 1000; 	// ist der Zeitraum größer als X Tage werden keine Boolean Werte mehr geladen, diese werden zuvor immer als Einzelwerte geladen	$CfgDaten['AggregatedValues']['MixedMode'] = false;     // alle Zeitraumbedingungen werden kombiniert
-	$CfgDaten['AggregatedValues']['MixedMode'] = false;
+	//$CfgDaten['AggregatedValues']['HourValues'] = 5;      // ist der Zeitraum größer als X Tage werden Stundenwerte geladen
+	//$CfgDaten['AggregatedValues']['DayValues'] = -1;       // ist der Zeitraum größer als X Tage werden Tageswerte geladen
+	//$CfgDaten['AggregatedValues']['WeekValues'] = -1;      // ist der Zeitraum größer als X Tage werden Wochenwerte geladen
+	//$CfgDaten['AggregatedValues']['MonthValues'] = -1;      // ist der Zeitraum größer als X Tage werden Monatswerte geladen
+	//$CfgDaten['AggregatedValues']['YearValues'] = -1;      	// ist der Zeitraum größer als X Tage werden Jahreswerte geladen
+	//$CfgDaten['AggregatedValues']['NoLoggedValues'] = 1000; 	// ist der Zeitraum größer als X Tage werden keine Boolean Werte mehr geladen, diese werden zuvor immer als Einzelwerte geladen	$CfgDaten['AggregatedValues']['MixedMode'] = false;     // alle Zeitraumbedingungen werden kombiniert
+	//$CfgDaten['AggregatedValues']['MixedMode'] = false;
 	// Systematik funktioniert jetzt additiv. D.h. die angegebenen Werte gehen ab dem letzten Wert
 	//
 	//            -5 Tage           -3 Tage    					EndTime
@@ -75,8 +104,9 @@
 	// *** title *** siehe http://www.highcharts.com/ref/#title
 	// **************************************************************************************
 	// $CfgDaten['title']['text'] = "Chart-Überschrift";  // Überchrift des gesamten Charts
-	$CfgDaten['title']['text'] = "Leistung";
-	
+	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
+	$CfgDaten['title']['style']['color'] = "#FFFFFF";
+
 	// **************************************************************************************
 	// *** subtitle *** siehe http://www.highcharts.com/ref/#subtitle
 	// **************************************************************************************
@@ -88,7 +118,7 @@
 
 	$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%"; 	
 	$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i"; 			
-
+   
 	// **************************************************************************************
 	// *** tooltip *** http://www.highcharts.com/ref/#tooltip
 	// **************************************************************************************
@@ -115,7 +145,8 @@
 	// *** xAxis *** http://www.highcharts.com/ref/#xAxis
 	// **************************************************************************************
 	// $CfgDaten['xAxis']['lineColor'] = '#FF0000';
-	// $CfgDaten['xAxis']['plotBands'][] = array("color"=>'#FCFFC5',"from"=> "@Date.UTC(2012, 3, 29)@","to"=> "@Date.UTC(2012, 3, 30)@");
+	//$CfgDaten['xAxis']['plotBands'][] = array("color"=>'#FCFFC5',"from"=> "@Date.UTC(2012, 3, 29)@","to"=> "@Date.UTC(2013, 3, 30)@");
+	//$CfgDaten['xAxis']['plotBands'][] = array("color"=>'#FCFFC5',"from"=> 10,"to"=> 100);
 
 	// **************************************************************************************
 	// *** yAxis *** http://www.highcharts.com/ref/#yAxis
@@ -134,13 +165,22 @@
 	//    -> entfallen: 'YAxisColor' -> verwende ['yAxis'][0]['title']['style']
 	//    -> entfallen: 'TitleStyle'-> verwende ['yAxis'][0]['title']['style']
 
-	//$CfgDaten['yAxis'][0]['title']['text'] = "Leistung";
-	$CfgDaten['yAxis'][0]['Unit'] = "Watt";
+	$CfgDaten['yAxis'][0]['title']['text'] = "Watt";
+	//$CfgDaten['yAxis'][0]['Unit'] = "Watt";
 	$CfgDaten['yAxis'][0]['opposite'] = false;
 	//$CfgDaten['yAxis'][0]['tickInterval'] = 5;
 	$CfgDaten['yAxis'][0]['min'] = 0;
 	//$CfgDaten['yAxis'][0]['max'] = 0;
 
+	if ( $maxleistung > 0 )
+	   {
+    	$pb['from'] = $maxleistung;
+    	$pb['to'] = 1000000;
+    	$pb['color'] = 'rgba(255, 0, 0, 0.2)';
+    //$pb['label']['text'] = '';
+    //$pb['label']['style']['color'] = '#606060';
+    	$CfgDaten["yAxis"][0]['plotBands'][] = $pb;
+		}
 
 	// **************************************************************************************
 	// *** series *** http://www.highcharts.com/ref/#series
@@ -167,43 +207,30 @@
 	//		ist sinnvoll wenn nicht Einzelwerte sondern Stundenwerte, Tageswerte, usw. ausgelesen werden
 	// $serie['data'] = array('TimeStamp'=> time(),'Value'=12) // hier kann ein Array an eigenen Datenpunkten übergeben werden. In diesem Fall werden für diese Serie keine Daten aus der Variable gelesenen.
 
-	$id = 0;
-	$childs = IPS_GetChildrenIDs($CircleIdCData);
-	foreach ( $childs as $child )
-	   {
-	   $object = IPS_GetObject($child);
-	   
-	   if ( GetValueInteger($child) == 1 )
-	      {
-	      $info = $object['ObjectInfo'];
-	      $parent = IPS_GetObjectIDByName($info,$CircleIdData);
-			$id = IPS_GetObjectIDByName('Leistung',$parent);
-	      
-	      break;
-	      }
-	   }
-	if ( $id == 0 )
-	   return;
+
 	
 	$serie = array();
-	$serie['name'] = "Leistung " . $info;
+	$serie['name'] = "Leistung ";
 	$serie['Id'] = $id;
-	$serie['color'] = "#CC9966";
+	$serie['color'] = "#CC9933";
 	$serie['Unit'] = "Watt";
-	$serie['ReplaceValues'] = false;
+	$serie['ReplaceValues'] = true;
+	//$serie['ReplaceValues'] = false;
 	$serie['type'] = "area";
 	$serie['yAxis'] = 0;
 	$serie['marker']['enabled'] = false;
 	$serie['AggType'] = 0;
-	$serie['shadow'] = true;
-	$serie['lineWidth'] = 2;
+	$serie['shadow'] = false;
+	$serie['lineWidth'] = 0;
 	$serie['RoundValue'] = 1;
-	$serie['states']['hover']['lineWidth'] = 2;
+	$serie['states']['hover']['lineWidth'] = 1;
 	$serie['marker']['states']['hover']['enabled'] = true;
 	$serie['marker']['states']['hover']['symbol'] = 'circle';
-	$serie['marker']['states']['hover']['radius'] = 4;
+	$serie['marker']['states']['hover']['radius'] = 1;
 	$serie['marker']['states']['hover']['lineWidth'] = 1;
 	$serie['showInLegend'] =  false;
+	//$serie['AggValue'] ='Max';
+	
 	$CfgDaten['series'][] = $serie;
 
 
@@ -214,7 +241,7 @@
 
 	// Abmessungen des erzeugten Charts
 	$CfgDaten['HighChart']['Width'] = 0; 			// in px,  0 = 100%
-	$CfgDaten['HighChart']['Height'] = 300; 		// in px
+	$CfgDaten['HighChart']['Height'] = 280; 		// in px
 
 	// -------------------------------------------------------------------------------------------------------------------------------------
 	// und jetzt los ......
