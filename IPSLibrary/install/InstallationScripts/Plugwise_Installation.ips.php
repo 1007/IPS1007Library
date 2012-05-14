@@ -208,7 +208,7 @@
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA1", $WFC_TabPaneItem."-SPLITDATA1", 30, "Titel", $Icon="", $VisuID_data1, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2", $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-  $PageUri = WEBSERVER . "user/Plugwise/Plugwise_Highcharts_index.htm";
+  //$PageUri = WEBSERVER . "user/Plugwise/Plugwise_Highcharts_index.htm";
   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $graphid , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
   //CreateWFCItemExternalPage ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 50, "Titel", $Icon="", $PageUri, $BarBottomVisible='true' /*'true' or 'false'*/);
 

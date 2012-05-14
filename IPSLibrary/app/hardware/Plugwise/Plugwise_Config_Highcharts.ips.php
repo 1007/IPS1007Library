@@ -31,7 +31,7 @@
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
 	
 	// Zeitraum welcher dargestellt werden soll (kann durch die Zeitvorgaben in den Serien verändert werden)
-	$CfgDaten['StartTime'] = mktime(0,0,0, date("m", time()), date("d",time())-7, date("Y",time())); // ab heute 00:00 Uhr
+	$CfgDaten['StartTime'] = mktime(0,0,0, date("m", time()), date("d",time())-4, date("Y",time())); // ab heute 00:00 Uhr
 	$CfgDaten['EndTime'] = mktime(23,59,59, date("m", time()), date("d",time()), date("Y",time())); // ab heute 23:59 Uhr, oder //$CfgDaten['EndTime'] = time();   // = bis jetzt
 
 	// damit wird die Art des Aufrufes festgelegt
@@ -39,7 +39,7 @@
 
 
 	// Serienübergreifende Einstellung für das Laden von Werten
-	$CfgDaten['AggregatedValues']['HourValues'] = 15;      // ist der Zeitraum größer als X Tage werden Stundenwerte geladen
+	$CfgDaten['AggregatedValues']['HourValues'] = 5;      // ist der Zeitraum größer als X Tage werden Stundenwerte geladen
 	$CfgDaten['AggregatedValues']['DayValues'] = -1;       // ist der Zeitraum größer als X Tage werden Tageswerte geladen
 	$CfgDaten['AggregatedValues']['WeekValues'] = -1;      // ist der Zeitraum größer als X Tage werden Wochenwerte geladen
 	$CfgDaten['AggregatedValues']['MonthValues'] = -1;      // ist der Zeitraum größer als X Tage werden Monatswerte geladen
@@ -184,7 +184,7 @@
 	   }
 	if ( $id == 0 )
 	   return;
-	   
+	
 	$serie = array();
 	$serie['name'] = "Leistung " . $info;
 	$serie['Id'] = $id;
@@ -203,6 +203,7 @@
 	$serie['marker']['states']['hover']['symbol'] = 'circle';
 	$serie['marker']['states']['hover']['radius'] = 4;
 	$serie['marker']['states']['hover']['lineWidth'] = 1;
+	$serie['showInLegend'] =  false;
 	$CfgDaten['series'][] = $serie;
 
 

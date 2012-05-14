@@ -4,8 +4,21 @@ update_data1data2();
 
 function PW_SendCommand($cmd)
 {
-	//$REGVAR = 38691; // ID der Registervariable
-	//$REGVAR = findRegVar($IPS_SELF);
+
+	switch ( substr($cmd,0,4 ) )
+	   {
+	   case	"0012": 	logging( "S - ".$cmd." Power information request (current)"); break;
+		case	"0016":	logging( "S - ".$cmd." Clock set request"); break;
+		case	"0017":	logging( "S - ".$cmd." Device Ein/Aus"); break;
+		case	"0018":	logging( "S - ".$cmd." Search Circle"); break;
+		case	"0023":	logging( "S - ".$cmd." Device information request"); break;
+		case	"0026":	logging( "S - ".$cmd." Kalibrierungsdaten abrufen"); break;
+		case	"003E":	logging( "S - ".$cmd." Clock information request"); break;
+		case	"0048":	logging( "S - ".$cmd." Power buffer information"); break;
+
+	   default     :  logging( "S - ".$cmd." unbekannter Befehl"); break;
+		}
+		
 
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
 	$i = (IPS_GetInstance($comid));
@@ -13,8 +26,6 @@ function PW_SendCommand($cmd)
 
 	if ( $i != 102 ) { echo "\nCOMPort nicht offen"; return ; }
 
-	
-	
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
 
 	$ausgabe=strtoupper(dechex(calculate_common_crc16c($cmd)));
@@ -22,6 +33,7 @@ function PW_SendCommand($cmd)
 	$cmd.= $ausgabe;
 	RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
 	IPS_Sleep(300);
+	
 }
 
 function PW_SwitchMode($InstanceID, $DeviceOn)
@@ -236,28 +248,6 @@ function createCircle($mac, $parentID){
   AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
 
 
-  /*
-  if ( $name != "" )
-    if ( $gruppe != "" )
-        {
-        $VisuPath   = get_ObjectIDByPath("Visualization.WebFront.Hardware.Plugwise.$gruppe.$name");
-        $MobilePath = get_ObjectIDByPath("Visualization.Mobile.Hardware.Plugwise.$gruppe.$name");
-
-        if ( $VisuPath )
-          {
-          CreateLink ("Status",         $id1, $VisuPath, 0, "");
-          CreateLink ("Leistung",       $id2, $VisuPath, 0, "");
-          CreateLink ("Gesamtverbrauch",$id3, $VisuPath, 0, "");
-          CreateLink ("Status",         $id1, $MobilePath, 0, "");
-          CreateLink ("Leistung",       $id2, $MobilePath, 0, "");
-          CreateLink ("Gesamtverbrauch",$id3, $MobilePath, 0, "");
-
-          }
-        }
-
-  */
-
-
 
 	// $myVar = CreateVariable("Pulses Stunde", 2, $item, 0, "", 0);
 	// IPS_SetHidden($myVar, True);
@@ -272,6 +262,10 @@ function createCircle($mac, $parentID){
 	$myVar = CreateVariable("offNoise",2,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
    $myVar = CreateVariable("LogAddress", 1,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+   $myVar = CreateVariable("Error", 1,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
+   $myVar = CreateVariable("LastMessage", 3,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
 
 
@@ -306,7 +300,8 @@ function update_data1data2()
 		$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
 		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
 		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
-
+		$error      = GetValue(IPS_GetVariableIDByName('Error',$parent));
+		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
       
@@ -333,6 +328,8 @@ function update_data1data2()
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "</table>";
 
+		if ( $error != 0 )
+		   $html1 = "Circle ausgefallen !".$error;
       SetValueString($data1id,$html1);
 
 		$html1 = "";
@@ -398,5 +395,22 @@ function update_data1data2()
 
 
 	}
+
+//******************************************************************************
+// Logging
+//******************************************************************************
+function logging($text)
+	{
+
+	if ( !LOG_MODE )
+	   return;
+	$logdatei = IPS_GetKernelDir() . "logs\\plugwise.log";
+	$datei = fopen($logdatei,"a+");
+	fwrite($datei, date("d.m.Y H:i:s")." ". $text . chr(13));
+	fclose($datei);
+
+	}
+//******************************************************************************
+
 	
 ?>
