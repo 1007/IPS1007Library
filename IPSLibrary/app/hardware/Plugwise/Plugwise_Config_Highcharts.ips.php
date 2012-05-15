@@ -70,6 +70,7 @@
 
 	// damit wird die Art des Aufrufes festgelegt
 	$CfgDaten['RunMode'] = "script"; 	// file, script oder popup
+	//$CfgDaten['RunMode'] = "file"; 	// file, script oder popup
 
 	// **************************************************************************************
 	// *** Highcharts Options ***
@@ -105,11 +106,11 @@
 	$serie = array();
 	$serie['name'] = "Leistung ";
 	$serie['Id'] = $id;
-	$serie['color'] = "#CC9933";
+	//$serie['color'] = "#CC9933";
 	$serie['Unit'] = "Watt";
 	$serie['ReplaceValues'] = true;
 	
-	$serie['type'] = "area";
+	$serie['type'] = "areaspline";
 	$serie['yAxis'] = 0;
 	$serie['marker']['enabled'] = false;
 	$serie['AggType'] = 0;
@@ -123,6 +124,9 @@
 	$serie['marker']['states']['hover']['lineWidth'] = 1;
 	$serie['showInLegend'] =  false;
 	
+	$CfgDaten['plotOptions']['areaspline']['fillColor']['linearGradient'] = array(0, 0, 0, 300); // Winkel,,,,
+	$CfgDaten['plotOptions']['areaspline']['fillColor']['stops'] = array(array(0,'rgba(255,0,0,0.5)'),array(1,'rgba(0,255,0,1)'));
+
 	$CfgDaten['series'][] = $serie;
 
 	// Abmessungen des erzeugten Charts
@@ -153,6 +157,7 @@
 		}
 
 		$sConfig = CreateConfigString($CfgDaten);             		// erzeugen und zurückgeben des Config Strings
+		
 	}
 	else
 	{
