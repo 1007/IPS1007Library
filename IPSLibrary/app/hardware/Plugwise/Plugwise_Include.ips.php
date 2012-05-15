@@ -319,25 +319,25 @@ function update_data1data2()
       
 		$hintergrundfarbe = "#003366";
 		$fontsize = "17px";
-
+		
       
 		$html1 = "";
-		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='210' cellspacing='10'  >";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td style='text-align:left;'>";
-		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:10px;'>$dateleistung<br></span>";
-		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:15px;'>Leistung</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$leistung</span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>Watt</span></td>";
+		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:15px;'>Aktuell<br></span>";
+		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:15px;'></span></td>";
+		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight:bold;color:white;font-size:20px;'>$dateleistung </span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:20px;'>Uhr</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px'>Verbrauch</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px'>$gesamt</span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>kWh</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px'>Leistung</span></td>";
+		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px'>$leistung</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>Watt</span></td>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px;'>Kosten</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$kosten</span></td>";
+		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$kosten</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>$waehrung</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "</table>";
@@ -347,46 +347,46 @@ function update_data1data2()
       SetValueString($data1id,$html1);
 
 		$html1 = "";
-		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='210'>";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='10'>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch gestern</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Gesamt</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'>$gesamt</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Verbrauch Woche</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Verbrauch Heute</span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Monat</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Jahr</span></td>";
+		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Kosten gestern</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Woche</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Monat</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Kosten Jahr</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>€</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 
 		$html1 = $html1 . "</table>";
@@ -414,6 +414,7 @@ function aktuelle_kosten($leistung)
 
       $startdatex = strtotime($startdate);
       $endedatex  = strtotime($endedate);
+      //echo "\n------------------------------------------------";
 		//echo "\n - " .$startdatex . " - " . $endedatex;
 		// in welchem Jahreszeitraum befinden wird uns ?
 		if ( $now > $startdatex  and $now < $endedatex  )
@@ -431,21 +432,21 @@ function aktuelle_kosten($leistung)
 						$starttimestamp  = strtotime($starttimestring);
 						$endetimestamp   = strtotime($endetimestring);
 
-						//echo "\n-".$tarifname . strtotime($endezeit);
+						//echo "\n".$tarifname . " " . strtotime($endezeit);
 						//echo "\n $tarifname ";
 						//echo "\n $starttimestring - $starttimestamp";
 						//echo "\n $endetimestring - $endetimestamp";
-
-						if ( $now > $starttimestamp )
+						$ok = true;
+						if ( $now <= $starttimestamp ) {  $ok = false; }
+						if ( $now >= $endetimestamp  ) {   $ok = false; }
+						if ( $ok )
 						   {
-						   //echo "\n Now ist groesser fuer Start";
-						   if ( $now < $endetimestamp )
-								{
-						   	//echo "\n Now ist kleiner fuer Ende";
-								$akttarifname = $tarifname;
-								$aktpreiskwh = $preiskwh;
-								}
-							}
+						   //echo "ok";
+							$akttarifname = $tarifname;
+							$aktpreiskwh = $preiskwh;
+						   }
+
+
 
 					   }
 					}
