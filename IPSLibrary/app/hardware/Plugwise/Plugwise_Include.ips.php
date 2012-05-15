@@ -307,6 +307,15 @@ function update_data1data2()
 		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
+      $kosten   = floatval(aktuelle_kosten($leistung));
+      $waehrung = "Cent/h";
+      $vergleich = 0.1 ;
+      if ( $kosten > $vergleich )
+         { 
+         $kosten = $kosten/100;
+         $waehrung = "Euro/h";
+         }
+      $kosten = round($kosten,2);
       
 		$hintergrundfarbe = "#003366";
 		$fontsize = "17px";
@@ -328,8 +337,8 @@ function update_data1data2()
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px;'>Kosten</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>€</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$kosten</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>$waehrung</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "</table>";
 
@@ -384,23 +393,82 @@ function update_data1data2()
 
       SetValueString($data2id,$html1);
 
-		//$object = IPS_GetObject($child);
-      //echo "\n--".$leistung;
-
-      
-
-/*
-		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
-			IPS_SetHidden($child,false);
-		else
-		   IPS_SetHidden($child,true);
-
-*/
 		}
 
 
 	}
 
+function aktuelle_kosten($leistung)
+	{
+	GLOBAL $Stromtarife;
+	
+	$now = time();
+	$heute = date('d.m.Y');
+	//echo "\nNow:". $now ." - " . $heute;
+	$aktpreiskwh = 0;
+	$akttarifname = "?";
+	foreach ( $Stromtarife as $tarif )
+	   {
+	   $startdate = $tarif[0];
+	   $endedate  = $tarif[1];
+
+      $startdatex = strtotime($startdate);
+      $endedatex  = strtotime($endedate);
+		//echo "\n - " .$startdatex . " - " . $endedatex;
+		// in welchem Jahreszeitraum befinden wird uns ?
+		if ( $now > $startdatex  and $now < $endedatex  )
+			foreach ( $tarif[2] as $tarif )
+					{
+					$tarifname = $tarif[0];
+					$startzeit = $tarif[1];
+					$endezeit  = $tarif[2];
+					$preiskwh  = $tarif[3];
+					if ( $preiskwh > 0 and $tarifname != "" and $endezeit != "" and
+								$startzeit != "" )
+						{
+						$starttimestring = $heute . " " . $startzeit;
+						$endetimestring  = $heute . " " . $endezeit;
+						$starttimestamp  = strtotime($starttimestring);
+						$endetimestamp   = strtotime($endetimestring);
+
+						//echo "\n-".$tarifname . strtotime($endezeit);
+						//echo "\n $tarifname ";
+						//echo "\n $starttimestring - $starttimestamp";
+						//echo "\n $endetimestring - $endetimestamp";
+
+						if ( $now > $starttimestamp )
+						   {
+						   //echo "\n Now ist groesser fuer Start";
+						   if ( $now < $endetimestamp )
+								{
+						   	//echo "\n Now ist kleiner fuer Ende";
+								$akttarifname = $tarifname;
+								$aktpreiskwh = $preiskwh;
+								}
+							}
+
+					   }
+					}
+
+
+
+
+
+
+	   }
+
+
+	//echo "\nDer aktuelle Tarifname = $akttarifname - $aktpreiskwh ";
+
+	$watt = $leistung;
+	$kwh = ($watt/1000) * 1 ;
+	$kosten = round(($kwh * $aktpreiskwh),2);
+	//echo "\nWatt:$watt $kwh Preis pro Stunde : $kosten ";
+	// Rueckgabe als hunderstel Cent
+
+	return($kosten);
+	}
+	
 //******************************************************************************
 // Logging
 //******************************************************************************
