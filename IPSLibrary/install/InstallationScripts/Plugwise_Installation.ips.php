@@ -39,6 +39,8 @@
 	$MobilePath     = "Visualization.Mobile.Hardware.Plugwise";
   $HardwarePath   = "Hardware.Plugwise";
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+	$GroupDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Groups";
   
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
 	
@@ -49,6 +51,8 @@
 	$CategoryIdMobile = CreateCategoryPath($MobilePath,100);
 	$CategoryIdHw     = CreateCategoryPath($HardwarePath);
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
+  $CategoryIdOData  = CreateCategoryPath($OtherDataPath);
+  //$CategoryIdGData  = CreateCategoryPath($GroupDataPath);
 
   EmptyCategory($CategoryIdVisu);
   EmptyCategory($CategoryIdMobile);
@@ -140,19 +144,79 @@
   $id = CreateTimer_OnceADay ("REFRESH",$ScriptId,3,0);
 
   //****************************************************************************
-  //  CycleGroups in Data erstellen anhand der Liste im Configurationsfile
+  //  CircleGroups in Data erstellen anhand der Liste im Configurationsfile
   //****************************************************************************
   foreach ( $CircleGroups as $cycle )
       {
       if ( $cycle[0] != "" )
-        { echo "\nCreate Circle". $cycle[0];
+        { 
+        echo "\nCreate Circle". $cycle[0];
         createCircle($cycle[0],$CategoryIdCData);        
         }
       } 
  
+  //****************************************************************************
+  //  Archive Control finden
+  //****************************************************************************
+  foreach ( IPS_GetInstanceListByModuleType(0) as $modul )
+    {
+    $archive_id = false;
+		$instance = IPS_GetInstance($modul);
+		if ( $instance['ModuleInfo']['ModuleName'] == "Archive Control" ) 
+      { $archive_id = $modul; break; }
+	  }
    
   //****************************************************************************
-  // Jetzt Cycles suchen
+  //  Others   Gesamt
+  //****************************************************************************
+  $item = CreateDummyInstance ("Gesamt", $CategoryIdOData , 0);
+  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+	$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+	$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+
+  if ( $archive_id )
+    {
+    AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
+    AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+    AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
+    AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+    }
+
+  //***************************************************************************
+	// Gruppe in DATA erstellen fuer Gesamtuebersicht einer Gruppe
+	//***************************************************************************
+   $array = array();
+   foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
+   $groups = array_unique($array);
+	 $x = 10;
+   foreach ( $groups as $group )
+   	{
+      if ( $group != "" )
+      	{
+        $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
+        $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+        $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+        $id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+        $id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+
+        if ( $archive_id )
+          { 
+          AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
+          AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+          AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
+          AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+          }
+
+        $x = $x + 10;
+        }
+      }
+
+
+
+
+  //****************************************************************************
+  // Jetzt Circles suchen
   //****************************************************************************
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
   PW_SendCommand("0008");
@@ -194,7 +258,7 @@
    $VisuID_data2 = CreateCategory("DATA2",$CategoryIdVisu,10);
    $VisuID_graph = CreateCategory("GRAPH",$CategoryIdVisu,10);
 
-  $graphid = CreateVariable("Leistungsverlauf", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
+  $graphid = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
 
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Circles",$VisuID_menu,20);
@@ -225,15 +289,19 @@
 
   $ActionScriptId = IPS_GetScriptIDByName('Plugwise_Webfront', $CategoryIdApp );
 
+  
+	//***************************************************************************
+	// Systemsteuerung erstellen
+	//***************************************************************************
+  $id = CreateVariable("Systemsteuerung", 1, $VisuID_menu, 0, "Plugwise_MenuItem", $ActionScriptId, false);
+
 	//***************************************************************************
 	// Gruppenmenu erstellen
 	//***************************************************************************
-	//$groups = $CircleGroups[2];
-	//$groups = array_unique($groups);
    $array = array();
    foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
    $groups = array_unique($array);
-	$x = 10;
+	 $x = 10;
    foreach ( $groups as $group )
    	{
       if ( $group != "" )
@@ -315,6 +383,7 @@
       			$id = CreateLink($circle[1],$id,$VisuID_data2,$x);
 					IPS_SetHidden($id , true );
 					IPS_SetInfo($id,$circle[0]);
+					IPS_SetIdent($id,$circle[0]);
       			$x = $x + 10;
 			      }
 
@@ -322,7 +391,44 @@
 			}
 		}
 
+	//***************************************************************************
+	// HTML Gruppendaten und Gesamt linken
+	//***************************************************************************
+  $x = 10 ;
+  $childs = IPS_GetChildrenIDs($CategoryIdOData);
+  foreach($childs as $child )
+      {
+      $id = @IPS_GetObjectIDByName("WebData1",$child);
+      if ( $id )
+        {
+        echo "\nOther Link " . $child ;	
+        $parent_name = IPS_GetName($child);
 
+        $id = CreateLink($parent_name,$id,$VisuID_data1,$x);
+        IPS_SetHidden($id , true );
+        IPS_SetInfo($id,$parent_name );
+        IPS_SetIdent($id,$parent_name );
+        $x = $x + 2;
+        }
+      $x = 10;
+      $id = @IPS_GetObjectIDByName("WebData2",$child);
+      if ( $id )
+        {
+        echo "\nOther Link " . $child ;	
+        $parent_name = IPS_GetName($child);
+
+        $id = CreateLink($parent_name,$id,$VisuID_data2,$x);
+        IPS_SetHidden($id , true );
+        IPS_SetInfo($id,$parent_name );
+        IPS_SetIdent($id,$parent_name );
+        $x = $x + 2;
+        }
+
+
+
+      }
+    
+    
 
 
     }

@@ -7,7 +7,7 @@
 
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Leistungsverlauf";
+	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Uebersicht";
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
