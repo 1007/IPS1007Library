@@ -21,12 +21,6 @@
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
    $IdMenu    = get_ObjectIDByPath($VisuPath);
 
-
-	//echo $IPS_SENDER;
- 	//echo $IPS_VARIABLE ;
-  	//echo $IPS_VALUE ;
-   //SetValue($IPS_VARIABLE, $IPS_VALUE);
-
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
 	
@@ -41,28 +35,17 @@
 	   if ( GetValue($IPS_VARIABLE) == 0 )
 			{
 			reset_groups(true);
-			hide_circles(true);
-      	hide_graph(true);
-      	hide_data1data2($IdData1,$IdData2);
-      	show_main($IdData1,$IdData2);
 			SetValue($IPS_VARIABLE, 1);
-
-			return;
 			}
 		else
 		   {
 			reset_groups(true);
-			hide_circles(true);
-			hide_data1data2($IdData1,$IdData2);
-      	hide_graph(false);
-      	//($IdData1,$IdData2);
-
 		   SetValue($IPS_VARIABLE,0);
-
 		   }
-			
-
 		}
+	//***************************************************************************
+
+
 		
 	//***************************************************************************
 	// Gruppenmenu
@@ -91,6 +74,8 @@
 			SetValue($IPS_VARIABLE, $IPS_VALUE);
 			IPS_SetHidden($IPS_VARIABLE,false);
 			$hidecircles = false;
+			$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung aus
+			SetValue($id,0);
 			}
 
 
@@ -126,18 +111,7 @@
 
 					if ( $gruppenname == $cycle[2] and !$hidecircles)
 						{
-						
-						//ersten Eintrag anwaehlen
-						if ( $x < 1 )
-							{
-							hide_data1data2($IdData1,$IdData2);
-							SetValue($id,1);
-							show_data1data2($id,$IdData1,$IdData2);
-
-							}
-						$x++;
 						IPS_SetHidden($id,false);
-						
 						}
 					else
 			   		{
@@ -148,6 +122,8 @@
 				
       		}
 		}
+	//***************************************************************************
+
 
 	//***************************************************************************
 	// Circlemenu
@@ -155,22 +131,107 @@
 	//***************************************************************************
 	if ( $object['ObjectName'] == 'Circles' )
 	   {
+	   hide_data1data2();
+	   $value = GetValue($IPS_VARIABLE);
 		$childs = IPS_GetChildrenIDs($parent);
 		foreach ( $childs as $child )
 	   		{
 	   		SetValue($child, 0);
 	   		}
-      SetValue($IPS_VARIABLE, $IPS_VALUE);
-      
-      show_data1data2($IPS_VARIABLE,$IdData1,$IdData2);
+
+	   if ( $value == 0 )
+		   {
+      	SetValue($IPS_VARIABLE, 1);
+         }
+		else
+		   {
+      	SetValue($IPS_VARIABLE, 0);
+         }
+
+         
 		}
 	//***************************************************************************
 	
 
+	//***************************************************************************
+	// ab hier wird entschieden was angezeigt werden soll
+	// **************************************************************************
+	hide_graph(true);
+   hide_data1data2();
+	$showid = false;
+	
+	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung 
+
+	if ( GetValue($id) > 0 )
+	   { 
+	   show_main($IdData1,$IdData2);
+	   return;
+	   }
+
+	$aktuelle_gruppenid = 0;
+	
+	$id = IPS_GetObjectIDByIdent('Gruppen',$IdMenu);  // Gruppen
+	$childs = IPS_GetChildrenIDs($id);
+	$ok = false;
+	foreach ( $childs as $child )
+	   		{
+	   		if ( GetValue($child) > 0 )
+	   		   {
+					$ok = true;
+					$aktuelle_gruppenid = $child;
+					$showid = $IPS_VARIABLE ;
+					break;
+					}
+				}
+	if ( !$ok )
+	   {  // Keine Gruppe angewaehlt - Gesamtverbrauch anzeigen
+
+		show_webfront(0);
+		return;
+
+		
+		}
+
+
+	$id = IPS_GetObjectIDByIdent('Circles',$IdMenu);  // Circles
+	$childs = IPS_GetChildrenIDs($id);
+	$ok = false;
+	foreach ( $childs as $child )
+	   		{
+	   		if ( GetValue($child) > 0 )
+	   		   {
+					$ok = true;
+					$showid = $IPS_VARIABLE;
+					show_webfront($showid);
+					return;
+					}
+				}
+	if ( !$ok )
+	   {  // Kein Circle angewaehlt - Gesamtverbrauch der Gruppe anzeigen
+					
+		show_webfront($aktuelle_gruppenid);
+		return;
+
+		}
+
+
+//******************************************************************************
+// zeigt Data1 , Data2 , Graph
+//******************************************************************************
+function show_webfront($showid)
+	{
+	GLOBAL $IdApp;
+	
+   show_data1data2($showid);
+
 	$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
 	IPS_RunScript($id);
 
+	}
 
+//******************************************************************************
+// leert die HTMLBox
+//******************************************************************************
 function hide_graph($status = true)
 	{
 	GLOBAL $IdGraph;
@@ -180,10 +241,13 @@ function hide_graph($status = true)
 	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
 	// IPS_SetHidden($id,$status);
 	}
-	
+
+//******************************************************************************
+// zeigt die Scripte - Sytemsteuerung an
+//******************************************************************************
 function show_main($IdData1,$IdData2)
 	{
-	hide_data1data2($IdData1,$IdData2);
+	hide_data1data2();
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
 		$object = IPS_GetObject($child);
@@ -199,10 +263,9 @@ function show_main($IdData1,$IdData2)
 
 	}
 
-function hide_circles()
-	{
-	
-	}
+//******************************************************************************
+// Reset Gruppen und Circlegruppe verstecken
+//******************************************************************************
 function reset_groups()
 	{
 	GLOBAL $IdMenu;
@@ -220,8 +283,14 @@ function reset_groups()
 
 	}
 	
-function hide_data1data2($IdData1,$IdData2)
+//******************************************************************************
+// versteckt alle Data1 und Data2
+//******************************************************************************
+function hide_data1data2()
 	{
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+	
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
 		IPS_SetHidden($child,true);
@@ -234,9 +303,23 @@ function hide_data1data2($IdData1,$IdData2)
 	
 	
 	
-function show_data1data2($id,$IdData1,$IdData2)
+//******************************************************************************
+// zeigt die in $id uebergebenen Daten in Data1 und Data2 an
+//******************************************************************************
+function show_data1data2($id)
 	{
 	GLOBAL $IdGraph;
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+
+	if ( $id == 0 )
+		{
+		$id = IPS_GetObjectIDByIdent('Gesamt',$IdData1);
+		IPS_SetHidden($id,false);
+		$id = IPS_GetObjectIDByIdent('Gesamt',$IdData2);
+		IPS_SetHidden($id,false);
+		}
+
    $object2 = IPS_GetObject($id);
 
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
@@ -255,7 +338,8 @@ function show_data1data2($id,$IdData1,$IdData2)
 		else
 		   IPS_SetHidden($child,true);
 		}
-
 	
 	}
+
+
 ?>

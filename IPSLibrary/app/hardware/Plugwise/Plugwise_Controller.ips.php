@@ -25,13 +25,15 @@ Noch zu lösende Probleme der Plugwise-Skripte:
 	IPSUtils_Include ("Plugwise_Configuration.inc.php",      "IPSLibrary::config::hardware::Plugwise");
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-   $idCatCircles = get_ObjectIDByPath($CircleDataPath);
+   $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
+	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+   $idCatOthers    = get_ObjectIDByPath($OtherDataPath);
 
 
    $now = time();
 	
 
-
+/*
 foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 												{  // alle Unterobjekte durchlaufen
 		    									$id_info = IPS_GetObject($item);
@@ -39,12 +41,15 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 		    									$t = $now - ($obj["VariableUpdated"]);
   												}
   												
+*/
 	switch ($_IPS['SENDER'])
 			{
 
 			Case "RunScript":    break;
 			Case "Execute":      break;
-			Case "TimerEvent":	// Alle Circles durchlaufen, Status und Verbrauch lesen
+			Case "TimerEvent":   //********************************************************************************
+										// Alle Circles durchlaufen, Status und Verbrauch lesen
+										//********************************************************************************
 										foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 												{  // alle Unterobjekte durchlaufen
 												
@@ -64,7 +69,9 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 										break;
 
 			Case "Variable":		break;
-			Case "WebFront": 	   // Zum schalten im Webfront
+			Case "WebFront":     //***********************************************************************************
+										// Zum schalten im Webfront
+										//***********************************************************************************
 	   								$id = IPS_GetParent($_IPS['VARIABLE']);
 										$id_info = IPS_GetObject($id);
 										if ($_IPS['VALUE'] == 1)
@@ -276,11 +283,9 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
                                                 logging( "R - ".$buf . " Status - ".$s);
 																break;
 
-											case "0027":   // Kalibrierungsdaten empfangen
-											               
-											               logging( "R - ".$buf . " Kalibrierungsdaten empfangen");
-																$myCat = IPS_GetObjectIDByIdent(substr($buf,8,16), $idCatCircles);
-
+											case "0027":   //*******************************************************************
+																// Kalibrierungsdaten empfangen
+											               //*******************************************************************
 																SetValueFloat(CreateVariable("gaina",2,$myCat,0,""),bintofloat(substr($buf,24,8)));
 																SetValueFloat(CreateVariable("gainb",2,$myCat,0,""),bintofloat(substr($buf,32,8)));
 																SetValueFloat(CreateVariable("offTotal",2,$myCat,0,""),bintofloat(substr($buf,40,8)));
@@ -288,6 +293,12 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 																	SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),0);
 																else
 																	SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),bintofloat(substr($buf,48,8)));
+
+																$text = "Kalibrierungsdaten empfangen [".$buf."]";
+											               //logging( "R - ".$buf . " Kalibrierungsdaten empfangen");
+											               logging($text,'plugwisecalibration.log' );
+																$myCat = IPS_GetObjectIDByIdent(substr($buf,8,16), $idCatCircles);
+
 																break;
 
 											case "0049": 	// Antwort auf 0048 - historischen Verbrauch lesen (Buffer)
@@ -375,38 +386,49 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 																	};
 
 
-																/*
+																
 
-																PRINT "PW0048 Buffer - ".IPS_GetName($myCat).":\r\n";
-																$log[0]["Zeit"]=date("d.m.Y H:i", pwtime2unixtime(substr($buf,24,8)));
-																$log[0]["Verbrauch"]=pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
-																$log[1]["Zeit"]=date("d.m.Y H:i", pwtime2unixtime(substr($buf,40,8)));
-																$log[1]["Verbrauch"]=pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
-																$log[2]["Zeit"]=date("d.m.Y H:i", pwtime2unixtime(substr($buf,56,8)));
-																$log[2]["Verbrauch"]=pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
-																$log[3]["Zeit"]=date("d.m.Y H:i", pwtime2unixtime(substr($buf,72,8)));
-																$log[3]["Verbrauch"]=pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
-																print_r($log);
-																*/
+																$text =  "\nPW0049 Buffer - ".IPS_GetName($myCat) . "[".$buf."]";
+																$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,24,8))).": ";
+																$text = $text . pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
+																$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,40,8))).": ";
+																$text = $text . pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
+																$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,56,8))).": ";
+																$text = $text . pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
+																$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,72,8))).": ";
+																$text = $text . pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
+																logging($text,'plugwisebuffer.log' );
+																
+																
 
 																break;
 
-											case "003F": 	// Antwort auf 003E - Uhrzeit auslesen
+											case "003F":   //*************************************************************************
+																// Antwort auf 003E - Uhrzeit auslesen
+																//*************************************************************************
 			   												$mcID = substr($buf,8,16);
 																$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
-																//date_default_timezone_set('UTC');
+																
 																$myTime = mktime(hexdec(substr($buf,24,2)) + (date("Z")/3600), hexdec(substr($buf,26,2)), hexdec(substr($buf,28,2)), 0,0,0);
-																//date_default_timezone_set('Europe/Berlin');
-																print "PW Uhrzeit (lokal) - ".IPS_GetName($myCat).": ".date("H:i", $myTime)."\r\n";
-																// print $buf."\r\n";
-																// print "Die Sequenznr: ".substr($buf,4,4)."\r\n";
-																// print "MC Adresse: ".substr($buf,8,16)."\r\n";
-																// print "Stunde : ".hexdec(substr($buf,24,2))."\r\n";
-																// print "Min: ".hexdec(substr($buf,26,2))."\r\n";
-																// print "Sek : ".hexdec(substr($buf,28,2))."\r\n";
-																// print "Tag der Woche: ".substr($buf,30,2)."\r\n";
-																// print "Rest : ".substr($buf,32,2)."\r\n";
-																// print "Rest2: ".substr($buf,34,10)."\r\n";
+      														$std = date("H", $myTime);
+																$min = date("i", $myTime);
+																$sek = date("s", $myTime);
+																$m1  = ($std*60*60) + ($min*60) + $sek;
+																$std = date("H", time());
+																$min = date("i", time());
+																$sek = date("s", time());
+																$m2  = ($std*60*60) + ($min*60) + $sek;
+
+ 																$abweichung = $m1 - $m2;
+																$text = " R - ".IPS_GetName($myCat).": ".date("H:i:s", $myTime)." Abweichung: " . $abweichung ." Sekunden. " .unixtime2pwtime();
+																
+																if ( $abweichung > 120 ) // Abweichung groesser 120 Sekunden
+																   {
+																   $text = $text . " Uhrzeit wird gestellt.";
+																   PW_SendCommand("0016".IPS_GetName($myCat).unixtime2pwtime());
+																   }
+																
+																logging($text,'plugwisetime.log' );
 																break;
 										 }
 
@@ -418,6 +440,93 @@ foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 	break;
 	}
 
+
+
+   berechne_gruppenverbrauch();
+
+	hole_gesamtverbrauch();
+	
+
+function hole_gesamtverbrauch()
+	{
+	GLOBAL $idCatOthers;
+	
+	$id1 = IPS_GetObjectIDByIdent('Gesamt',$idCatOthers);
+
+	if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
+	   {
+      $d = GetValue(ID_GESAMTVERBRAUCH);
+		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
+
+		SetValue($id,$d);
+		
+	   }
+
+	if ( IPS_ObjectExists(ID_LEISTUNG) )
+	   {
+      $d = GetValue(ID_LEISTUNG);
+		$id = IPS_GetObjectIDByIdent('Leistung',$id1);
+		SetValue($id,$d);
+
+
+	   }
+
+	
+	}
+
+function berechne_gruppenverbrauch()
+	{
+	GLOBAL $CircleGroups;
+	GLOBAL $idCatCircles;
+	GLOBAL $idCatOthers;
+
+	$others = IPS_GetChildrenIDs($idCatOthers);
+
+
+   $array = array();
+   foreach ( $CircleGroups as $group )
+      {
+		$array_leistung[$group[2]] = 0;
+		$array_verbrauch[$group[2]] = 0;
+		}
+	
+	foreach ( $CircleGroups as $group )
+		{
+		$gruppe = $group[2];
+		$mac 	  = $group[0];
+
+		$gruppenid = IPS_GetObjectIDByIdent($gruppe,$idCatOthers);
+		
+		$id = IPS_GetObjectIDByIdent($mac,$idCatCircles);
+		if ( $id )
+		   {
+		   $leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
+		   $verbrauch = GetValue(IPS_GetObjectIDByIdent('Gesamtverbrauch',$id));
+
+			$array_leistung[$gruppe] = $array_leistung[$gruppe] + $leistung;
+			$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
+
+			}
+		}
+
+	$keys = array_keys($array_leistung);
+	
+	foreach ( $keys as $gruppe )
+	   {
+		$gruppenid = IPS_GetObjectIDByIdent($gruppe,$idCatOthers);
+
+		$wert = $array_leistung[$gruppe];
+		$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);
+		SetValue($id,$wert);
+
+		$wert = $array_verbrauch[$gruppe];
+		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
+		SetValue($id,$wert);
+
+	   }
+
+
+	}
 
 
 ?>

@@ -7,9 +7,16 @@
 
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+	$OthersDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+
 	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Uebersicht";
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
+
+	$GruppenVisuPath= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
+  	$GroupsIdData   = get_ObjectIDByPath($GruppenVisuPath);
+  	$GroupsIdOData  = get_ObjectIDByPath($OthersDataPath);
+
 
   	$CircleIdData   = get_ObjectIDByPath($CircleDataPath);
 	$CategoryIdApp  = get_ObjectIDByPath($AppPath);
@@ -18,11 +25,13 @@
 	// damit kann der Script auch von anderen Scripten aufgerufen werden
 	// und bereits mit CfgDaten vorkonfiguriert werden
 	Global $CfgDaten; 
-	
+
+	$id = 0;
+	$maxleistung = 0;
 	//***************************************************************************
 	// Welcher Circle soll dargestellt werden
 	//***************************************************************************
-	$id = 0;
+
 	$childs = IPS_GetChildrenIDs($CircleIdCData);
 	foreach ( $childs as $child )
 	   {
@@ -34,26 +43,53 @@
 	      $objectname = $object['ObjectName'];
 	      $parent = IPS_GetObjectIDByName($info,$CircleIdData);
 			$id = IPS_GetObjectIDByName('Leistung',$parent);
+			foreach ($CircleGroups as $circle )
+	   		{	// Maxwert fuer Circle aus Config
+	    		if ( $info == $circle[0] )
+					{
+					$maxleistung = $circle[4];
+	      		break;
+	      		}
+				}
 
 	      break;
 	      }
 	   }
-	if ( $id == 0 )   // Kein Circle ? dann raus
-	   return;
+	   
+	   
 
+	   
+	if ( $id == 0 )   // Kein Circle dann nach Gruppe suchen
+		{
+		$childs = IPS_GetChildrenIDs($GroupsIdData);
+		foreach ( $childs as $child )
+	   	{
+	   	$object = IPS_GetObject($child);
+			
+	   	if ( GetValueInteger($child) == 1 )
+	      	{
+	      	$ident = $object['ObjectIdent'];
+	      	
+	      	$objectname = $object['ObjectIdent'];
+	      	$parent1 = IPS_GetObjectIDByName($ident,$GroupsIdOData);
+	      	
+				$id = IPS_GetObjectIDByName('Leistung',$parent1);
+				$maxleistung = 0;
+				
+				}
 
-	//***************************************************************************
-	// Maxwert fuer Circle aus Config lesen fuer Farbumschlag
-	//***************************************************************************
-	foreach ($CircleGroups as $circle )
-	   {
-	    if ( $info == $circle[0] )
-			{
-			$maxleistung = $circle[4];
-	      break;
+	      
 	      }
-		}
+	   }
 
+	
+	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
+		{
+
+		$idgesamt = IPS_GetObjectIDByIdent('Gesamt',$GroupsIdOData);
+		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
+		$objectname = "Gesamt";
+		}
 
 	// ID der String Variable in welche die Daten geschrieben werdern
 	$CfgDaten['ContentVarableId']= $ContentId;

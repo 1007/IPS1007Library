@@ -307,6 +307,7 @@
       if ( $group != "" )
       	{
          $id = CreateVariable($group, 1, $IDGroups, 0, "Plugwise_MenuItem", $ActionScriptId, false);
+         IPS_SetInfo($id,$group);
          $x = $x + 10;
          }
       }
@@ -321,7 +322,7 @@
 		   {
          $id = CreateVariable($circle[1], 1, $IDCircles, 0, "Plugwise_MenuItem", $ActionScriptId, false);
          IPS_SetInfo($id,$circle[0]);
-			IPS_SetHidden($id,true);
+			   IPS_SetHidden($id,true);
          $x = $x + 10;
 		   }
 		}

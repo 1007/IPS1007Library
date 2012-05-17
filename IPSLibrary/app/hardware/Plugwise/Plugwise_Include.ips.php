@@ -169,9 +169,11 @@ function findRegVar($id) {
 		}
 	}
 }
-function unixtime2pwtime() {
 
-	// Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zurück (Zeitzone UTC!)
+//******************************************************************************
+// Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zurück (Zeitzone UTC!)
+//******************************************************************************
+function unixtime2pwtime() {
 
 	$vorstellen = 1;
 
@@ -283,19 +285,41 @@ function createCircle($mac, $parentID){
 
 }
 
+
 function update_data1data2()
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
 
    $IdData   = get_ObjectIDByPath($CircleDataPath);
-	
+
 	foreach ( IPS_GetChildrenIDs($IdData) as $parent )
 		{
+      update_data1data2_sub($parent);
+		}
+
+	$OtherDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+
+   $IdData   = get_ObjectIDByPath($OtherDataPath);
+
+	foreach ( IPS_GetChildrenIDs($IdData) as $parent )
+		{
+      update_data1data2_sub($parent,true);
+		}
+
+		
+	}
+		
+function update_data1data2_sub($parent,$groups = false)
+	{
+	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
+	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+
+
 		$data1id    = IPS_GetVariableIDByName('WebData1',$parent);
 		$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
 		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
@@ -307,7 +331,7 @@ function update_data1data2()
 		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
-      $kosten   = floatval(aktuelle_kosten($leistung));
+      $kosten   = floatval(aktuelle_kosten($parent,$leistung,$groups));
       $waehrung = "Cent/h";
       $vergleich = 0.1 ;
       if ( $kosten > $vergleich )
@@ -393,24 +417,49 @@ function update_data1data2()
 
       SetValueString($data2id,$html1);
 
-		}
+		
 
 
 	}
 
-function aktuelle_kosten($leistung)
+function aktuelle_kosten($parent,$leistung,$groups = false)
 	{
 	GLOBAL $Stromtarife;
+	GLOBAL $CircleGroups;
+	
+	$debug = false;
+	
+	$object = IPS_GetObject($parent);
+	$ident = $object['ObjectIdent'];
+	
+	
+	$tarifgruppe = false;
+	foreach( $CircleGroups as $circle )
+	   {
+	      //Tarifgruppe fuer diesen Circle suchen
+	   if ( $circle[0] == $ident )
+	      { $tarifgruppe = $circle[6] ; break ; }
+	      
+	   }
+	
+
+	if ( !$tarifgruppe )
+	   return(0);           // Keine Tarifgruppe gefunden
+
+
+
+	   
+	if ( $debug ) echo "\n" . $tarifgruppe;
 	
 	$now = time();
 	$heute = date('d.m.Y');
-	//echo "\nNow:". $now ." - " . $heute;
+	if ( $debug )  echo "\nNow:". $now ." - " . $heute;
 	$aktpreiskwh = 0;
 	$akttarifname = "?";
-	foreach ( $Stromtarife as $tarif )
+	foreach ( $Stromtarife as $zeitraum )
 	   {
-	   $startdate = $tarif[0];
-	   $endedate  = $tarif[1];
+	   $startdate = $zeitraum[0];
+	   $endedate  = $zeitraum[1];
 
       $startdatex = strtotime($startdate);
       $endedatex  = strtotime($endedate);
@@ -418,12 +467,16 @@ function aktuelle_kosten($leistung)
 		//echo "\n - " .$startdatex . " - " . $endedatex;
 		// in welchem Jahreszeitraum befinden wird uns ?
 		if ( $now > $startdatex  and $now < $endedatex  )
-			foreach ( $tarif[2] as $tarif )
-					{
-					$tarifname = $tarif[0];
-					$startzeit = $tarif[1];
-					$endezeit  = $tarif[2];
-					$preiskwh  = $tarif[3];
+			{
+			if ( $debug ) echo "\nJahreszeitraum vom $startdate - $endedate";
+			if ( $zeitraum[2] == $tarifgruppe)
+				{
+				if ( $debug ) print_r($zeitraum);
+				$tarifname = $zeitraum[3];
+				$startzeit = $zeitraum[4];
+				$endezeit  = $zeitraum[5];
+				$preiskwh  = $zeitraum[6];
+
 					if ( $preiskwh > 0 and $tarifname != "" and $endezeit != "" and
 								$startzeit != "" )
 						{
@@ -432,16 +485,16 @@ function aktuelle_kosten($leistung)
 						$starttimestamp  = strtotime($starttimestring);
 						$endetimestamp   = strtotime($endetimestring);
 
-						//echo "\n".$tarifname . " " . strtotime($endezeit);
-						//echo "\n $tarifname ";
-						//echo "\n $starttimestring - $starttimestamp";
-						//echo "\n $endetimestring - $endetimestamp";
+						if ( $debug ) echo "\n".$tarifname . " " . strtotime($endezeit);
+						if ( $debug ) echo "\n $tarifname ";
+						if ( $debug ) echo "\n $starttimestring - $starttimestamp";
+						if ( $debug ) echo "\n $endetimestring - $endetimestamp";
 						$ok = true;
 						if ( $now <= $starttimestamp ) {  $ok = false; }
 						if ( $now >= $endetimestamp  ) {   $ok = false; }
 						if ( $ok )
 						   {
-						   //echo "ok";
+						   if ( $debug ) echo "ok";
 							$akttarifname = $tarifname;
 							$aktpreiskwh = $preiskwh;
 						   }
@@ -449,17 +502,17 @@ function aktuelle_kosten($leistung)
 
 
 					   }
-					}
+
+			   }
+			}
+
+		}
 
 
 
 
 
-
-	   }
-
-
-	//echo "\nDer aktuelle Tarifname = $akttarifname - $aktpreiskwh ";
+	if ( $debug ) echo "\nDer aktuelle Tarifname = $akttarifname - $aktpreiskwh ";
 
 	$watt = $leistung;
 	$kwh = ($watt/1000) * 1 ;
@@ -473,12 +526,12 @@ function aktuelle_kosten($leistung)
 //******************************************************************************
 // Logging
 //******************************************************************************
-function logging($text)
+function logging($text,$file = 'plugwise.log' )
 	{
 
 	if ( !LOG_MODE )
 	   return;
-	$logdatei = IPS_GetKernelDir() . "logs\\plugwise.log";
+	$logdatei = IPS_GetKernelDir() . "logs\\" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, date("d.m.Y H:i:s")." ". $text . chr(13));
 	fclose($datei);
