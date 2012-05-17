@@ -439,7 +439,8 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 	      //Tarifgruppe fuer diesen Circle suchen
 	   if ( $circle[0] == $ident )
 	      { $tarifgruppe = $circle[6] ; break ; }
-	      
+
+		$tarifgruppe = $circle[6] ;   // Wenn keine Gruppe gefunden dann letzten Eintrag
 	   }
 	
 

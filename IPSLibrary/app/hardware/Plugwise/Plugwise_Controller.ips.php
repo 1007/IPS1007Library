@@ -486,12 +486,18 @@ function berechne_gruppenverbrauch()
    $array = array();
    foreach ( $CircleGroups as $group )
       {
-		$array_leistung[$group[2]] = 0;
-		$array_verbrauch[$group[2]] = 0;
+      if ( $group[0] != "" )
+         {
+			$array_leistung[$group[2]] = 0;
+			$array_verbrauch[$group[2]] = 0;
+			}
 		}
 	
 	foreach ( $CircleGroups as $group )
 		{
+      if ( $group[0] != "" )
+         {
+
 		$gruppe = $group[2];
 		$mac 	  = $group[0];
 
@@ -507,6 +513,7 @@ function berechne_gruppenverbrauch()
 			$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
 
 			}
+		}
 		}
 
 	$keys = array_keys($array_leistung);
