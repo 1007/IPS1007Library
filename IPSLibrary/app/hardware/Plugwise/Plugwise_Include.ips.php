@@ -347,7 +347,13 @@ function update_data1data2_sub($parent,$groups = false)
 		
 		$leistung = round(GetValue($leistungid),1);
       $gesamt   = round(GetValue($gesamtid),1);
-      $kosten   = floatval(aktuelle_kosten($parent,$leistung,$groups));
+      $akt_tk   = aktuelle_kosten($parent,$leistung,$groups);  // aktuelle Kosten und Tarif
+      $kosten   = $akt_tk['KOSTEN'];
+      $akt_tarif= $akt_tk['TARIF'];
+      $kt_preis = $akt_tk['PREISKWH'];
+
+		$akt_tarif= $akt_tarif . " " . $kt_preis ." Cent/kWh";
+
       $waehrung = "Cent/h";
       $vergleich = 0.1 ;
       if ( $kosten > $vergleich )
@@ -356,6 +362,11 @@ function update_data1data2_sub($parent,$groups = false)
          $waehrung = "Euro/h";
          }
       $kosten = round($kosten,2);
+      
+      $array = statistikdaten($gesamtid);
+      $verbrauch_heute   = $array['VERBRAUCH_HEUTE'];
+      $verbrauch_gestern = $array['VERBRAUCH_GESTERN'];
+
       
 		$hintergrundfarbe = "#003366";
 		$fontsize = "17px";
@@ -374,58 +385,66 @@ function update_data1data2_sub($parent,$groups = false)
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px'>Leistung</span></td>";
 		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px'>$leistung</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>Watt</span></td>";
-		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:15px;'>Kosten</span></td>";
 		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight:bold;color:yellow;font-size:40px;'>$kosten</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:25px;'>$waehrung</span></td>";
 		$html1 = $html1 . "</tr>";
+		$html1 = $html1 . "<tr>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:12px;'>Tarif</span></td>";
+		$html1 = $html1 . "<td align=center><span style='font-family:arial;font-weight;color:white;font-size:12px;'>$akt_tarif</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:12px;'></span></td>";
+		$html1 = $html1 . "</tr>";
+
 		$html1 = $html1 . "</table>";
 
 		if ( $error != 0 )
 		   $html1 = "Circle ausgefallen !".$error;
       SetValueString($data1id,$html1);
+		$fontsize  = "16px";
+		$fontsize1 = "20px";
 
 		$html1 = "";
 		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='10'>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Gesamt</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'>$gesamt</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize1;'>$gesamt</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'>Verbrauch Heute</span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize1'>$verbrauch_heute</span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Gestern</span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize1;'>$verbrauch_gestern</span></td>";
+		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'>kWh</span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
-		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:yellow;font-size:$fontsize;'></span></td>";
+		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
 
@@ -438,12 +457,54 @@ function update_data1data2_sub($parent,$groups = false)
 
 	}
 
+
+function statistikdaten($gesamtid)
+	{
+
+   $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
+	$archive   = $instances[0];
+
+	$array['VERBRAUCH_HEUTE'] = 0;
+	$array['VERBRAUCH_GESTERN'] = 0;
+
+
+	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
+	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
+	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	if ( $data )
+	   {
+		$start_wert = floatval($data[0]['Value']);
+		$ende_wert  = floatval($data[count($data)-1]['Value']);
+		$diff_wert  = $start_wert - $ende_wert ;
+		}
+	$array['VERBRAUCH_GESTERN'] = round($diff_wert,1);
+	
+	$start = mktime(0,0,0,date("m"),date("d"),date("Y"));
+	$ende  = mktime(23,59,59,date("m"),date("d"),date("Y"));
+	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	if ( $data )
+	   {
+		$start_wert = floatval($data[0]['Value']);
+		$ende_wert  = floatval($data[count($data)-1]['Value']);
+		$diff_wert  = $start_wert - $ende_wert ;
+		}
+	$array['VERBRAUCH_HEUTE'] = round($diff_wert,1);
+
+	
+	return $array;
+	
+	}
+	
 function aktuelle_kosten($parent,$leistung,$groups = false)
 	{
 	GLOBAL $Stromtarife;
 	GLOBAL $CircleGroups;
 	
 	$debug = false;
+	
+	$akt_kt['KOSTEN'] = 0;
+	$akt_kt['TARIF'] = "";
+
 	
 	$object = IPS_GetObject($parent);
 	$ident = $object['ObjectIdent'];
@@ -537,7 +598,11 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 	//echo "\nWatt:$watt $kwh Preis pro Stunde : $kosten ";
 	// Rueckgabe als hunderstel Cent
 
-	return($kosten);
+	$akt_kt['KOSTEN']   = $kosten;
+	$akt_kt['TARIF']    = $akttarifname;
+	$akt_kt['PREISKWH'] = $aktpreiskwh;
+
+	return($akt_kt);
 	}
 	
 //******************************************************************************

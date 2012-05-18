@@ -147,7 +147,7 @@ function plugwise_0000_received($buf)
 							break;
 
 		default:       // unbekannte Antwort
-							//print "Fehler von Stick: ".$buf;  //bei allem anderen
+							// print "Fehler von Stick: ".$buf;  //bei allem anderen
 							logging( "Unbekanntes Telegramm [".$buf . "]","plugwiseunknown.log");
 							break;
 
@@ -368,8 +368,8 @@ function plugwise_003F_received($buf)
 	}
 
 /***************************************************************************//**
-*	"0049" empfangen	-  Kalibrierungsdaten empfangen
-*  Antwort auf "0048" Calibration request
+*	"0049" empfangen	-  Bufferdaten empfangen
+*  Antwort auf "0048" Buffer request
 *******************************************************************************/
 function plugwise_0049_received($buf)
 	{
