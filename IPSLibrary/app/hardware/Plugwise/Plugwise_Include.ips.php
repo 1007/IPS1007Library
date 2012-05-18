@@ -545,10 +545,16 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 //******************************************************************************
 function logging($text,$file = 'plugwise.log' )
 	{
-
 	if ( !LOG_MODE )
 	   return;
-	$logdatei = IPS_GetKernelDir() . "logs\\" . $file;
+	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
+   if ( !is_dir ( $ordner ) )
+		mkdir($ordner);
+
+   if ( !is_dir ( $ordner ) )
+	   return;
+      
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, date("d.m.Y H:i:s")." ". $text . chr(13));
 	fclose($datei);
