@@ -18,9 +18,14 @@
 
 update_data1data2();
 
+
+/***************************************************************************//**
+*  Sendet ein Kommando an Plugwise
+*******************************************************************************/
 function PW_SendCommand($cmd)
 {
 
+	// Hier nur Logging
 	switch ( substr($cmd,0,4 ) )
 	   {
 	   case	"0012": 	logging( "S - ".$cmd." Power information request (current)"); break;
@@ -35,6 +40,7 @@ function PW_SendCommand($cmd)
 	   default     :  logging( "S - ".$cmd." unbekannter Befehl"); break;
 		}
 		
+
 
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
 	$i = (IPS_GetInstance($comid));
@@ -52,6 +58,10 @@ function PW_SendCommand($cmd)
 	
 }
 
+
+/***************************************************************************//**
+*	
+*******************************************************************************/
 function PW_SwitchMode($InstanceID, $DeviceOn)
 {
 	// PRINT "PW_SwitchMode - PW Device: ".$InstanceID.", DeviceON: ".$DeviceOn;
@@ -63,7 +73,9 @@ function PW_SwitchMode($InstanceID, $DeviceOn)
    PW_SendCommand($cmd);
 }
 
-// this function is used to calculate the (common) crc16c for an entire buffer
+/***************************************************************************//**
+*	this function is used to calculate the (common) crc16c for an entire buffer
+*******************************************************************************/
 function calculate_common_crc16c($buffer)
 {
     $crc16c = 0x0000;  // the crc initial value laut www.maartendamen.com
@@ -75,8 +87,11 @@ function calculate_common_crc16c($buffer)
     }
     return $crc16c;
 }
-// this function is used to calculate the (common) crc16c byte by byte
-// $ch is the next byte and $crc16c is the result from the last call, or 0xffff initially
+
+/***************************************************************************//**
+*	this function is used to calculate the (common) crc16c byte by byte
+*  $ch is the next byte and $crc16c is the result from the last call, or 0xffff initially
+*******************************************************************************/
 function update_common_crc16c($ch, $crc16c)
 {
     $crc16c_polynomial = 0x11021;   //auch laut maartendamen
@@ -107,27 +122,11 @@ function update_common_crc16c($ch, $crc16c)
     return $crc16c;
 }
 
-/*
-function pwtime2unixtime2($pwtime) {
-
-	// Konvertiert Datumsangaben des Plugwise-Formats in Unixtime
-
-	$year = hexdec(substr($pwtime,0,2));
-	$month = hexdec(substr($pwtime,2,2));
-	$minutes = hexdec(substr($pwtime,4,4));
-	// date_default_timezone_set('UTC');
-	return mktime(0, $minutes, 0, $month, 0,$year);
-	// date_default_timezone_set('Europe/Berlin');
-	// $utcDateTime = date("c",mktime(0, $minutes, 0, $month, 0,$year));
-	// date_default_timezone_set("Europe/Berlin");
-   // return strtotime($utcDateTime);
-}
-*/
-
-function pwtime2unixtime($pwdate) {
-
-	// Konvertiert Plugwise Zeit in lokale Zeit und gibt den Timestamp zurück
-
+/***************************************************************************//**
+*	Konvertiert Plugwise Zeit in lokale Zeit und gibt den Timestamp zurück
+*******************************************************************************/
+function pwtime2unixtime($pwdate)
+	{
 	$jahr = 2000+hexdec(substr($pwdate,0,2));
 	$monat =hexdec(substr($pwdate,2,2));
 	$stunden = (hexdec(substr($pwdate,4,4))/60);
@@ -136,8 +135,12 @@ function pwtime2unixtime($pwdate) {
 	$h = ($stunden%24);
 	$offsetgmt = (date("Z")/3600);             // Offset zur GMT in Stunden
 	return mktime($h + $offsetgmt, $min, 0, $monat, $tag, $jahr);
-}
 
+	}
+
+/***************************************************************************//**
+*	Binaer to Float
+*******************************************************************************/
 function bintofloat($in)
 {
     $in=hexdec($in);
@@ -149,18 +152,9 @@ function bintofloat($in)
 }
 
 
-/*
-function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB) {
-		if ($value == hexdec("FFFFFFFF")) {
-			return 0;
-		} else {
-			$pulses = (((pow($value + $offRuis, 2.0) * $gainB) + (($value + $offRuis) * $gainA)) + $offTot);
-			$result = $pulses / 3600 / 468.9385193;
-			return $result;
-		}
-	}
-*/
-
+/***************************************************************************//**
+*	Pulse zu kWh Umwandlung
+*******************************************************************************/
 function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB) {
         if ($value == hexdec("FFFFFFFF")) {
             return 0;
@@ -171,6 +165,7 @@ function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB) {
             return $result;
         }
     }
+
 
 function findRegVar($id) {
 	foreach(IPS_GetChildrenIDs(IPS_GetParent($id)) as $item){   // alle Unterobjekte durchlaufen
@@ -186,12 +181,15 @@ function findRegVar($id) {
 	}
 }
 
-//******************************************************************************
-// Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zurück (Zeitzone UTC!)
-//******************************************************************************
+
+/***************************************************************************//**
+*	Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zurück (Zeitzone UTC!)
+*******************************************************************************/
 function unixtime2pwtime() {
 
 	$vorstellen = 1;
+
+	$vorstellen = 0;  // keine Minute vorstellen
 
 	$jahr=str_pad(strtoupper(dechex(gmdate("y"))), 2 ,'0', STR_PAD_LEFT);
 	$monat=str_pad(strtoupper(dechex(gmdate("m"))), 2 ,'0', STR_PAD_LEFT);
@@ -205,7 +203,9 @@ function unixtime2pwtime() {
 }
 
 
-
+/***************************************************************************//**
+*	Create eine Circle mit allen Variablen
+*******************************************************************************/
 function createCircle($mac, $parentID){
 	
 	GLOBAL $CircleGroups;
@@ -302,6 +302,9 @@ function createCircle($mac, $parentID){
 }
 
 
+/***************************************************************************//**
+*	Update die 2 HTMLBoxen im Webfront
+*******************************************************************************/
 function update_data1data2()
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
@@ -329,6 +332,9 @@ function update_data1data2()
 		
 	}
 		
+/***************************************************************************//**
+*	Update die 2 HTMLBoxen im Webfront ( Sub )
+*******************************************************************************/
 function update_data1data2_sub($parent,$groups = false)
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
@@ -458,6 +464,9 @@ function update_data1data2_sub($parent,$groups = false)
 	}
 
 
+/***************************************************************************//**
+*	Statistikdaten liefern ( Heute,Gestern )
+*******************************************************************************/
 function statistikdaten($gesamtid)
 	{
 
@@ -471,6 +480,7 @@ function statistikdaten($gesamtid)
 	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
 	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$diff_wert = 0;
 	if ( $data )
 	   {
 		$start_wert = floatval($data[0]['Value']);
@@ -495,6 +505,9 @@ function statistikdaten($gesamtid)
 	
 	}
 	
+/***************************************************************************//**
+*	Liefert die aktuellen Kosten nach Tarif
+*******************************************************************************/
 function aktuelle_kosten($parent,$leistung,$groups = false)
 	{
 	GLOBAL $Stromtarife;
@@ -605,9 +618,9 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 	return($akt_kt);
 	}
 	
-//******************************************************************************
-// Logging
-//******************************************************************************
+/***************************************************************************//**
+*	Logging
+*******************************************************************************/
 function logging($text,$file = 'plugwise.log' )
 	{
 	if ( !LOG_MODE )
@@ -625,7 +638,11 @@ function logging($text,$file = 'plugwise.log' )
 	fclose($datei);
 
 	}
-//******************************************************************************
 
-	
+
+
+/***************************************************************************//**
+* @}
+* @}
+*******************************************************************************/
 ?>

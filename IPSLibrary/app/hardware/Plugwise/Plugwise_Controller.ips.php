@@ -61,6 +61,7 @@
 												switch ((substr($buf,0,4)))
 													{
 													case "0000":	plugwise_0000_received($buf);	break;
+													case "0003":	plugwise_0003_received($buf);	break;
 													case "0011":  	plugwise_0011_received($buf);	break;
 													case "0013":	plugwise_0013_received($buf); break;
 													case "0019":   plugwise_0019_received($buf);	break;
@@ -95,8 +96,8 @@ function dummy()
 function plugwise_0000_received($buf)
 	{
 	GLOBAL $idCatCircles;
-	
-	switch ((substr($buf,8,4)))
+
+	switch ( substr($buf,8,4) )
 		{
 		case "00C1":	// Schauen ob alles empfangen wurde
 		 					// print "Befehl von Stick empfangen";
@@ -155,6 +156,17 @@ function plugwise_0000_received($buf)
 	}
 
 /***************************************************************************//**
+*	"0003" empfangen	- ???
+*  Antwort auf "0001" - ???
+*******************************************************************************/
+function plugwise_0003_received($buf)
+	{
+	GLOBAL $idCatCircles;
+
+	//PW_SendCommand("000A");
+
+	}
+/***************************************************************************//**
 *	"0011" empfangen	-  Init
 *  Antwort auf "000A" - stick initialization
 *******************************************************************************/
@@ -162,14 +174,18 @@ function plugwise_0011_received($buf)
 	{
 	GLOBAL $idCatCircles;
 
-
+	
 	// Kalibrierungsdaten aller Circles abrufen
 	foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 		{	// alle Unterobjekte
 		$id_info = IPS_GetObject($item);
-		PW_SendCommand("0026".$id_info['ObjectIdent']);
+		//PW_SendCommand("0026".$id_info['ObjectIdent']);
 		}
-	$text = "Init [".$buf."]";
+	$stick = substr($buf,8,16);
+	
+	//PW_SendCommand("0004"."00000000000000000000".$stick);
+	
+	$text = "Init [".$buf."] " .$stick;
 	logging($text,'plugwiseinit.log' );
 		
 	}
@@ -278,7 +294,7 @@ function plugwise_0024_received($buf)
 	GLOBAL $idCatCircles;
 
 	$mcID = substr($buf,8,16);
-	$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
+	$myCat = @IPS_GetObjectIDByIdent($mcID, $idCatCircles);
 
 	if ( !$myCat)
 	   {
@@ -289,9 +305,13 @@ function plugwise_0024_received($buf)
 
 	SetValue(IPS_GetVariableIDByName("Status",$myCat),substr($buf,41,1));
 
-	SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
+	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
+	
+	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),substr($buf,32,8));
+   SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)))));
+   
 	$text = IPS_GetName($myCat);
-	$text = $text." Logadresse[".intval((hexdec(substr($buf,32,8)) - 278528) / 32)."]";
+	$text = $text." Logadresse[".intval((hexdec(substr($buf,32,8)) - 278528) / 32)."][".hexdec(substr($buf,32,8))."]";
 
 	//$text = $text."[".substr($buf,24,2)." ".substr($buf,26,2)." ".substr($buf,28,4)."] ";
 
@@ -393,42 +413,52 @@ function plugwise_0049_received($buf)
 	$offTotal = GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
 	$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
 
+	$verbrauch = 0;
 
 	// Korrecktes Logdate aus den Vier Werten im Buffer herausfinden
 	$usedlogdate = 0;
+
 	$logdate = pwtime2unixtime(substr($buf,24,8));
-	if ($logdate > time())
+	print "\nLetztes Logdate: ".date("c",$logdate);
+
+	$time = time() - 3600;
+	
+   
+	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,40,8));
+	print "\nLetztes Logdate: ".date("c",$logdate);
 
-	if ($logdate > time())
+	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,56,8));
+	print "\nLetztes Logdate: ".date("c",$logdate);
 
-	if ($logdate > time())
+	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,72,8));
+	print "\nLetztes Logdate: ".date("c",$logdate);
 
-	if ($logdate > time())
+	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
-	// echo "Letztes Logdate: ".date("c",$logdate)."\n";
-
+	echo "\nVerbrauch:".$verbrauch;
+   $usedlogdate = 1;
 	if ($usedlogdate == 0)
 		{
 		$id_log = IPS_GetVariable(IPS_GetVariableIDByName ("LogAddress", $myCat));
@@ -436,11 +466,11 @@ function plugwise_0049_received($buf)
 			{
 			$id_info = IPS_GetObject($myCat);
 			$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $myCat));
-			print "PW0048 - ".IPS_GetName($myCat)." - ";
-			print "Buffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", es wird versucht den Buffer mit LogAdress ".($LogAddress-1)." zu lesen";
+			print "\nPW0048 - ".IPS_GetName($myCat)." - ";
+			print "\nBuffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", es wird versucht den Buffer mit LogAdress ".($LogAddress-1)." zu lesen";
 			$LogAddress = 278528 + (32 * ($LogAddress-1));
 			$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
-			PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
+			//PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
 
 			}
 		else
@@ -455,8 +485,8 @@ function plugwise_0049_received($buf)
 		$varGesamtverbrauch = IPS_GetVariableIDByName("Gesamtverbrauch",$myCat);
 		$oldVerbrauch = GetValueFloat($varGesamtverbrauch);
 
-		PRINT "PW0048 - ".IPS_GetName($myCat).":\n";
-		print "Logdate: ".date("c",$usedlogdate)."\n";
+		PRINT "\nPW0048 - ".IPS_GetName($myCat).":\n";
+		print "\nLogdate: ".date("c",$usedlogdate)."\n";
 		print "Verbrauch/Stunde: ".$verbrauch."\n";
 		print "Alter Gesamtverbrauch: ".$oldVerbrauch."\n";
 		print "Neuer Gesamtverbrauch: ".($verbrauch + $oldVerbrauch)."\n";
@@ -589,7 +619,7 @@ function berechne_gruppenverbrauch()
 
 		$gruppenid = IPS_GetObjectIDByIdent($gruppe,$idCatOthers);
 		
-		$id = IPS_GetObjectIDByIdent($mac,$idCatCircles);
+		$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
 		if ( $id )
 		   {
 		   $leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));

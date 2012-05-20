@@ -44,9 +44,12 @@
 		{	// alle Unterobjekte durchlaufen
 		$id_info = IPS_GetObject($item);
 		$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $item));
-		$LogAddress = 278528 + (32 * ($LogAddress));
-
+		$LogAddress = $LogAddress - 24;
+		//$LogAddress = 278528 + (32 * ($LogAddress));
 		$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
+      
+		echo "\n" . $LogAddress ;
+		
 		PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
 		}
 
