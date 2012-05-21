@@ -17,8 +17,10 @@
 */
 
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-
+	
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
 *******************************************************************************/
@@ -303,13 +305,13 @@ function createCircle($mac, $parentID){
 
 
 /***************************************************************************//**
-*	Update die 2 HTMLBoxen im Webfront
+*	Update die 2 HTMLBoxen im Webfront und bei Systemsteuerung die Uebersicht
 *******************************************************************************/
 function update_data1data2()
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
-	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
 
@@ -329,9 +331,102 @@ function update_data1data2()
       update_data1data2_sub($parent,true);
 		}
 
+	update_uebersicht();
 		
 	}
+
+/***************************************************************************//**
+*	Update Uebersicht nur bei Systemsteuerung
+*******************************************************************************/
+function update_uebersicht()
+	{
+	GLOBAL $CircleGroups;
+	
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
+   $IdMenu    = get_ObjectIDByPath($VisuPath);
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = get_ObjectIDByPath($VisuPath);
+
+	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung
+	if ( GetValue($id) != 1 ) return;
+
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles = get_ObjectIDByPath($CircleDataPath);
+
+
+   $hintergrundfarbe = "#003366";
+   
+	$text = "";
+
+	$text = $text . "<table border='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$anzahl = 0;
+
+	$anzahl = count(IPS_GetChildrenIDs($idCatCircles));
+   $circles = IPS_GetChildrenIDs($idCatCircles);
+   
+   
+	$counter = 0;
+	for ( $y = 0;$y<12;$y++)
+	   {
+		$text = $text . "<tr>";
+
+		for ( $x = 0;$x<4;$x++)
+	   	{
+	   	$circle = 0;
+	   	$name = "FFFFFFFFFFFFFFFF";
+	   	$name = "";
+			$hintergrundfarbe = '#000000';
+			$statustext = "";
+
+	   	if ( $counter < $anzahl )
+	   	   {
+	   	   $id     = $circles[$counter];
+	   		$circle = IPS_GetObject($id);
+	   		$name   = $circle['ObjectIdent'];
+            $error  = @GetValue(IPS_GetVariableIDByName('Error',$id));
+            $status = @GetValue(IPS_GetVariableIDByName('Status',$id));
+				
+				if ( $error == 0 )
+					$hintergrundfarbe = '#009900';
+				else
+					$hintergrundfarbe = '#CC0000';
+
+				if ( $status )
+					$statustext = 'EIN';
+				else
+					$statustext = 'AUS';
+
+				//suche richtigen Namen in der Config
+				foreach ( $CircleGroups as $configCircle )
+				   {
+				   
+				   if ( $name == $configCircle[0] )
+				      { $name = $configCircle[1] ; break ; }
+				   
+				   }
+				   
+
+	   	   }
+
+			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$statustext - </span>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$name</span>";
+			$text = $text . "</td>";
+			$counter++;
+			
+	   	}
+		$text = $text . "</tr>";
+
+	 }
+	   
+	$text = $text . "</table>";
 		
+	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
+
+   SetValueString($id,$text);
+
+	}
+	
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront ( Sub )
 *******************************************************************************/
@@ -344,11 +439,11 @@ function update_data1data2_sub($parent,$groups = false)
 
 	$data1id    = @IPS_GetVariableIDByName('WebData1',$parent);
 	if ($data1id === false) {echo "Variable WebData1 nicht gefunden!"; return ; }
-	$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
+	$data2id    = @IPS_GetVariableIDByName('WebData2',$parent);
 	if ($data2id === false) {echo "Variable WebData2 nicht gefunden!"; return ; }
-	$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
+	$gesamtid   = @IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
 	if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
-	$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
+	$leistungid = @IPS_GetVariableIDByName('Leistung',$parent);
 	if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
 
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));

@@ -289,6 +289,8 @@ function show_main($IdData1,$IdData2)
 			IPS_SetHidden($child,false);
 		}
 
+	update_uebersicht();
+
 	}
 
 //******************************************************************************

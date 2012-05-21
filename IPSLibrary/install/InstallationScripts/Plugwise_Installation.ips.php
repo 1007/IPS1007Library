@@ -135,7 +135,7 @@
   $ScriptId = IPS_GetScriptIDByName('Plugwise_ReadBuffer', $CategoryIdApp );
   $id = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,60,true);
   IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,60/*Minutes*/);
-  IPS_SetEventCyclicTimeBounds($id,mktime(0,59,30),0);
+  IPS_SetEventCyclicTimeBounds($id,mktime(0,05,00),0);
 
   //****************************************************************************
   // Timer fuer Plugwise_Recalibrate
