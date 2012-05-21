@@ -16,6 +16,8 @@
 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
 */
 
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+
 
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
