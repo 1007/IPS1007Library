@@ -54,7 +54,8 @@
 			{
 			Case "RunScript"			:	break;
 			Case "Execute"				:	break;
-			Case "TimerEvent"			:	request_circle_data();	break;
+			Case "TimerEvent"			:	request_circle_data();
+												update_data1data2();	break;
 			Case "Variable"			:	break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;
 			Case "RegisterVariable"	:	$buf = $IPS_VALUE;

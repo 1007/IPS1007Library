@@ -53,7 +53,7 @@
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
   $CategoryIdOData  = CreateCategoryPath($OtherDataPath);
   //$CategoryIdGData  = CreateCategoryPath($GroupDataPath);
-
+  
   EmptyCategory($CategoryIdVisu);
   EmptyCategory($CategoryIdMobile);
 

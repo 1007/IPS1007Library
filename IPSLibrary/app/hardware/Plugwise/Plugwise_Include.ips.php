@@ -16,8 +16,6 @@
 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
 */
 
-update_data1data2();
-
 
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
@@ -342,11 +340,16 @@ function update_data1data2_sub($parent,$groups = false)
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
 
-		$data1id    = IPS_GetVariableIDByName('WebData1',$parent);
-		$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
-		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
-		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
-		$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
+	$data1id    = @IPS_GetVariableIDByName('WebData1',$parent);
+	if ($data1id === false) {echo "Variable WebData1 nicht gefunden!"; return ; }
+	$data2id    = IPS_GetVariableIDByName('WebData2',$parent);
+	if ($data2id === false) {echo "Variable WebData2 nicht gefunden!"; return ; }
+	$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
+	if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
+	$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
+	if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
+
+	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 		
 		$dateleistung = IPS_GetVariable($leistungid);
 		$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
