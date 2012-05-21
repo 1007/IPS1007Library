@@ -268,7 +268,9 @@ function plugwise_0019_received($buf)
 		if ($myCat == false)
 			{
 			$text = $text . "Circle wird angelegt";
-			createCircle($mac, $idCatCircles);
+			if ( AUTOCREATECIRCLE )
+				createCircle($mac, $idCatCircles);
+
 			}
 		else
 			{
