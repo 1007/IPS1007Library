@@ -14,7 +14,6 @@
 * 
 *******************************************************************************/
   GLOBAL $CircleGroups;
-
 	
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
@@ -43,7 +42,6 @@
 	$GroupDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Groups";
   
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
-	
   
   $CategoryIdData   = CreateCategoryPath($DataPath);
 	$CategoryIdApp    = CreateCategoryPath($AppPath);
@@ -437,6 +435,24 @@
 
   
   ReloadAllWebFronts() ;
-
-
+  
+  $error = error_get_last() ;
+  $error = false;
+  if ( !$error )
+    {
+    echo "\n<br>********************************************************************";
+    echo "\n<br>Installation beendet. Es ist kein Fehler aufgetreten.";
+    echo "\n<br>*********************************************************************";
+    echo "\n<br>";
+    }
+  else
+    {
+    echo "\n<br>********************************************************************";
+    echo "\n<br>Installation beendet. Fehler aufgetreten:";
+    echo "\n<br>" . $error['message'];
+    echo "\n<br>" . $error['file'];
+    echo "\n<br>" . $error['line'];
+    echo "\n<br>*********************************************************************";
+    echo "\n<br>";    
+    }
 ?>
