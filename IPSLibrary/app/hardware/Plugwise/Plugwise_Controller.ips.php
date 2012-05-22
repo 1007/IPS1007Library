@@ -564,6 +564,7 @@ function hole_gesamtverbrauch()
 	
 	$id1 = IPS_GetObjectIDByIdent('Gesamt',$idCatOthers);
 
+	if ( ID_GESAMTVERBRAUCH != 0 )
 	if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
 	   {
       $d = GetValue(ID_GESAMTVERBRAUCH);
@@ -572,7 +573,7 @@ function hole_gesamtverbrauch()
 		SetValue($id,$d);
 		
 	   }
-
+   if ( ID_LEISTUNG != 0 )
 	if ( IPS_ObjectExists(ID_LEISTUNG) )
 	   {
       $d = GetValue(ID_LEISTUNG);
