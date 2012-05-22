@@ -70,7 +70,7 @@
   define ( 'ID_GESAMTVERBRAUCH',0); // VariablenID des Gesamtverbrauchs
   define ( 'ID_LEISTUNG',0);        // VariablenID der aktuellen Leistung
 
-  define ( 'AUTOCREATECIRCLE',true);  
+  define ( 'AUTOCREATECIRCLE',false);  
 
 ?>
   
