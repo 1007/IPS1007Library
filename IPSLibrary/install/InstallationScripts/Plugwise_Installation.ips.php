@@ -214,10 +214,10 @@
 
 
   //****************************************************************************
-  // Jetzt Circles suchen
+  // Jetzt Circles suchen  / erst mal deaktiviert
   //****************************************************************************
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
-  PW_SendCommand("0008");
+  //PW_SendCommand("0008");
   
 
 
