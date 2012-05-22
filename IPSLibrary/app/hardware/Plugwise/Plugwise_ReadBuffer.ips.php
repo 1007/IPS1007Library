@@ -29,7 +29,21 @@
 *
 *
 *  @brief   Plugwise Readbuffer - sendet Anfrage fuer Buffer
-*
+	         Aufbau des Buffers :
+						278528			0044000 - 0044007  umgerechnete Logadresse  0
+						278536			0044008 - 004400F
+						278544			0044010 - 0044017
+											0044018 - 004401F
+											0044020 - 0044027  umgerechnete Logadresse  1
+											....... - .......
+											....... - .......
+
+						282592			0044FE0 - 0044FE7  umgerechnete Logadresse  127
+						282600			0044FE8 - 0044FEF
+						282608			0044FF0 - 0044FF7
+						282616			0044FF8 - 0044FFF
+
+											0045000            umgerechnete Logadresse  128
 * @todo
 *
 *******************************************************************************/
@@ -45,7 +59,9 @@
 		$id_info = IPS_GetObject($item);
 		$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $item));
 		$LogAddress = $LogAddress - 24;
-		//$LogAddress = 278528 + (32 * ($LogAddress));
+		if ( $LogAddress < 278528 )
+		   $LogAddress = 278528;
+		
 		$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
       
 		

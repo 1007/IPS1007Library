@@ -393,6 +393,8 @@ function plugwise_003F_received($buf)
 /***************************************************************************//**
 *	"0049" empfangen	-  Bufferdaten empfangen
 *  Antwort auf "0048" Buffer request
+*  Keine weiteren Bufferdaten anfordern ( Telegrammflut )
+*  entweder ist die letzte Stunde drin oder nicht.
 *******************************************************************************/
 function plugwise_0049_received($buf)
 	{
@@ -460,7 +462,6 @@ function plugwise_0049_received($buf)
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
-	//echo "\nVerbrauch:".$verbrauch;
    $usedlogdate = 1;
 	if ($usedlogdate == 0)
 		{
@@ -487,12 +488,6 @@ function plugwise_0049_received($buf)
 		{
 		$varGesamtverbrauch = IPS_GetVariableIDByName("Gesamtverbrauch",$myCat);
 		$oldVerbrauch = GetValueFloat($varGesamtverbrauch);
-
-		//PRINT "\nPW0048 - ".IPS_GetName($myCat).":\n";
-		//print "\nLogdate: ".date("c",$usedlogdate)."\n";
-		//print "Verbrauch/Stunde: ".$verbrauch."\n";
-		//print "Alter Gesamtverbrauch: ".$oldVerbrauch."\n";
-		//print "Neuer Gesamtverbrauch: ".($verbrauch + $oldVerbrauch)."\n";
 		SetValueFloat ($varGesamtverbrauch,$verbrauch + $oldVerbrauch);
 		};
 
