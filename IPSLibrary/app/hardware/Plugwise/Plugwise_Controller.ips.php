@@ -616,7 +616,7 @@ function berechne_gruppenverbrauch()
 		$gruppe = $group[2];
 		$mac 	  = $group[0];
 
-		$gruppenid = IPS_GetObjectIDByIdent($gruppe,$idCatOthers);
+		$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
 		
 		$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
 		if ( $id )
@@ -635,7 +635,7 @@ function berechne_gruppenverbrauch()
 	
 	foreach ( $keys as $gruppe )
 	   {
-		$gruppenid = IPS_GetObjectIDByIdent($gruppe,$idCatOthers);
+		$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
 
 		$wert = $array_leistung[$gruppe];
 		$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);

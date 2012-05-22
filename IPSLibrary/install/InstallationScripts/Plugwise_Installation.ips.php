@@ -406,7 +406,7 @@
         $id = CreateLink($parent_name,$id,$VisuID_data1,$x);
         IPS_SetHidden($id , true );
         IPS_SetInfo($id,$parent_name );
-        IPS_SetIdent($id,$parent_name );
+        IPS_SetIdent($id,umlaute_ersetzen($parent_name ));
         $x = $x + 2;
         }
       $x = 10;
@@ -419,7 +419,7 @@
         $id = CreateLink($parent_name,$id,$VisuID_data2,$x);
         IPS_SetHidden($id , true );
         IPS_SetInfo($id,$parent_name );
-        IPS_SetIdent($id,$parent_name );
+        IPS_SetIdent($id,umlaute_ersetzen($parent_name) );
         $x = $x + 2;
         }
 

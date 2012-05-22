@@ -242,10 +242,9 @@ function createCircle($mac, $parentID){
 		   }
 	   }
 
-
-
-	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
-	// CreateVariable ($Name, $Type, $Parent, $Position, $Profile, $Action=0, $ValueDefault='', $Icon="")
+  if ( $name != "" )
+      IPS_SetName($item,$name);
+      
 	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
  
@@ -268,11 +267,6 @@ function createCircle($mac, $parentID){
   AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
 
 
-
-	// $myVar = CreateVariable("Pulses Stunde", 2, $item, 0, "", 0);
-	// IPS_SetHidden($myVar, True);
-	// $myVar = CreateVariable("LogAddress", 3, $item, 0, "", "");
-	// IPS_SetHidden($myVar, True);
 	$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
 	$myVar = CreateVariable("gainb",2,$item,0,"", 0,0);
@@ -287,9 +281,6 @@ function createCircle($mac, $parentID){
 	IPS_SetHidden($myVar, True);
    $myVar = CreateVariable("LastMessage", 3,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
-
-
-
 
 	// Kalibrierungsdaten vom Circle abrufen
 	PW_SendCommand("0026".$mac);
@@ -716,6 +707,18 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 	$akt_kt['PREISKWH'] = $aktpreiskwh;
 
 	return($akt_kt);
+	}
+
+
+/***************************************************************************//**
+*	Umlaute ersetzen 
+*******************************************************************************/
+function umlaute_ersetzen($text)
+  {
+  $such_array  = array ('ä', 'ö', 'ü', 'ß');
+  $ersetzen_array = array ('ae', 'oe', 'ue', 'ss');
+  $neuer_text  = str_replace($such_array, $ersetzen_array, $text);
+  return $neuer_text;
 	}
 	
 /***************************************************************************//**

@@ -71,9 +71,9 @@
 	      	$ident = $object['ObjectIdent'];
 	      	
 	      	$objectname = $object['ObjectIdent'];
-	      	$parent1 = IPS_GetObjectIDByName($ident,$GroupsIdOData);
+	      	$parent1 = IPS_GetObjectIDByIdent($ident,$GroupsIdOData);
 	      	
-				$id = IPS_GetObjectIDByName('Leistung',$parent1);
+				$id = IPS_GetObjectIDByIdent('Leistung',$parent1);
 				$maxleistung = 0;
 				
 				}
