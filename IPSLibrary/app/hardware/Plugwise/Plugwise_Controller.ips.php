@@ -164,7 +164,7 @@ function plugwise_0003_received($buf)
 	{
 	GLOBAL $idCatCircles;
 
-	//PW_SendCommand("000A");
+	
 
 	}
 /***************************************************************************//**
@@ -184,7 +184,7 @@ function plugwise_0011_received($buf)
 		}
 	$stick = substr($buf,8,16);
 	
-	//PW_SendCommand("0004"."00000000000000000000".$stick);
+	
 	
 	$text = "Init [".$buf."] " .$stick;
 	logging($text,'plugwiseinit.log' );
@@ -422,7 +422,7 @@ function plugwise_0049_received($buf)
 	$usedlogdate = 0;
 
 	$logdate = pwtime2unixtime(substr($buf,24,8));
-	print "\nLetztes Logdate: ".date("c",$logdate);
+	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	$time = time() - 3600;
 	
@@ -434,7 +434,7 @@ function plugwise_0049_received($buf)
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,40,8));
-	print "\nLetztes Logdate: ".date("c",$logdate);
+	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
@@ -443,7 +443,7 @@ function plugwise_0049_received($buf)
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,56,8));
-	print "\nLetztes Logdate: ".date("c",$logdate);
+	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
@@ -452,7 +452,7 @@ function plugwise_0049_received($buf)
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,72,8));
-	print "\nLetztes Logdate: ".date("c",$logdate);
+	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
@@ -460,7 +460,7 @@ function plugwise_0049_received($buf)
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
 		}
 
-	echo "\nVerbrauch:".$verbrauch;
+	//echo "\nVerbrauch:".$verbrauch;
    $usedlogdate = 1;
 	if ($usedlogdate == 0)
 		{
@@ -469,8 +469,8 @@ function plugwise_0049_received($buf)
 			{
 			$id_info = IPS_GetObject($myCat);
 			$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $myCat));
-			print "\nPW0048 - ".IPS_GetName($myCat)." - ";
-			print "\nBuffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", es wird versucht den Buffer mit LogAdress ".($LogAddress-1)." zu lesen";
+			//print "\nPW0048 - ".IPS_GetName($myCat)." - ";
+			//print "\nBuffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", es wird versucht den Buffer mit LogAdress ".($LogAddress-1)." zu lesen";
 			$LogAddress = 278528 + (32 * ($LogAddress-1));
 			$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
 			//PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
@@ -479,8 +479,8 @@ function plugwise_0049_received($buf)
 		else
 			{
 			$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $myCat));
-			print "PW0048 - ".IPS_GetName($myCat)." - ";
-			print "Buffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", Timing-Problem?";
+			//print "PW0048 - ".IPS_GetName($myCat)." - ";
+			//print "Buffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", Timing-Problem?";
 			};
 		}
 	else
@@ -488,11 +488,11 @@ function plugwise_0049_received($buf)
 		$varGesamtverbrauch = IPS_GetVariableIDByName("Gesamtverbrauch",$myCat);
 		$oldVerbrauch = GetValueFloat($varGesamtverbrauch);
 
-		PRINT "\nPW0048 - ".IPS_GetName($myCat).":\n";
-		print "\nLogdate: ".date("c",$usedlogdate)."\n";
-		print "Verbrauch/Stunde: ".$verbrauch."\n";
-		print "Alter Gesamtverbrauch: ".$oldVerbrauch."\n";
-		print "Neuer Gesamtverbrauch: ".($verbrauch + $oldVerbrauch)."\n";
+		//PRINT "\nPW0048 - ".IPS_GetName($myCat).":\n";
+		//print "\nLogdate: ".date("c",$usedlogdate)."\n";
+		//print "Verbrauch/Stunde: ".$verbrauch."\n";
+		//print "Alter Gesamtverbrauch: ".$oldVerbrauch."\n";
+		//print "Neuer Gesamtverbrauch: ".($verbrauch + $oldVerbrauch)."\n";
 		SetValueFloat ($varGesamtverbrauch,$verbrauch + $oldVerbrauch);
 		};
 
