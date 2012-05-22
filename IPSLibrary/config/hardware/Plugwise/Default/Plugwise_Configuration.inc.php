@@ -15,8 +15,8 @@
 //******************************************************************************
 // Debug und Logging
 //******************************************************************************
-	define ( 'DEBUG_MODE' , TRUE );
-	define ( 'LOG_MODE'   , TRUE );
+	define ( 'DEBUG_MODE' , FALSE );
+	define ( 'LOG_MODE'   , FALSE );
 
 //******************************************************************************
 // Comport Plugwise-Stick
@@ -67,8 +67,8 @@
   //***************************************************************************
 	// Externe Stromdaten ( zB EKM )
 	//***************************************************************************
-  define ( 'ID_GESAMTVERBRAUCH',20244); // VariablenID des Gesamtverbrauchs
-  define ( 'ID_LEISTUNG',45750);        // VariablenID der aktuellen Leistung
+  define ( 'ID_GESAMTVERBRAUCH',0); // VariablenID des Gesamtverbrauchs
+  define ( 'ID_LEISTUNG',0);        // VariablenID der aktuellen Leistung
 
   define ( 'AUTOCREATECIRCLE',true);  
 
