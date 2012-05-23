@@ -341,7 +341,7 @@ function show_data1data2($id)
 	GLOBAL $IdGraph;
 	GLOBAL $IdData1;
 	GLOBAL $IdData2;
-
+	
 	if ( $id == 0 )
 		{
 		$id = IPS_GetObjectIDByIdent('Gesamt',$IdData1);

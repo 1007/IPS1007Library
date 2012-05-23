@@ -41,7 +41,7 @@
 	      {
 	      $info = $object['ObjectInfo'];
 	      $objectname = $object['ObjectName'];
-	      $parent = IPS_GetObjectIDByName($info,$CircleIdData);
+	      $parent = IPS_GetObjectIDByIdent($info,$CircleIdData);
 			$id = IPS_GetObjectIDByName('Leistung',$parent);
 			foreach ($CircleGroups as $circle )
 	   		{	// Maxwert fuer Circle aus Config

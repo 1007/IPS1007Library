@@ -560,7 +560,7 @@ function update_data1data2_sub($parent,$groups = false)
 *******************************************************************************/
 function statistikdaten($gesamtid)
 	{
-
+	echo "\n-----------" . $gesamtid . IPS_GetName($gesamtid);
    $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$archive   = $instances[0];
 

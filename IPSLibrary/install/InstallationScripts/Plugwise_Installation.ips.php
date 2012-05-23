@@ -357,7 +357,7 @@
 		if ( $circle[1] != "" )
 		   {
 			echo "\n". $circle[0]."-".$CategoryIdCData;
-         $parent = @IPS_GetObjectIDByName($circle[0],$CategoryIdCData);
+         $parent = @IPS_GetObjectIDByIdent($circle[0],$CategoryIdCData);
 			if ( $parent )
 			   {
 			   $id = @IPS_GetObjectIDByName("WebData1",$parent);
