@@ -159,7 +159,7 @@
 	//***************************************************************************
 	if ( $object['ObjectName'] == 'Circles' )
 	   {
-	   hide_data1data2();
+	   //hide_data1data2();
 	   $value = GetValue($IPS_VARIABLE);
 		$childs = IPS_GetChildrenIDs($parent);
 		foreach ( $childs as $child )
@@ -265,7 +265,7 @@ function hide_graph($status = true)
 	GLOBAL $IdGraph;
 	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
 
-	SetValueString($id,"");
+	//SetValueString($id,"");
 	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
 	// IPS_SetHidden($id,$status);
 	}
