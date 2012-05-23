@@ -334,12 +334,13 @@ function update_uebersicht()
 	GLOBAL $CircleGroups;
 	
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
-   $IdMenu    = get_ObjectIDByPath($VisuPath);
+   $IdMenu    = @get_ObjectIDByPath($VisuPath,true);
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
-   $IdGraph   = get_ObjectIDByPath($VisuPath);
+   $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
 
-	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung
-	if ( GetValue($id) != 1 ) return;
+	$id = @IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung
+  if ( !$id ) return;
+	if ( @GetValue($id) != 1 ) return;
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
    $idCatCircles = get_ObjectIDByPath($CircleDataPath);
@@ -560,7 +561,7 @@ function update_data1data2_sub($parent,$groups = false)
 *******************************************************************************/
 function statistikdaten($gesamtid)
 	{
-	echo "\n-----------" . $gesamtid . IPS_GetName($gesamtid);
+	
    $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$archive   = $instances[0];
 

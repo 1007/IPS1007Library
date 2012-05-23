@@ -58,22 +58,9 @@
   //****************************************************************************
   // Serial Port erstellen
   //****************************************************************************
-  $comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
+  $comid = CreateSerialPort('PlugwiseCOM', COMPORT , 115200, 1, 8, 'None');
+
   if ( !$comid )
-    $comid = IPS_CreateInstance ('{6DC3D946-0D31-450F-A8C6-C42DB8D7D4F1}');
-	if ( $comid )
-	   {
-	    IPS_SetName($comid,'PlugwiseCOM');
-	    COMPort_SetBaudRate($comid,'115200');
-	    COMPort_SetStopBits($comid,'1');
-	    COMPort_SetDataBits($comid,'8');
-	    COMPort_SetParity($comid,'N');      
-      COMPort_SetPort($comid,COMPORT);
-      COMPort_SetOpen($comid,true);
-      
-      @IPS_ApplyChanges($comid);
-     }
-  else
     echo "\nCOM-Port konnte nicht angelegt werden ";
 
   //****************************************************************************
@@ -101,26 +88,11 @@
   //****************************************************************************
   // Registervariable erstellen
   //****************************************************************************  
-  $id = @IPS_GetInstanceIDByName('PlugwiseRegisterVariable',$CategoryIdHw);
-  if ( !$id )
-    $id = IPS_CreateInstance ('{F3855B3C-7CD6-47CA-97AB-E66D346C037F}');
-	if ( $id )
-    {
-    IPS_SetName($id,'PlugwiseRegisterVariable');
-    IPS_SetParent($id,$CategoryIdHw);
-    if ( $cutterid )
-      IPS_ConnectInstance($id,$cutterid);
-
-    }
-  
-  //****************************************************************************
-  // Registervariable Script zuordnen
-  //****************************************************************************      
   $ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
-  RegVar_SetRXObjectID($id, $ScriptId);
-  IPS_ApplyChanges($id);
+  $Name     = "PlugwiseRegisterVariable";
   
-  
+  $id = CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
+
   //****************************************************************************
   // Timer fuer Plugwise_Controller setzten
   //****************************************************************************  
@@ -141,6 +113,7 @@
   $ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
   $id = CreateTimer_OnceADay ("REFRESH",$ScriptId,3,0);
 
+  
   //****************************************************************************
   //  CircleGroups in Data erstellen anhand der Liste im Configurationsfile
   //****************************************************************************
@@ -432,9 +405,14 @@
 
     }
 
-
   
   ReloadAllWebFronts() ;
+
+
+  
+
+
+
   
   $error = error_get_last() ;
   $error = false;
