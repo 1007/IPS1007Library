@@ -306,7 +306,9 @@ function reset_groups()
 	foreach ( $childs as $child )
 			{
 	   	SetValue($child, 0);
-			IPS_SetHidden($child,false);
+         $object = IPS_GetObject($child);
+         if ( !$object['ObjectIsHidden'] )
+				IPS_SetHidden($child,false);
 			}
 	   	
 	IPS_SetHidden($CircleIdCData,true);
@@ -323,11 +325,15 @@ function hide_data1data2()
 	
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
-		IPS_SetHidden($child,true);
+		$object = IPS_GetObject($child);
+      if ( !$object['ObjectIsHidden'] )
+			IPS_SetHidden($child,true);
 		}
 	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
 		{
-		IPS_SetHidden($child,true);
+		$object = IPS_GetObject($child);
+      if ( !$object['ObjectIsHidden'] )
+			IPS_SetHidden($child,true);
 		}
 	}
 	
