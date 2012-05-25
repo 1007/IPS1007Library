@@ -172,8 +172,11 @@
 	//***************************************************************************
 	// und jetzt los ......
 	//***************************************************************************
-	$s = IPS_GetScript($CfgDaten['HighChartScriptId']); 	
-	include($s['ScriptFile']);
+	//$s = IPS_GetScript($CfgDaten['HighChartScriptId']);
+	//include($s['ScriptFile']);
+
+	IPSUtils_Include ("Highcharts.ips.php",      "IPSLibrary::app::hardware::Plugwise");
+
 
   	// hier werden die CfgDaten geprüft und bei Bedarf vervollständigt
 	$CfgDaten = CheckCfgDaten($CfgDaten);
