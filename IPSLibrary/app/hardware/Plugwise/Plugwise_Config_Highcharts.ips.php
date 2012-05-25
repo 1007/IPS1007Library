@@ -94,7 +94,7 @@
 	// ID der String Variable in welche die Daten geschrieben werdern
 	$CfgDaten['ContentVarableId']= $ContentId;
    // ID des Highcharts Scripts
-	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts_V2.01', $CategoryIdApp );  				
+	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts', $CategoryIdApp );  				
                                     
 	// Highcharts oder Highstock (default = Highcharts
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
