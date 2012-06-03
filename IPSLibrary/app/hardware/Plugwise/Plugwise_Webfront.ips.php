@@ -32,7 +32,7 @@
 	
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
-	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
@@ -73,7 +73,50 @@
 		}
 	//***************************************************************************
 
+	//***************************************************************************
+	// Scripte starten
+	//***************************************************************************
 
+	if ( $self['ObjectInfo'] == 'Script' )
+	   {
+		$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+
+		SetValue($IPS_VARIABLE, 1);
+
+		if ( $self['ObjectName'] == 'OnlineUpdate' )
+		   {
+		   SetValue($id,"Online Update wird gestartet");
+			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_IPSModulupdaten",$IdApp));
+		   }
+
+		if ( $self['ObjectName'] == 'Kalibrierung' )
+		   {
+		   SetValue($id,"Kalibrierung wird gestartet");
+			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Recalibrate",$IdApp));
+		   }
+
+		if ( $self['ObjectName'] == 'Circles suchen' )
+		   {
+		   SetValue($id,"Circlesuche wird gestartet");
+			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Circlesearch",$IdApp));
+		   }
+
+		if ( $self['ObjectName'] == 'Circlezeit lesen' )
+		   {
+		   SetValue($id,"Circlezeit wird gestartet");
+			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_ReadTime",$IdApp));
+		   }
+
+		if ( $self['ObjectName'] == 'Circlezeit setzen' )
+		   {
+		   SetValue($id,"Circlezeit wird gestellt");
+			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_SetTime",$IdApp));
+		   }
+
+		   
+      SetValue($IPS_VARIABLE, 0);
+		return;
+		}
 		
 	//***************************************************************************
 	// Gruppenmenu

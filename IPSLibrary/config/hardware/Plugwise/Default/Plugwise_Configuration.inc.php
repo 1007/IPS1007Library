@@ -30,11 +30,11 @@
 	GLOBAL $Stromtarife;
       
 	$CircleGroups = array(
-	//*************************************************************************************
-	//		    CircleID			   Name 		Gruppe       Ein/Aus   Watt     kWh  Tarifgruppe
-	//*************************************************************************************
-	array("000D6F0000B81B6E","Plasma TV","Wohnzimmer"		,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht"),
-	array("000D6F0000C3B1DA","Server"	,"Arbeitszimmer"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht"),
+	//*******************************************************************************************************************************
+	//		    CircleID			   Name 		Gruppe       Ein/Aus   Watt     kWh  Tarifgruppe           in Gesamt
+	//*******************************************************************************************************************************
+	array("000D6F0000B81B6E","Plasma TV","Wohnzimmer"		,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , 1 ),
+	array("000D6F0000C3B1DA","Server"	,"Arbeitszimmer"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , 1 ), 
 
 	// Standardtarifgruppe
 	array(""						,""			,""					,"0",""		,""	, "Tarifgruppe Tag/Nacht"),
@@ -63,6 +63,7 @@
 	// Highcharts
 	//***************************************************************************
 	define ( 'HIGHCHARTS' , true ) ;
+	define ( 'HIGHCHARTS_ZEITRAUM' , 24 ) ;   // Zeitraum fuer Graph in Stunden
 
   //***************************************************************************
 	// Externe Stromdaten ( zB EKM )

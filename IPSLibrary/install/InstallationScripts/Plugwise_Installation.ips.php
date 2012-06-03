@@ -141,7 +141,7 @@
   //  Others   Gesamt
   //****************************************************************************
   $item = CreateDummyInstance ("Gesamt", $CategoryIdOData , 0);
-  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
 	$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
 	$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
@@ -166,7 +166,7 @@
       if ( $group != "" )
       	{
         $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
-        $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+        $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
         $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
         $id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
         $id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
@@ -253,8 +253,14 @@
 												1 	=> "-----"
 												),
 												'', array(
-												0  =>	0x666666,
+												0  =>	0xFFCC00,
 												1  =>	0x00FFCC
+												));
+	CreateProfile_Associations ("Plugwise_MenuScripte", array(
+												0	=> "Starten"											
+												),
+												'', array(
+												0  =>	0xFFCC00
 												));
 
 
@@ -301,7 +307,7 @@
 	//***************************************************************************
 	// Scriptlinks erstellen
 	//***************************************************************************
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
+/*		$ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
       $id = CreateLink("Kalibrierung starten",$ScriptId,$VisuID_data1,10);
       IPS_SetInfo($id,"Script");
 		$ScriptId = IPS_GetScriptIDByName('Plugwise_Circlesearch', $CategoryIdApp );
@@ -316,11 +322,20 @@
 		$ScriptId = IPS_GetScriptIDByName('Plugwise_ReadBuffer', $CategoryIdApp );
       $id = CreateLink("Circlebuffer lesen",$ScriptId,$VisuID_data1,50);
       IPS_SetInfo($id,"Script");
+*/
+    $id = CreateVariable("Kalibrierung", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Circles suchen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Circlezeit lesen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Circlezeit setzen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
 
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_IPSModulupdaten', $CategoryIdApp );
-      $id = CreateLink("Plugwise Onlineupdate",$ScriptId,$VisuID_data2,50);
-      IPS_SetInfo($id,"Script");
 
+    $id = CreateVariable("OnlineUpdate", 1, $VisuID_data2, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
+    
 	//***************************************************************************
 	// HTMLCircledaten linken
 	//***************************************************************************

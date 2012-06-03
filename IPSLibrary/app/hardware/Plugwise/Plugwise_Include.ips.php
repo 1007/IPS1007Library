@@ -255,7 +255,7 @@ function createCircle($mac, $parentID){
     IPS_SetVariableCustomAction($id1,$ScriptId);
     }
    
-	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.3680", 0, 0);
+	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
 	$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);

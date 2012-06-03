@@ -101,7 +101,14 @@
 	
 	// Zeitraum welcher dargestellt werden soll
 	// (kann durch die Zeitvorgaben in den Serien verändert werden)
-	$CfgDaten['StartTime'] = time() - (60*60*24*2 );   // letzten 2 Tage
+	if ( defined('HIGHCHARTS_ZEITRAUM') )
+		$zeitrum_stunden = HIGHCHARTS_ZEITRAUM;
+	else
+		$zeitrum_stunden = 24;
+	   
+	echo $zeitrum_stunden;
+	
+	$CfgDaten['StartTime'] = time() - (60*60*$zeitrum_stunden );   // letzten 2 Tage
    $CfgDaten['EndTime']   = time();
 
 	// damit wird die Art des Aufrufes festgelegt

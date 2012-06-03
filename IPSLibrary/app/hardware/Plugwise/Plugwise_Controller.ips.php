@@ -213,7 +213,7 @@ function plugwise_0013_received($buf)
 
 	If ($pulse == "FFFF")
 		{	// Circle ausgeschaltet, meldet FFFF
-		SetValue(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.3680", 0), 0);
+		SetValue(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.14490", 0), 0);
 		$text = $myCat . " Circle ausgeschaltet. " . $buf;
 		}
 	else
@@ -224,15 +224,23 @@ function plugwise_0013_received($buf)
 		$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
 
 		// Aktueller Verbrauch in Watt ermitteln
-		$value 	 = hexdec($pulse)/8;
-		$out 		 = (pow(($value+$offNoise),2)*$gainB)+(($value+$offNoise)*$gainA)+$offTotal;
-		$Leistung = (($out ) / 468.9385193)*1000;
-		$Leistung = round($Leistung,1);
-
-		SetValueFloat(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.3680", 0), $Leistung);
+		if ( $pulse > 0 )
+		   {
+			$value 	 = hexdec($pulse)/8;
+			$out 		 = (pow(($value+$offNoise),2)*$gainB)+(($value+$offNoise)*$gainA)+$offTotal;
+			$Leistung = (($out ) / 468.9385193)*1000;
+			$Leistung = round($Leistung,1);
+			}
+		else
+		   $Leistung = 0;
+		   
+		if ( $Leistung < 0 )
+		   $Leistung = 0;
+		   
+		SetValueFloat(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.14490", 0), $Leistung);
 		SetValue(IPS_GetVariableIDByName("Error", $myCat),0);
 
-		$text = IPS_GetName($myCat) . " Aktueller Stromverbrauch. " . $Leistung ." [".$buf."]";
+		$text = IPS_GetName($myCat) . " Aktueller Stromverbrauch. " . $Leistung ." [".$buf."] Pulse: $pulse";
 
 		}
 		
@@ -306,6 +314,10 @@ function plugwise_0024_received($buf)
 		return;
 	   }
 
+   $t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
+	$t = microtime(true) - $t ;
+	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
+
 	SetValue(IPS_GetVariableIDByName("Status",$myCat),substr($buf,41,1));
 
 	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
@@ -318,9 +330,14 @@ function plugwise_0024_received($buf)
 
 	//$text = $text."[".substr($buf,24,2)." ".substr($buf,26,2)." ".substr($buf,28,4)."] ";
 
-	$text = $text. " Hardwareversion: ".substr($buf,44,4)."-".substr($buf,48,4)."-".substr($buf,52,4);
-	$text = $text. " Softwareversion: ".date('d.m.Y h:i:s',hexdec(substr($buf,56,8)))." ";
+	$hw_version = substr($buf,44,4)."-".substr($buf,48,4)."-".substr($buf,52,4);
+	$sw_version = date('d.m.Y h:i:s',hexdec(substr($buf,56,8)));
+	$text = $text. " Hardwareversion: ".$hw_version;
+	$text = $text. " Softwareversion: ".$sw_version." ";
 
+	$info = $hw_version .",".$sw_version;
+	IPS_SetInfo($myCat,$info);
+	
  	logging($text,'plugwisestatus.log' );
 
 	}
@@ -539,7 +556,7 @@ function request_circle_data()
 		{  // alle Unterobjekte durchlaufen
 		$obj = IPS_GetVariable(IPS_GetObjectIDByIdent("Leistung",$item));
 		$t = ($now - ($obj["VariableUpdated"]))/60; // Zeit in Minuten wann letzte Aktualisierung
-      SetValue(IPS_GetVariableIDByName ("LastMessage", $item),$t);
+      //SetValue(IPS_GetVariableIDByName ("LastMessage", $item),$t);
       if ( $t > 5 )  // laenger als 5 Minuten keine Daten
       	SetValue(IPS_GetVariableIDByName ("Error", $item),1);
 		else
@@ -548,7 +565,12 @@ function request_circle_data()
 		$id_info = IPS_GetObject($item);
 
 		PW_SendCommand("0012".$id_info['ObjectIdent']);
+		
+		SetValue(IPS_GetVariableIDByName ("LastMessage", $item),microtime(true));
+
 		PW_SendCommand("0023".$id_info['ObjectIdent']);
+		
+
 		}
 	}
   
@@ -561,27 +583,48 @@ function request_circle_data()
 function hole_gesamtverbrauch()
 	{
 	GLOBAL $idCatOthers;
+	GLOBAL $idCatCircles;
 	
 	$id1 = IPS_GetObjectIDByIdent('Gesamt',$idCatOthers);
 
 	if ( ID_GESAMTVERBRAUCH != 0 )
-	if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
-	   {
-      $d = GetValue(ID_GESAMTVERBRAUCH);
-		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
+		if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
+	   	{
+      	$d = GetValue(ID_GESAMTVERBRAUCH);
+			$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
 
-		SetValue($id,$d);
+			SetValue($id,$d);
 		
-	   }
+	   	}
    if ( ID_LEISTUNG != 0 )
-	if ( IPS_ObjectExists(ID_LEISTUNG) )
-	   {
-      $d = GetValue(ID_LEISTUNG);
+		if ( IPS_ObjectExists(ID_LEISTUNG) )
+	   	{
+      	$d = GetValue(ID_LEISTUNG);
+			$id = IPS_GetObjectIDByIdent('Leistung',$id1);
+			SetValue($id,$d);
+
+	   	}
+
+   if ( ID_LEISTUNG == 0 and ID_GESAMTVERBRAUCH == 0)
+      {
+		$l = 0;
+		$g = 0;
+		foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
+			{  
+			$data = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$item));
+			$l = $l + $data;
+			$data = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$item));
+			$g = $g + $data;
+
+			}
+				
 		$id = IPS_GetObjectIDByIdent('Leistung',$id1);
-		SetValue($id,$d);
+      SetValue($id,$l);
+		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
+      SetValue($id,$g);
 
-
-	   }
+		}
+		
 
 	
 	}
