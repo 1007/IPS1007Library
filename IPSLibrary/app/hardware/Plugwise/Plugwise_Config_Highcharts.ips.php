@@ -106,7 +106,6 @@
 	else
 		$zeitrum_stunden = 24;
 	   
-	echo $zeitrum_stunden;
 	
 	$CfgDaten['StartTime'] = time() - (60*60*$zeitrum_stunden );   // letzten 2 Tage
    $CfgDaten['EndTime']   = time();
