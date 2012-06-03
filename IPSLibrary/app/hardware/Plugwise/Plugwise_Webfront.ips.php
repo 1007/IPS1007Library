@@ -103,7 +103,7 @@
 
 		if ( $self['ObjectName'] == 'Circlezeit lesen' )
 		   {
-		   SetValue($id,"Circlezeit wird gestartet");
+		   SetValue($id,"Circlezeit wird gelesen");
 			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_ReadTime",$IdApp));
 		   }
 
@@ -111,6 +111,15 @@
 		   {
 		   SetValue($id,"Circlezeit wird gestellt");
 			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_SetTime",$IdApp));
+		   }
+
+		if ( $self['ObjectName'] == 'Versionsinfo' )
+		   {
+		   IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+   		$moduleManager = new IPSModuleManager('Plugwise');
+			$version = "<h3>Version : " .$moduleManager->VersionHandler()->GetModuleVersion() ."</h3>";
+		   
+		   SetValue($id,$version);
 		   }
 
 		   

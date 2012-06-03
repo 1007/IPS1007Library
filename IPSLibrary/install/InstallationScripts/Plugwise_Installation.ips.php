@@ -24,7 +24,7 @@
 
   $moduleManager->VersionHandler()->CheckModuleVersion('IPS','2.50');
 	$moduleManager->VersionHandler()->CheckModuleVersion('IPSModuleManager','2.50.1');
-  $moduleManager->VersionHandler()->SetModuleVersion("1.0.0");
+  $moduleManager->VersionHandler()->SetModuleVersion("1.0.1007");
   
   IPSUtils_Include ("IPSInstaller.inc.php",                "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("IPSMessageHandler.class.php",         "IPSLibrary::app::core::IPSMessageHandler");
@@ -323,17 +323,19 @@
       $id = CreateLink("Circlebuffer lesen",$ScriptId,$VisuID_data1,50);
       IPS_SetInfo($id,"Script");
 */
-    $id = CreateVariable("Kalibrierung", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Kalibrierung", 1, $VisuID_data1, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circles suchen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circles suchen", 1, $VisuID_data1, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit lesen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circlezeit lesen", 1, $VisuID_data1, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit setzen", 1, $VisuID_data1, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circlezeit setzen", 1, $VisuID_data1, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
 
 
-    $id = CreateVariable("OnlineUpdate", 1, $VisuID_data2, 0, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("OnlineUpdate", 1, $VisuID_data2, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Versionsinfo", 1, $VisuID_data2, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     
 	//***************************************************************************
