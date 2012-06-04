@@ -332,6 +332,7 @@ function update_data1data2()
 function update_uebersicht()
 	{
 	GLOBAL $CircleGroups;
+	GLOBAL $IdGraph;
 	
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
    $IdMenu    = @get_ObjectIDByPath($VisuPath,true);
@@ -339,13 +340,21 @@ function update_uebersicht()
    $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
 
 	$id = @IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung
-  if ( !$id ) return;
+  	if ( !$id ) return;
 	if ( @GetValue($id) != 1 ) return;
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
    $idCatCircles = get_ObjectIDByPath($CircleDataPath);
 
-
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	$menupunkt = GetValue($id);
+	if ( $menupunkt < 0 or $menupunkt > 4 )
+	   {
+		$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
+   	SetValueString($id,"");
+   	return;
+	   }
+	   
    $hintergrundfarbe = "#003366";
    
 	$text = "";
@@ -356,11 +365,12 @@ function update_uebersicht()
 	$anzahl = count(IPS_GetChildrenIDs($idCatCircles));
    $circles = IPS_GetChildrenIDs($idCatCircles);
    
-   
 	$counter = 0;
-	for ( $y = 0;$y<12;$y++)
+	for ( $y = 0;$y<8;$y++)
 	   {
 		$text = $text . "<tr>";
+		$text1 = "";
+		$text2 = "";
 
 		for ( $x = 0;$x<4;$x++)
 	   	{
@@ -374,35 +384,73 @@ function update_uebersicht()
 	   	   {
 	   	   $id     = $circles[$counter];
 	   		$circle = IPS_GetObject($id);
+	   		$info   = $circle['ObjectInfo'];
 	   		$name   = $circle['ObjectIdent'];
             $error  = @GetValue(IPS_GetVariableIDByName('Error',$id));
             $status = @GetValue(IPS_GetVariableIDByName('Status',$id));
-				
-				if ( $error == 0 )
-					$hintergrundfarbe = '#009900';
-				else
-					$hintergrundfarbe = '#CC0000';
-
-				if ( $status )
-					$statustext = 'EIN';
-				else
-					$statustext = 'AUS';
+            $lastm  = @GetValue(IPS_GetVariableIDByName('LastMessage',$id));
 
 				//suche richtigen Namen in der Config
 				foreach ( $CircleGroups as $configCircle )
 				   {
-				   
+
 				   if ( $name == $configCircle[0] )
-				      { $name = $configCircle[1] ; break ; }
-				   
+				      {
+						$name  =  $configCircle[1] ;
+						$mac   = substr($configCircle[0],-4);
+
+						$namemac = $mac . " - " . $name;
+						break ;
+						}
+
 				   }
-				   
+
+				switch( $menupunkt)
+				   {
+				   case 0 :		if ( $error == 0 )
+										$hintergrundfarbe = '#009900';
+									else
+										$hintergrundfarbe = '#CC0000';
+									$text2 = $name;
+				               break;
+
+				   case 1 :		if ( $status  == 0 )
+										$hintergrundfarbe = '#003366';
+									else
+										$hintergrundfarbe = '#33CC00';
+									$text2 = $name;
+				               break;
+
+					case 2 :    $array = explode(";",$info);
+									$mac = $mac . " - ";
+									if ( isset($array[0]) )
+										$mac = $mac . $array[0];
+									$text2 = $mac;
+					            break;
+
+					case 3 :		$array = explode(";",$info);
+                           $mac = $mac . " - ";
+									if ( isset($array[1]) )
+										$mac = $mac . $array[1];
+									$text2 = $mac;
+					            break;
+
+					case 4 :    $mac = $mac . " - ";
+
+                           $text2 = $mac . $lastm;
+					            break;
+
+				   default:    $text1 = ""; $text2 = ""; break;
+					}
+
+
+
 
 	   	   }
 
 			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
-			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$statustext - </span>";
-			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$name</span>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$text1</span>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$text2</span>";
 			$text = $text . "</td>";
 			$counter++;
 			

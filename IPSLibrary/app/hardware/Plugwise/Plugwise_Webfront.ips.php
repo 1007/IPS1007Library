@@ -52,11 +52,26 @@
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
 	
+	$self = IPS_GetObject($IPS_VARIABLE);
+
+	
+	
+
+	//***************************************************************************
+	// Menu Uebersicht
+	//***************************************************************************
+	if ( $self['ObjectIdent'] == 'Auswahl' )
+	   {
+		SetValue($IPS_VARIABLE, $IPS_VALUE);
+		update_uebersicht();
+		return;
+		}
+	//***************************************************************************
+
 	//***************************************************************************
 	// Systemsteuerung
 	// Systemsteuerung auswaehlen
 	//***************************************************************************
-	$self = IPS_GetObject($IPS_VARIABLE);
 	
 	if ( $self['ObjectName'] == 'Systemsteuerung' )
 	   {	// Systemsteuerung anwaehlen
@@ -316,8 +331,12 @@ function hide_graph($status = true)
 	{
 	GLOBAL $IdGraph;
 	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	SetValueString($id,"");
+	
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	IPS_SetHidden($id,true);
 
-	//SetValueString($id,"");
+	
 	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
 	// IPS_SetHidden($id,$status);
 	}
@@ -327,6 +346,8 @@ function hide_graph($status = true)
 //******************************************************************************
 function show_main($IdData1,$IdData2)
 	{
+	GLOBAL $IdGraph;
+
 	hide_data1data2();
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
@@ -342,6 +363,8 @@ function show_main($IdData1,$IdData2)
 		}
 
 	update_uebersicht();
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	IPS_SetHidden($id,false);
 
 	}
 
@@ -352,6 +375,8 @@ function reset_groups()
 	{
 	GLOBAL $IdMenu;
 	GLOBAL $CircleIdCData;
+	GLOBAL $IdGraph;
+	
 	$parent = IPS_GetObjectIDByName('Gruppen',$IdMenu);
 
 	$childs = IPS_GetChildrenIDs($parent);
@@ -364,6 +389,10 @@ function reset_groups()
 			}
 	   	
 	IPS_SetHidden($CircleIdCData,true);
+	
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	IPS_SetHidden($id,true);
+
 
 	}
 	
