@@ -99,7 +99,7 @@
 	   copy($cssDefault,$cssFile);
 		}
 
-	echo "\n--- Create Webfront -----------------------------------------------";
+	echo "\n--- Create Webfront -----------------------------------------------\n";
   	$WFC10_Enabled    = $moduleManager->GetConfigValue('Enabled', 		 'WFC10');
   	$WFC10_Path       = $moduleManager->GetConfigValue('Path', 			 'WFC10');
   	$WFC10_WebFrontID = $moduleManager->GetConfigValueInt('WebFrontID','WFC10');
