@@ -379,7 +379,8 @@ function update_uebersicht()
 	   	$name = "";
 			$hintergrundfarbe = '#000000';
 			$statustext = "";
-
+			$text1 ="";
+			$text2 ="";
 	   	if ( $counter < $anzahl )
 	   	   {
 	   	   $id     = $circles[$counter];
@@ -421,14 +422,14 @@ function update_uebersicht()
 									$text2 = $name;
 				               break;
 
-					case 2 :    $array = explode(";",$info);
+					case 2 :    $array = explode(",",$info);
 									$mac = $mac . " - ";
 									if ( isset($array[0]) )
 										$mac = $mac . $array[0];
 									$text2 = $mac;
 					            break;
 
-					case 3 :		$array = explode(";",$info);
+					case 3 :		$array = explode(",",$info);
                            $mac = $mac . " - ";
 									if ( isset($array[1]) )
 										$mac = $mac . $array[1];
