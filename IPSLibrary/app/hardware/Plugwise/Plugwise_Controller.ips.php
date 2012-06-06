@@ -224,7 +224,7 @@ function plugwise_0013_received($buf)
 		$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
 
 		// Aktueller Verbrauch in Watt ermitteln
-		if ( $pulse > 0 )
+		if ( hexdec($pulse) > 0 )
 		   {
 			$value 	 = hexdec($pulse)/8;
 			$out 		 = (pow(($value+$offNoise),2)*$gainB)+(($value+$offNoise)*$gainA)+$offTotal;
