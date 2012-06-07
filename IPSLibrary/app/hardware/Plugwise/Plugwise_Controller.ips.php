@@ -56,7 +56,7 @@
 			Case "Execute"				:	break;
 			Case "TimerEvent"			:	request_circle_data();
 												update_data1data2();	break;
-			Case "Variable"			:	break;
+			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;
 			Case "RegisterVariable"	:	$buf = $IPS_VALUE;
 												switch ((substr($buf,0,4)))
@@ -89,6 +89,62 @@
 function dummy()
   {
   }
+
+/***************************************************************************//**
+*  Variablenaenderung
+*******************************************************************************/
+function schaltbefehl($var,$status)
+	{
+	GLOBAL $CircleGroups;
+	GLOBAL $idCatCircles;
+	
+	$text = $var ."-".$status;
+	
+	
+	foreach( $CircleGroups as $circle)
+	   {
+	   $mac = false;
+		
+	   if ( $var == intval($circle[3]) )
+	      {
+	      $mac = $circle[0];
+	      break;
+	      }
+	      
+	   }
+
+	if ( strlen($mac) > 0 )
+	   {
+		$parent = $idCatCircles;
+		$id = 0;
+		$id = @IPS_GetObjectIDByIdent($mac,$parent);
+
+		$id = @IPS_GetVariableIDByName("Status",$id);
+
+		if ( IPS_VariableExists($id) )
+		   {
+		   if ( $status == 0 )
+		      $action = 0;
+		   if ( $status == 1 )
+		      $action = 1;
+		   if ( $status == true )
+		      $action = 1;
+		   if ( $status == false )
+		      $action = 0;
+
+			if ( $status == 0 or $status == 1 )
+			   {
+		   	$cmd = "0017".$mac."0".$action;
+				PW_SendCommand($cmd);
+				}
+				
+		   
+		   }
+
+	   }
+	   
+	   
+	}
 
 /***************************************************************************//**
 *	"0000" empfangen	-  Stick
@@ -267,7 +323,7 @@ function plugwise_0019_received($buf)
 		return;
 	   }
 
-	$text = IPS_GetName($myCat) . "Adresse empfangen [".$buf."] ";
+	$text = IPS_GetName($myCat) . " Adresse empfangen [".$buf."] ";
 
 	$mac = substr($buf,24,16);
 	if (!($mac == "FFFFFFFFFFFFFFFF"))

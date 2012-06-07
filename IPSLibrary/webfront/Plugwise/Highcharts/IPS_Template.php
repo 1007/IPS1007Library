@@ -95,9 +95,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>Highcharts</title>
 		
-		<!-- 1. Add these JavaScript inclusions in the head of your page -->
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-		<!-- wenn lokal vorhanden .... <script type="text/javascript" src="jquery/1.7.2/jquery.js"></script> -->
+		<!-- wenn lokal vorhanden ....  -->
+    <script type="text/javascript" src="/user/Plugwise/jquery-1.7.2.min.js"></script> 
 		<script type="text/javascript" src="js/highcharts.js"></script>
 		
 		<!-- 1a) add a theme file -->

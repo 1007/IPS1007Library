@@ -59,7 +59,12 @@
 
 
 
-  	//***************************************************************************
+  //***************************************************************************
+	// AggregationType setzen ( 0 = Standard , 1 = Zaehler ) 
+	//***************************************************************************
+	define ( 'AGGTYPE' ,1 ) ;
+
+  //***************************************************************************
 	// Highcharts
 	//***************************************************************************
 	define ( 'HIGHCHARTS' , true ) ;
@@ -71,7 +76,11 @@
   define ( 'ID_GESAMTVERBRAUCH',0); // VariablenID des Gesamtverbrauchs
   define ( 'ID_LEISTUNG',0);        // VariablenID der aktuellen Leistung
 
+
+
   define ( 'AUTOCREATECIRCLE',false);  
+  
+  
 
 ?>
   

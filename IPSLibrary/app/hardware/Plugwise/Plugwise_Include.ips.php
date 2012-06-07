@@ -249,10 +249,20 @@ function createCircle($mac, $parentID){
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
  
   $id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
-  if ( $einaus == "1" )
+  $einaus = intval($einaus);
+  
+  if ( $einaus > 0 )
     {
     echo "\nBei $id1 Actionscript setzen"; 
     IPS_SetVariableCustomAction($id1,$ScriptId);
+
+	 if ( $einaus > 1 )
+    if ( IPS_VariableExists($einaus) )
+	 	{
+	 	echo "\nCreate Trigger:" ;
+	 	CreateEvent($einaus,$einaus,$ScriptId,0);
+		}
+    
     }
    
 	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
@@ -261,10 +271,15 @@ function createCircle($mac, $parentID){
 	$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
 	$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
 
+
+  $aggtype = 1;   // Zaehler
+  if ( defined('AGGTYPE') )
+        $aggtype = AGGTYPE;
+ 
   AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-  AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+  AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
   AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-  AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+  AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
 
 
 	$myVar = CreateVariable("gaina",2,$item,0,"",0,0);

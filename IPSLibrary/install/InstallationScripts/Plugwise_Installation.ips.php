@@ -85,10 +85,20 @@
   else
     echo "\nCutter konnte nicht angelegt werden ";
 
+
+  $ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
+  //****************************************************************************
+  // alle Kinder loeschen
+  //****************************************************************************  
+  $childs = IPS_GetChildrenIDs($ScriptId);
+  foreach( $childs as $child )
+    IPS_DeleteEvent($child);
+    
+
   //****************************************************************************
   // Registervariable erstellen
   //****************************************************************************  
-  $ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
+
   $Name     = "PlugwiseRegisterVariable";
   
   $id = CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
@@ -148,10 +158,14 @@
 
   if ( $archive_id )
     {
+    $aggtype = 1;   // Zaehler
+    if ( defined('AGGTYPE') )
+        $aggtype = AGGTYPE;
+        
     AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-    AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+    AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
     AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-    AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+    AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
     }
 
   //***************************************************************************
