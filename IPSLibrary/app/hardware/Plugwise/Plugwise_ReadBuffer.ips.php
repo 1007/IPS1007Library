@@ -64,10 +64,13 @@
 		
 		$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
       
-		
-		
 		PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
 		}
+
+
+	//$LogAddress = str_pad(strtoupper(dechex(282624)), 8 ,'0', STR_PAD_LEFT);
+
+	//PW_SendCommand("0048000D6F0000C3B1DA".$LogAddress);
 
 
 	dummy();

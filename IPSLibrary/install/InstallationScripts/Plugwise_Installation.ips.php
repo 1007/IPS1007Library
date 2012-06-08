@@ -372,6 +372,14 @@
     $id = CreateVariable("Versionsinfo", 1, $VisuID_data2, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     
+
+	//***************************************************************************
+	// Webdata1 und Webdata2 erstellen
+	//***************************************************************************
+  $id = CreateVariable("WEBDATA1", 3, $VisuID_data1, 1, "~HTMLBox", false, "");
+  $id = CreateVariable("WEBDATA2", 3, $VisuID_data2, 1, "~HTMLBox", false, "");
+  
+    
 	//***************************************************************************
 	// HTMLCircledaten linken
 	//***************************************************************************
@@ -387,10 +395,10 @@
 			   $id = @IPS_GetObjectIDByName("WebData1",$parent);
 			   if ( $id )
 			      {
-      			$id = CreateLink($circle[1],$id,$VisuID_data1,$x);
-					IPS_SetHidden($id , true );
-					IPS_SetInfo($id,$circle[0]);
-      			$x = $x + 10;
+      			//$id = CreateLink($circle[1],$id,$VisuID_data1,$x);
+					//IPS_SetHidden($id , true );
+					//IPS_SetInfo($id,$circle[0]);
+      			//$x = $x + 10;
 			      }
 			   $id = IPS_GetObjectIDByName("Status",$parent);
 			   if ( $id )
@@ -403,12 +411,13 @@
 			   $id = @IPS_GetObjectIDByName("WebData2",$parent);
 			   if ( $id )
 			      {
-      			$id = CreateLink($circle[1],$id,$VisuID_data2,$x);
-					IPS_SetHidden($id , true );
-					IPS_SetInfo($id,$circle[0]);
-					IPS_SetIdent($id,$circle[0]);
-      			$x = $x + 10;
+      			//$id = CreateLink($circle[1],$id,$VisuID_data2,$x);
+					//IPS_SetHidden($id , true );
+					//IPS_SetInfo($id,$circle[0]);
+					//IPS_SetIdent($id,$circle[0]);
+      			//$x = $x + 10;
 			      }
+
 
 			   }
 			}
@@ -427,11 +436,11 @@
         echo "\nOther Link " . $child ;	
         $parent_name = IPS_GetName($child);
 
-        $id = CreateLink($parent_name,$id,$VisuID_data1,$x);
-        IPS_SetHidden($id , true );
-        IPS_SetInfo($id,$parent_name );
-        IPS_SetIdent($id,umlaute_ersetzen($parent_name ));
-        $x = $x + 2;
+        //$id = CreateLink($parent_name,$id,$VisuID_data1,$x);
+        //IPS_SetHidden($id , true );
+        //IPS_SetInfo($id,$parent_name );
+        //IPS_SetIdent($id,umlaute_ersetzen($parent_name ));
+        //$x = $x + 2;
         }
       $x = 10;
       $id = @IPS_GetObjectIDByName("WebData2",$child);
@@ -440,18 +449,19 @@
         echo "\nOther Link " . $child ;	
         $parent_name = IPS_GetName($child);
 
-        $id = CreateLink($parent_name,$id,$VisuID_data2,$x);
-        IPS_SetHidden($id , true );
-        IPS_SetInfo($id,$parent_name );
-        IPS_SetIdent($id,umlaute_ersetzen($parent_name) );
-        $x = $x + 2;
+        //$id = CreateLink($parent_name,$id,$VisuID_data2,$x);
+        //IPS_SetHidden($id , true );
+        //IPS_SetInfo($id,$parent_name );
+        //IPS_SetIdent($id,umlaute_ersetzen($parent_name) );
+        //$x = $x + 2;
         }
 
 
 
       }
     
-    
+ 
+       
 
 
     }

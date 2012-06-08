@@ -309,12 +309,74 @@ function createCircle($mac, $parentID){
 
 }
 
+/***************************************************************************//**
+*	Update die 2 HTMLBoxen im Webfront 
+* 
+*******************************************************************************/
+function update_data1_data2()
+	{
+	
+	// rausfinden welche Variable oder Gruppe aktuell
+	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1    = @get_ObjectIDByPath($Data1Path,true);
+	$object     = IPS_GetObject($IdData1);
+	
+	
+	$info = "";
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA1" )
+		   {
+         $info = $object['ObjectInfo'];
+			}
+		}
+
+   $CirclesId = get_ObjectIDByPath('Program.IPSLibrary.data.hardware.Plugwise.Circles');
+	$circles  = IPS_GetChildrenIDs($CirclesId);
+   $GroupsId = get_ObjectIDByPath('Program.IPSLibrary.data.hardware.Plugwise.Others');
+	$groups   = IPS_GetChildrenIDs($GroupsId);
+
+	
+	$gefunden = 0;
+	
+	foreach ( $circles as $circle )
+	   { 
+		$object = IPS_GetObject($circle);
+		
+		if ( $object['ObjectIdent'] == $info )
+		   {
+		   $gefunden = $circle; break;
+		   }
+	   }
+
+	if ( $gefunden == 0 )
+	   {
+		foreach ( $groups as $group )
+	   	{
+			$object = IPS_GetObject($group);
+
+			if ( $object['ObjectIdent'] == $info )
+		   	{
+		   	$gefunden = $group; break;
+		   	}
+	   	}
+	   
+	   
+	   }
+	
+	update_data1data2_sub($gefunden);
+	
+	}
 
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront und bei Systemsteuerung die Uebersicht
 *******************************************************************************/
 function update_data1data2()
 	{
+
+/*
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
@@ -336,7 +398,9 @@ function update_data1data2()
 		{
       update_data1data2_sub($parent,true);
 		}
+*/
 
+   update_data1_data2();
 	update_uebersicht();
 		
 	}
@@ -492,14 +556,54 @@ function update_data1data2_sub($parent,$groups = false)
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
+	$data1id = 0;
+	$data2id = 0;
 
+	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1    = @get_ObjectIDByPath($Data1Path,true);
+	$Data2Path  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2    = @get_ObjectIDByPath($Data2Path,true);
+
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectIdent'] == "WEBDATA1" )
+		   {
+         $data1id = $child;
+			}
+		}
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectIdent'] == "WEBDATA2" )
+		   {
+         $data2id = $child;
+			}
+		}
+
+
+	if ( $data1id == 0 or $data2id == 0)
+	   return;
+	   
+	if ( $parent == 0 )
+	   {
+	   SetValueString($data1id,"");
+	   SetValueString($data2id,"");
+	   return;
+	   }
+	   
+/*
 	$data1id    = @IPS_GetVariableIDByName('WebData1',$parent);
 	if ($data1id === false) {echo "Variable WebData1 nicht gefunden!"; return ; }
 	$data2id    = @IPS_GetVariableIDByName('WebData2',$parent);
 	if ($data2id === false) {echo "Variable WebData2 nicht gefunden!"; return ; }
-	$gesamtid   = @IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
+*/
+
+	
+	
+	$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
 	if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
-	$leistungid = @IPS_GetVariableIDByName('Leistung',$parent);
+	$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
 	if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
 
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
@@ -799,10 +903,13 @@ function logging($text,$file = 'plugwise.log' )
 
    if ( !is_dir ( $ordner ) )
 	   return;
-      
+
+	list($usec, $sec) = explode(" ", microtime());
+    
+	$time = date("d.m.Y H:i:s",$sec) . "," . $usec;
 	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
 	$datei = fopen($logdatei,"a+");
-	fwrite($datei, date("d.m.Y H:i:s")." ". $text . chr(13));
+	fwrite($datei, $time ." ". $text . chr(13));
 	fclose($datei);
 
 	}

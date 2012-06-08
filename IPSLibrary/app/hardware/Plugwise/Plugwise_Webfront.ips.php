@@ -428,12 +428,63 @@ function show_data1data2($id)
 	GLOBAL $IdGraph;
 	GLOBAL $IdData1;
 	GLOBAL $IdData2;
+
+	
+	$object = IPS_GetObject($id);
+	$name = $object['ObjectName'];
+	$info = $object['ObjectInfo'];
+
+	if ( $name == 1007 )
+		{
+	   $name = "Gesamt";
+	   $info = "Gesamt";
+	   }
+	   
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA1" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         IPS_SetInfo($child,$info);
+         }
+         
+		if ( $object['ObjectType'] == 6 )   // Link
+		   {
+		   if ( $object['ObjectInfo'] == $info )
+		   	{
+				IPS_SetHidden($child,false);
+				}
+			else
+				{
+		   	IPS_SetHidden($child,true);
+				}
+		   }
+		   
+		}
+		
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+		
+		if ( $object['ObjectIdent'] == "WEBDATA2" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         }
+		}
+
+   update_data1_data2();
+	
+	return;
 	
 	if ( $id == 0 )
 		{
-		$id = IPS_GetObjectIDByIdent('Gesamt',$IdData1);
+		$id = @IPS_GetObjectIDByIdent('Gesamt',$IdData1);
 		IPS_SetHidden($id,false);
-		$id = IPS_GetObjectIDByIdent('Gesamt',$IdData2);
+		$id = @IPS_GetObjectIDByIdent('Gesamt',$IdData2);
 		IPS_SetHidden($id,false);
 		}
 

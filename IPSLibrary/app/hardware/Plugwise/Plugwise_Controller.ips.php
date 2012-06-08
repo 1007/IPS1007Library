@@ -294,7 +294,10 @@ function plugwise_0013_received($buf)
 		   $Leistung = 0;
 		   
 		SetValueFloat(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.14490", 0), $Leistung);
-		SetValue(IPS_GetVariableIDByName("Error", $myCat),0);
+		
+		$id = IPS_GetVariableIDByName("Error", $myCat);
+		if ( GetValue($id ) != 0 )
+			SetValue($id,0);
 
 		$text = IPS_GetName($myCat) . " Aktueller Stromverbrauch. " . $Leistung ." [".$buf."] Pulse: $pulse";
 
@@ -374,12 +377,20 @@ function plugwise_0024_received($buf)
 	$t = microtime(true) - $t ;
 	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
-	SetValue(IPS_GetVariableIDByName("Status",$myCat),substr($buf,41,1));
+
+	$einaus = substr($buf,41,1);
+	$id = IPS_GetVariableIDByName("Status",$myCat);
+	if ( GetValue($id) != $einaus )
+		SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);
 
 	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
 	
 	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),substr($buf,32,8));
-   SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)))));
+	
+	$logadress = intval((hexdec(substr($buf,32,8))));
+	$id = IPS_GetVariableIDByName("LogAddress",$myCat);
+	if ( GetValue($id) != $logadress )
+   	SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),$logadress);
    
 	$text = IPS_GetName($myCat);
 	$text = $text." Logadresse[".intval((hexdec(substr($buf,32,8)) - 278528) / 32)."][".hexdec(substr($buf,32,8))."]";
@@ -392,8 +403,13 @@ function plugwise_0024_received($buf)
 	$text = $text. " Softwareversion: ".$sw_version." ";
 
 	$info = $hw_version .",".$sw_version;
-	IPS_SetInfo($myCat,$info);
-	
+
+	$obj = IPS_GetObject($myCat);
+	$obj_info = $obj['ObjectInfo'];
+
+	if ( $obj_info != $info )
+		IPS_SetInfo($myCat,$info);
+
  	logging($text,'plugwisestatus.log' );
 
 	}
@@ -484,98 +500,106 @@ function plugwise_0049_received($buf)
 		return;
 	   }
 
-
+	//***************************************************************************
 	// Kalibrierungsdaten laden
+	//***************************************************************************
 	$gaina	 = GetValueFloat(IPS_GetVariableIDByName("gaina", $myCat));
 	$gainb	 = GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
 	$offTotal = GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
 	$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
 
 	$verbrauch = 0;
+	$bufferstelle = 0;
 
+	$time = time() - 3600;
+
+	//***************************************************************************
 	// Korrecktes Logdate aus den Vier Werten im Buffer herausfinden
+	//***************************************************************************
 	$usedlogdate = 0;
 
 	$logdate = pwtime2unixtime(substr($buf,24,8));
-	//print "\nLetztes Logdate: ".date("c",$logdate);
 
-	$time = time() - 3600;
-	
-   
 	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
+		$bufferstelle = 1;
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,40,8));
-	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
+		$bufferstelle = 2;
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,56,8));
-	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
+		$bufferstelle = 3;
 		}
 
 	$logdate = pwtime2unixtime(substr($buf,72,8));
-	//print "\nLetztes Logdate: ".date("c",$logdate);
 
 	if ($logdate > $time)
 		{
 		$usedlogdate = $logdate;
 		$verbrauch = pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
+		$bufferstelle = 4;
 		}
 
-   $usedlogdate = 1;
-	if ($usedlogdate == 0)
-		{
-		$id_log = IPS_GetVariable(IPS_GetVariableIDByName ("LogAddress", $myCat));
-		if ($id_log["VariableChanged"] > (time()-10*60))
-			{
-			$id_info = IPS_GetObject($myCat);
-			$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $myCat));
-			//print "\nPW0048 - ".IPS_GetName($myCat)." - ";
-			//print "\nBuffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", es wird versucht den Buffer mit LogAdress ".($LogAddress-1)." zu lesen";
-			$LogAddress = 278528 + (32 * ($LogAddress-1));
-			$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
-			//PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
-
-			}
-		else
-			{
-			$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $myCat));
-			//print "PW0048 - ".IPS_GetName($myCat)." - ";
-			//print "Buffer mit akt. LogAddress ".$LogAddress." enthält keine aktuellen Werte für die Zeit ".date("c",time()).", Timing-Problem?";
-			};
-		}
-	else
-		{
+	//***************************************************************************
+	// Buffer gefunden
+	//***************************************************************************
+	if ( $usedlogdate )
+	   {
 		$varGesamtverbrauch = IPS_GetVariableIDByName("Gesamtverbrauch",$myCat);
 		$oldVerbrauch = GetValueFloat($varGesamtverbrauch);
-		SetValueFloat ($varGesamtverbrauch,$verbrauch + $oldVerbrauch);
-		};
 
+		$obj = IPS_GetVariable($varGesamtverbrauch);
+		$ti1 = $obj["VariableChanged"];
 
-		$text =  "PW0049 Buffer - ".IPS_GetName($myCat) . "[".$buf."]";
-		$text = $text . "\nLogadresse:" .$LogAddressRaw;
-		$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,24,8))).": ";
-		$text = $text . pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
-		$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,40,8))).": ";
-		$text = $text . pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
-		$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,56,8))).": ";
-		$text = $text . pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
-		$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,72,8))).": ";
-		$text = $text . pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
-		logging($text,'plugwisebuffer.log' );
+		$stunde1 = intval(date('h',$usedlogdate));
+		$stunde2 = intval(date('h',$ti1));
+
+		if ( $stunde1 == $stunde2 )
+		   {
+			$ti1 = date('d.m.Y h:i:s',$ti1);
+			$ti2 = date('d.m.Y h:i:s',$usedlogdate);
+
+			IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
+			}
+		else
+		   {
+			$ti1 = date('d.m.Y h:i:s',$ti1);
+			$ti2 = date('d.m.Y h:i:s',$usedlogdate);
+
+			IPS_LogMessage("Stunde wird gezaehlt",$ti1."-".$ti2);
+
+			SetValueFloat ($varGesamtverbrauch,$verbrauch + $oldVerbrauch);
+
+		   }
+
+	   }
+	   
+
+	$text =  "PW0049 Buffer - ".IPS_GetName($myCat) . "[".$buf."]";
+	$text = $text . "\nLogadresse:" .$LogAddressRaw . " Logstelle:".$bufferstelle;
+	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,24,8))).": ";
+	$text = $text . pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
+	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,40,8))).": ";
+	$text = $text . pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
+	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,56,8))).": ";
+	$text = $text . pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
+	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,72,8))).": ";
+	$text = $text . pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
+	logging($text,'plugwisebuffer.log' );
 
 	}
 	
@@ -613,11 +637,20 @@ function request_circle_data()
 		$obj = IPS_GetVariable(IPS_GetObjectIDByIdent("Leistung",$item));
 		$t = ($now - ($obj["VariableUpdated"]))/60; // Zeit in Minuten wann letzte Aktualisierung
       //SetValue(IPS_GetVariableIDByName ("LastMessage", $item),$t);
-      if ( $t > 5 )  // laenger als 5 Minuten keine Daten
-      	SetValue(IPS_GetVariableIDByName ("Error", $item),1);
-		else
-			SetValue(IPS_GetVariableIDByName ("Error", $item),0);
 
+      if ( $t > 5 )  // laenger als 5 Minuten keine Daten
+      	{
+      	$id = IPS_GetVariableIDByName("Error", $item);
+			if ( GetValue($id ) != 1 )
+				SetValue($id,1);
+			}
+		else
+		   {
+      	$id = IPS_GetVariableIDByName("Error", $item);
+			if ( GetValue($id ) != 0 )
+				SetValue($id,0);
+			}
+			
 		$id_info = IPS_GetObject($item);
 
 		PW_SendCommand("0012".$id_info['ObjectIdent']);
