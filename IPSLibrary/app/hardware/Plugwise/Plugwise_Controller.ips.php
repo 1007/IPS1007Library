@@ -292,8 +292,13 @@ function plugwise_0013_received($buf)
 		   
 		if ( $Leistung < 0 )
 		   $Leistung = 0;
-		   
-		SetValueFloat(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.14490", 0), $Leistung);
+
+
+		$id = IPS_GetVariableIDByName("Leistung",$myCat);
+		if ( GetValueFloat($id) != $Leistung )
+			SetValueFloat($id,$Leistung);
+
+		//SetValueFloat(CreateVariable("Leistung", 2, $myCat, 0, "~Watt.14490", 0), $Leistung);
 		
 		$id = IPS_GetVariableIDByName("Error", $myCat);
 		if ( GetValue($id ) != 0 )
