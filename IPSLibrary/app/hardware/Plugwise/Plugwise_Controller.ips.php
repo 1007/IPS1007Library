@@ -596,7 +596,7 @@ function plugwise_0049_received($buf)
 			IPS_LogMessage("Stunde wird gezaehlt",$ti1."-".$ti2);
 
 			$neuerverbrauch = $verbrauch + $oldVerbrauch;
-         if (GetValue($varGesamtverbrauch != $neuerverbrauch ))
+         if (GetValue($varGesamtverbrauch) != $neuerverbrauch )
 				SetValueFloat ($varGesamtverbrauch,$neuerverbrauch);
 
 		   }
