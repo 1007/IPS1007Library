@@ -25,6 +25,7 @@
 	define ( 'COMPORT' , 'COM6' );       // COM-Port des Sticks	
 	define ( 'REFRESH_TIME',1);         // Refreshzeit in Minuten
 	define ( 'CALIBRATION_TIME',3);     // Uhrzeit fuer Recalibration + Uhrzeit checken
+	define ( 'WAIT_TIME',200);          // Wartezeit in Millisekunden nachdem ein Telegramm gesendet wurde
   
 	GLOBAL $CircleGroups;
 	GLOBAL $Stromtarife;

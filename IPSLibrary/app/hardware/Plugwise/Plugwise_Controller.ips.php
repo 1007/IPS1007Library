@@ -185,7 +185,7 @@ function plugwise_0000_received($buf)
 		case "00D7": 	// Antwort auf 0016 - Uhrzeit stellen
 					   	$mac = substr($buf,12,16);
 							$myCat = IPS_GetObjectIDByIdent($mac, $idCatCircles);
-					   	print "Uhrzeit gestellt auf ".IPS_GetName($myCat).": ".$buf;
+					   	//print "Uhrzeit gestellt auf ".IPS_GetName($myCat).": ".$buf;
 					   	// print "Uhrzeit gestellt auf  ".IPS_GetName($myCat);
 							break;
 
@@ -586,14 +586,14 @@ function plugwise_0049_received($buf)
 			$ti1 = date('d.m.Y h:i:s',$ti1);
 			$ti2 = date('d.m.Y h:i:s',$usedlogdate);
 
-			IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
+			//IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
 			}
 		else
 		   {
 			$ti1 = date('d.m.Y h:i:s',$ti1);
 			$ti2 = date('d.m.Y h:i:s',$usedlogdate);
 
-			IPS_LogMessage("Stunde wird gezaehlt",$ti1."-".$ti2);
+			//IPS_LogMessage("Stunde wird gezaehlt",$ti1."-".$ti2);
 
 			$neuerverbrauch = $verbrauch + $oldVerbrauch;
          if (GetValue($varGesamtverbrauch) != $neuerverbrauch )

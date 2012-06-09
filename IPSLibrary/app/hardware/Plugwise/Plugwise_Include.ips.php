@@ -56,7 +56,13 @@ function PW_SendCommand($cmd)
 	$ausgabe = str_pad($ausgabe, 4 ,'0', STR_PAD_LEFT); //mit nullen auffüllen
 	$cmd.= $ausgabe;
 	RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
-	IPS_Sleep(300);
+	
+	if ( defined('WAIT_TIME') )
+		$ms = WAIT_TIME;
+	else
+		$ms = 300;
+
+	IPS_Sleep($ms);
 	
 }
 
