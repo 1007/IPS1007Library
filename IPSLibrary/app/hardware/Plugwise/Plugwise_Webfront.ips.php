@@ -434,12 +434,12 @@ function show_data1data2($id)
 	$name = $object['ObjectName'];
 	$info = $object['ObjectInfo'];
 
-	if ( $name == 1007 )
+	if ( $object['ObjectID'] == 0 )
 		{
 	   $name = "Gesamt";
 	   $info = "Gesamt";
 	   }
-	   
+
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
 		$object = IPS_GetObject($child);
