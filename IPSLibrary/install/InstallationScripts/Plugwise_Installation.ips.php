@@ -153,8 +153,8 @@
   $item = CreateDummyInstance ("Gesamt", $CategoryIdOData , 0);
   $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-	$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-	$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+	//$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+	//$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
 
   if ( $archive_id )
     {
@@ -182,8 +182,8 @@
         $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
         $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
         $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-        $id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-        $id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+        //$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+        //$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
 
         if ( $archive_id )
           { 
@@ -257,7 +257,7 @@
 												2 => "HW-Version",
 												3 => "SW-Version",
 												4 => "- Timing -",
-												5 => "----------"
+												5 => " Not used "
 												
 												),
 												'', array(

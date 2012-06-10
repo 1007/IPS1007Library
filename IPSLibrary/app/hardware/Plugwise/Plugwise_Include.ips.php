@@ -274,8 +274,8 @@ function createCircle($mac, $parentID){
 	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
-	$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-	$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+	//$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
+	//$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
 
 
   $aggtype = 1;   // Zaehler
@@ -433,7 +433,7 @@ function update_uebersicht()
 
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
 	$menupunkt = GetValue($id);
-	if ( $menupunkt < 0 or $menupunkt > 4 )
+	if ( $menupunkt < 0 or $menupunkt > 5 )
 	   {
 		$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
    	SetValueString($id,"");
@@ -449,7 +449,12 @@ function update_uebersicht()
 
 	$anzahl = count(IPS_GetChildrenIDs($idCatCircles));
    $circles = IPS_GetChildrenIDs($idCatCircles);
-   
+
+	//***************************************************************************
+	// Menupunkte 1 - 4
+	//***************************************************************************
+	if ( $menupunkt < 5 )
+	   {
 	$counter = 0;
 	for ( $y = 0;$y<8;$y++)
 	   {
@@ -464,8 +469,8 @@ function update_uebersicht()
 	   	$name = "";
 			$hintergrundfarbe = '#000000';
 			$statustext = "";
-			$text1 ="";
-			$text2 ="";
+			$text1 ="-";
+			$text2 ="-";
 	   	if ( $counter < $anzahl )
 	   	   {
 	   	   $id     = $circles[$counter];
@@ -529,10 +534,9 @@ function update_uebersicht()
 				   default:    $text1 = ""; $text2 = ""; break;
 					}
 
-
-
-
 	   	   }
+
+
 
 			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
 			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$text1</span>";
@@ -544,7 +548,67 @@ function update_uebersicht()
 		$text = $text . "</tr>";
 
 	 }
-	   
+	}
+	//***************************************************************************
+	// Menupunkt 5 - unbekannte Circles anzeigen
+	//***************************************************************************
+	if ( $menupunkt == 5 )
+	   {
+   	$file = 'plugwise_unknowncircles.log';
+		$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+		if ( file_exists($logdatei) )
+		   {
+		   ini_set("auto_detect_line_endings", true);
+		   $array = file($logdatei,FILE_SKIP_EMPTY_LINES);
+		   $arr = array_unique($array);
+		   //print_r($arr);
+			$anzahl = count($arr);
+			
+			$counter = 0;
+			for ( $y = 0;$y<8;$y++)
+	   		{
+				$text = $text . "<tr>";
+
+				for ( $x = 0;$x<4;$x++)
+	   			{
+					$text1 = "-";
+					$text2 = "";
+
+	   			$hintergrundfarbe = '#000000';
+					if ( $counter < $anzahl  )
+						$text1 = trim($arr[$counter]);
+					if ( strlen($text1) != 18 )
+					   $text1 = "-";
+					else
+					   {
+					   $type  = substr($text1,-1);
+					   if ( $type == 0 )
+					      {
+					      $hintergrundfarbe = '#CC6666';
+							$text2 = " NEW!";
+							}
+						if ( $type == 1 )
+							{
+					      $hintergrundfarbe = '#6699FF';
+                     $text2 = " ?";
+							}
+					   $text1 = substr($text1,0,16);
+					   }
+					
+					$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
+					$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$text1</span>";
+					$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>$text2</span>";
+					$text = $text . "</td>";
+					$counter++;
+	   			}
+				$text = $text . "</tr>";
+
+				}
+
+		   }
+
+		}
+		
 	$text = $text . "</table>";
 		
 	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
@@ -895,12 +959,43 @@ function umlaute_ersetzen($text)
   $neuer_text  = str_replace($such_array, $ersetzen_array, $text);
   return $neuer_text;
 	}
-	
+
+/***************************************************************************//**
+*	Liste der nicht konfigurierten Circles
+*******************************************************************************/
+function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.log' )
+	{
+
+	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
+   if ( !is_dir ( $ordner ) )
+		mkdir($ordner);
+
+   if ( !is_dir ( $ordner ) )
+	   return;
+
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+
+	if ( $delete )
+	   {
+	   @unlink($logdatei);
+		}
+	else
+	   {
+		$datei = fopen($logdatei,"a+");
+		fwrite($datei, $text . chr(13));
+		fclose($datei);
+		}
+		
+	}
+
+
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/
 function logging($text,$file = 'plugwise.log' )
 	{
+	
+	if ( $file != 'plugwiseerror.log' )
 	if ( !LOG_MODE )
 	   return;
 	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";

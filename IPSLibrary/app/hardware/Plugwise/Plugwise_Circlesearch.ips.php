@@ -35,7 +35,11 @@
 	IPSUtils_Include ("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 
+   unknowncircles("",true);
+
 	PW_SendCommand("0008");
+	IPS_Sleep(10);
+	PW_SendCommand("000801");
 
 /***************************************************************************//**
 * @}
