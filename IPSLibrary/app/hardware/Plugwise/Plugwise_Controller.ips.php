@@ -327,7 +327,7 @@ function plugwise_0013_received($buf)
 			// scheinbar nicht
 		$id = IPS_GetVariableIDByName("Leistung",$myCat);
 		if ( GetValueFloat($id) != 0 )
-			SetValueFloat($id,$Leistung);
+			SetValueFloat($id,0);
 		
 		$id = IPS_GetVariableIDByName ("Status", $myCat);
 		//IPS_LogMessage("....",$id);
