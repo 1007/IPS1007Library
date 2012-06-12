@@ -41,6 +41,17 @@
 	array(""						,""			,""					,"0",""		,""	, "Tarifgruppe Tag/Nacht"),
   );
 
+	$ExterneGroups = array(
+	//*************************************************************************************
+	//		   Name 		       Gruppe    ID-Leistung ID-KWh     Watt     kWh  Tarifgruppe              in Gesamt
+	//*************************************************************************************
+	array("Hauptzaehler" ,"SYSTEM_MAIN"	,"28466"	, "28466"   ,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+	array("Sonstige"		,"SYSTEM_REST"	, false	, false		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+
+	array("Nebenzaehler1","Keller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+	array("Nebenzaehler2","Keller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+
+  			);
 
 	//***************************************************************************
 	// Stromtarife und Gruppen immer beginnen um 00:00 Uhr

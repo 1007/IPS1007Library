@@ -152,7 +152,9 @@
 	$serie['Unit'] = "Watt";
 	$serie['ReplaceValues'] = true;
 	
+	$serie['step'] = true;
 	$serie['type'] = "areaspline";
+	$serie['type'] = "area";
 	$serie['yAxis'] = 0;
 	$serie['marker']['enabled'] = false;
 	$serie['AggType'] = 0;
@@ -168,6 +170,9 @@
 	
 	$CfgDaten['plotOptions']['areaspline']['fillColor']['linearGradient'] = array(0, 0, 0, 300); // Winkel,,,,
 	$CfgDaten['plotOptions']['areaspline']['fillColor']['stops'] = array(array(0,'rgba(255,0,0,0.5)'),array(1,'rgba(0,255,0,1)'));
+
+	$CfgDaten['plotOptions']['area']['fillColor']['linearGradient'] = array(0, 0, 0, 300); // Winkel,,,,
+	$CfgDaten['plotOptions']['area']['fillColor']['stops'] = array(array(0,'rgba(255,0,0,0.5)'),array(1,'rgba(0,255,0,1)'));
 
 	$CfgDaten['series'][] = $serie;
 
