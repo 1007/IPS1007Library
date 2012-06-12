@@ -480,7 +480,7 @@ function update_uebersicht()
             $error  = @GetValue(IPS_GetVariableIDByName('Error',$id));
             $status = @GetValue(IPS_GetVariableIDByName('Status',$id));
             $lastm  = @GetValue(IPS_GetVariableIDByName('LastMessage',$id));
-
+				$mac    = "?";
 				//suche richtigen Namen in der Config
 				foreach ( $CircleGroups as $configCircle )
 				   {
