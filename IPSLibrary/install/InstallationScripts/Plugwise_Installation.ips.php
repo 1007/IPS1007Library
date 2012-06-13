@@ -152,7 +152,7 @@
   //****************************************************************************
   //  Gesamt  Sonstiges(Gesamt-Rest)
   //****************************************************************************
-  print_r($SystemStromzaehlerGroups);      
+  if ( isset($SystemStromzaehlerGroups) )       
   foreach( $SystemStromzaehlerGroups as $systemzaehler )
     {
     $name  = $systemzaehler[0];
@@ -206,6 +206,10 @@
 
         if ( $archive_id )
           { 
+          $archivlogging = true;
+          if ( defined('ARCHIVLOGGING') )
+            $archivlogging = ARCHIVLOGGING;
+
           if ($archivlogging == true)
             {        
             AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
