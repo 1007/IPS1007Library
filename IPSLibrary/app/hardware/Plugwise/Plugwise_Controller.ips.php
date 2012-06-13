@@ -47,7 +47,7 @@
    $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
    $idCatOthers    = get_ObjectIDByPath($OtherDataPath);
-	
+	 hole_gesamtverbrauch();
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
@@ -782,8 +782,11 @@ function hole_gesamtverbrauch()
 	GLOBAL $idCatCircles;
 	
 	
-	$id1 = IPS_GetObjectIDByIdent("SYSTEM_MAIN",$idCatOthers);
+	$id1 = @IPS_GetObjectIDByIdent("SYSTEM_MAIN",$idCatOthers);
 	
+	if ( $id1 == false )
+		$id1 = IPS_GetObjectIDByIdent("Gesamt",$idCatOthers);
+
 	if ( ID_GESAMTVERBRAUCH != 0 )
 		if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
 	   	{
