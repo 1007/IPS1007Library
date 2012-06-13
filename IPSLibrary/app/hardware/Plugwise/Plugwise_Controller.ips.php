@@ -47,7 +47,7 @@
    $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
    $idCatOthers    = get_ObjectIDByPath($OtherDataPath);
-	 hole_gesamtverbrauch();
+	
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
