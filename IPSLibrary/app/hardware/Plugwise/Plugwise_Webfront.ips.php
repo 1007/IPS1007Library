@@ -34,7 +34,7 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 
@@ -224,7 +224,7 @@
 	// Circlemenu
 	// Button farblich darstellen. Alle anderen auf 0
 	//***************************************************************************
-	if ( $object['ObjectName'] == 'Circles' )
+	if ( $object['ObjectName'] == 'Stromzähler' )
 	   {
 	   //hide_data1data2();
 	   $value = GetValue($IPS_VARIABLE);
@@ -288,7 +288,8 @@
 		}
 
 
-	$id = IPS_GetObjectIDByIdent('Circles',$IdMenu);  // Circles
+	//$id = IPS_GetObjectIDByIdent('GruppenItem',$IdMenu);  // Circles
+	$id = $CircleIdCData;
 	$childs = IPS_GetChildrenIDs($id);
 	$ok = false;
 	foreach ( $childs as $child )
@@ -316,7 +317,7 @@
 function show_webfront($showid)
 	{
 	GLOBAL $IdApp;
-	
+	show_status_in_menu($showid);
    show_data1data2($showid);
 
 	$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
@@ -419,6 +420,33 @@ function hide_data1data2()
 	}
 	
 	
+function show_status_in_menu($id)
+	{
+	GLOBAL $IdMenu;
+	
+	$object = IPS_GetObject($id);
+	$name = $object['ObjectName'];
+	$info = $object['ObjectInfo'];
+
+	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectType'] == 6 )   // Link
+		   {
+		   if ( $object['ObjectInfo'] == $info )
+		   	{
+				IPS_SetHidden($child,false);
+				}
+			else
+				{
+		   	IPS_SetHidden($child,true);
+				}
+		   }
+
+
+		}
+
+	}
 	
 //******************************************************************************
 // zeigt die in $id uebergebenen Daten in Data1 und Data2 an

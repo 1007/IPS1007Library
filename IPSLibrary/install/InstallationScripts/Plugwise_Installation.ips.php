@@ -148,13 +148,15 @@
 	  }
    
   //****************************************************************************
-  //  Others   Gesamt
+  //  Others   Gesamt  Sonstiges(Gesamt-Rest)
   //****************************************************************************
   $item = CreateDummyInstance ("Gesamt", $CategoryIdOData , 0);
   $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-	//$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-	//$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+  $item = CreateDummyInstance ("Sonstiges", $CategoryIdOData , 0);
+  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
 
   if ( $archive_id )
     {
@@ -182,8 +184,6 @@
         $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
         $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
         $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-        //$id4  = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-        //$id5  = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
 
         if ( $archive_id )
           { 
@@ -204,7 +204,7 @@
   // Jetzt Circles suchen  / erst mal deaktiviert
   //****************************************************************************
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
-  //PW_SendCommand("0008");
+  //PW_SendCommand("0008");   // deaktiviert
   
 
 
@@ -281,24 +281,18 @@
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
 
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
-	$IDCircles   = CreateDummyInstance("Circles",$VisuID_menu,20);
+	$IDCircles   = CreateDummyInstance("Stromzähler",$VisuID_menu,20);
   IPS_SetHidden($IDCircles,true);
   
 	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , 20 , $WFC_TabPaneName   , ''  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA", $WFC_TabPaneItem , 20 , $WFC_TabPaneName   , ''  , 0 , 48 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA",  $WFC_TabPaneItem              , 20 , $WFC_TabPaneName   , ''  , 0 , 40 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA1", $WFC_TabPaneItem."-SPLITDATA" , 20 , $WFC_TabPaneName   , ''  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
-	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA1", $WFC_TabPaneItem."-SPLITDATA1", 30, "Titel", $Icon="", $VisuID_data1, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2", $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA1",      $WFC_TabPaneItem."-SPLITDATA1", 30, "Titel", $Icon="", $VisuID_data1, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2",      $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-//  CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $graphid , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-
-
-
-
-  
 
   
 	//***************************************************************************
@@ -341,22 +335,7 @@
 	//***************************************************************************
 	// Scriptlinks erstellen
 	//***************************************************************************
-/*		$ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
-      $id = CreateLink("Kalibrierung starten",$ScriptId,$VisuID_data1,10);
-      IPS_SetInfo($id,"Script");
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_Circlesearch', $CategoryIdApp );
-      $id = CreateLink("Circlesuche starten",$ScriptId,$VisuID_data1,20);
-      IPS_SetInfo($id,"Script");
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_ReadTime', $CategoryIdApp );
-      $id = CreateLink("Circlezeit auslesen",$ScriptId,$VisuID_data1,30);
-      IPS_SetInfo($id,"Script");
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_SetTime', $CategoryIdApp );
-      $id = CreateLink("Circlezeit setzen",$ScriptId,$VisuID_data1,40);
-      IPS_SetInfo($id,"Script");
-		$ScriptId = IPS_GetScriptIDByName('Plugwise_ReadBuffer', $CategoryIdApp );
-      $id = CreateLink("Circlebuffer lesen",$ScriptId,$VisuID_data1,50);
-      IPS_SetInfo($id,"Script");
-*/
+
     $id = CreateVariable("Kalibrierung", 1, $VisuID_data1, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     $id = CreateVariable("Circles suchen", 1, $VisuID_data1, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
@@ -365,7 +344,6 @@
     IPS_SetInfo($id,"Script");
     $id = CreateVariable("Circlezeit setzen", 1, $VisuID_data1, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-
 
     $id = CreateVariable("OnlineUpdate", 1, $VisuID_data2, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
@@ -381,98 +359,34 @@
   
     
 	//***************************************************************************
-	// HTMLCircledaten linken
+	// HTML Daten linken
 	//***************************************************************************
 	$x = 100;
 	foreach ( $CircleGroups as $circle )
 		{
 		if ( $circle[1] != "" )
 		   {
-			echo "\n". $circle[0]."-".$CategoryIdCData;
-         $parent = @IPS_GetObjectIDByIdent($circle[0],$CategoryIdCData);
+        echo "\n". $circle[0]."-".$CategoryIdCData;
+        $parent = @IPS_GetObjectIDByIdent($circle[0],$CategoryIdCData);
 			if ( $parent )
 			   {
-			   $id = @IPS_GetObjectIDByName("WebData1",$parent);
-			   if ( $id )
-			      {
-      			//$id = CreateLink($circle[1],$id,$VisuID_data1,$x);
-					//IPS_SetHidden($id , true );
-					//IPS_SetInfo($id,$circle[0]);
-      			//$x = $x + 10;
-			      }
 			   $id = IPS_GetObjectIDByName("Status",$parent);
 			   if ( $id )
-			      {
-      			$id = CreateLink($circle[1]." Status",$id,$VisuID_data1,$x+200);
-					IPS_SetHidden($id , true );
-					IPS_SetInfo($id,$circle[0]);
+			      {                                                      
+      			//$id = CreateLink($circle[1]." Status",$id,$VisuID_data1,$x+200);
+      			$id = CreateLink($circle[1]." Status",$id,$VisuID_menu,$x+200);
+					  IPS_SetHidden($id , true );
+					  IPS_SetInfo($id,$circle[0]);
 			      }
-
-			   $id = @IPS_GetObjectIDByName("WebData2",$parent);
-			   if ( $id )
-			      {
-      			//$id = CreateLink($circle[1],$id,$VisuID_data2,$x);
-					//IPS_SetHidden($id , true );
-					//IPS_SetInfo($id,$circle[0]);
-					//IPS_SetIdent($id,$circle[0]);
-      			//$x = $x + 10;
-			      }
-
-
 			   }
 			}
 		}
-
-	//***************************************************************************
-	// HTML Gruppendaten und Gesamt linken
-	//***************************************************************************
-  $x = 10 ;
-  $childs = IPS_GetChildrenIDs($CategoryIdOData);
-  foreach($childs as $child )
-      {
-      $id = @IPS_GetObjectIDByName("WebData1",$child);
-      if ( $id )
-        {
-        echo "\nOther Link " . $child ;	
-        $parent_name = IPS_GetName($child);
-
-        //$id = CreateLink($parent_name,$id,$VisuID_data1,$x);
-        //IPS_SetHidden($id , true );
-        //IPS_SetInfo($id,$parent_name );
-        //IPS_SetIdent($id,umlaute_ersetzen($parent_name ));
-        //$x = $x + 2;
-        }
-      $x = 10;
-      $id = @IPS_GetObjectIDByName("WebData2",$child);
-      if ( $id )
-        {
-        echo "\nOther Link " . $child ;	
-        $parent_name = IPS_GetName($child);
-
-        //$id = CreateLink($parent_name,$id,$VisuID_data2,$x);
-        //IPS_SetHidden($id , true );
-        //IPS_SetInfo($id,$parent_name );
-        //IPS_SetIdent($id,umlaute_ersetzen($parent_name) );
-        //$x = $x + 2;
-        }
-
-
-
-      }
-    
- 
-       
 
 
     }
 
   
   ReloadAllWebFronts() ;
-
-
-  
-
-
 
   
   $error = error_get_last() ;

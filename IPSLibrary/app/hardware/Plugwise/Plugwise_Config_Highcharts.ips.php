@@ -10,7 +10,7 @@
 	$OthersDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
 
 	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Uebersicht";
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Circles";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
 	$GruppenVisuPath= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
@@ -178,7 +178,7 @@
 
 	// Abmessungen des erzeugten Charts
 	$CfgDaten['HighChart']['Width'] = 0; 			// in px,  0 = 100%
-	$CfgDaten['HighChart']['Height'] = 280; 		// in px
+	$CfgDaten['HighChart']['Height'] = 320; 		// in px
 
 	//***************************************************************************
 	// und jetzt los ......
