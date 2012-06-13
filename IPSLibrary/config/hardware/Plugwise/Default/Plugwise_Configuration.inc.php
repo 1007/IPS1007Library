@@ -26,7 +26,8 @@
 	define ( 'REFRESH_TIME',1);         // Refreshzeit in Minuten
 	define ( 'CALIBRATION_TIME',3);     // Uhrzeit fuer Recalibration + Uhrzeit checken
 	define ( 'WAIT_TIME',200);          // Wartezeit in Millisekunden nachdem ein Telegramm gesendet wurde
-  
+
+    
 	GLOBAL $CircleGroups;
 	GLOBAL $Stromtarife;
       
@@ -72,9 +73,12 @@
 
 
   //***************************************************************************
-	// AggregationType setzen ( 0 = Standard , 1 = Zaehler ) 
+	// Archivehandling
+  // AggregationType setzen ( 0 = Standard , 1 = Zaehler ) 
 	//***************************************************************************
 	define ( 'AGGTYPE' ,1 ) ;
+  define ( 'ARCHIVLOGGING' , true);
+
 
   //***************************************************************************
 	// Highcharts
@@ -88,6 +92,16 @@
   define ( 'ID_GESAMTVERBRAUCH',0); // VariablenID des Gesamtverbrauchs
   define ( 'ID_LEISTUNG',0);        // VariablenID der aktuellen Leistung
 
+  	//***************************************************************************
+	// MySql Anbindung
+	//***************************************************************************
+	define ( 'MYSQL_ANBINDUNG' , 			true );
+	define ( 'MYSQL_SERVER' , 				'121.11.58.34' );
+	define ( 'MYSQL_USER' , 				'root' );
+	define ( 'MYSQL_PASSWORD' , 			'k7pmde' );
+	define ( 'MYSQL_DATENBANK' , 			'Plugwise' );
+	define ( 'MYSQL_TABELLE_LEISTUNG' , 'Leistung' );
+	define ( 'MYSQL_TABELLE_GESAMT' , 	'Gesamtverbrauch' );
 
 
   define ( 'AUTOCREATECIRCLE',false);  

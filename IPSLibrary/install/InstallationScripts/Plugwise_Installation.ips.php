@@ -14,7 +14,9 @@
 * 
 *******************************************************************************/
   GLOBAL $CircleGroups;
-	
+	GLOBAL $SystemStromzaehlerGroups; 
+  GLOBAL $ExterneStromzaehlerGroups;
+         
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
 
@@ -148,27 +150,44 @@
 	  }
    
   //****************************************************************************
-  //  Others   Gesamt  Sonstiges(Gesamt-Rest)
+  //  Gesamt  Sonstiges(Gesamt-Rest)
   //****************************************************************************
-  $item = CreateDummyInstance ("Gesamt", $CategoryIdOData , 0);
-  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-  $item = CreateDummyInstance ("Sonstiges", $CategoryIdOData , 0);
-  $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-	$id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
-
-
-  if ( $archive_id )
+  print_r($SystemStromzaehlerGroups);      
+  foreach( $SystemStromzaehlerGroups as $systemzaehler )
     {
-    $aggtype = 1;   // Zaehler
-    if ( defined('AGGTYPE') )
+    $name  = $systemzaehler[0];
+    $ident = $systemzaehler[1];
+   
+    $item = CreateDummyInstance ($name, $CategoryIdOData , 0);
+    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+    IPS_SetIdent($item,$ident);
+    IPS_SetIdent($id1,"Leistung");
+    IPS_SetIdent($id2,"Gesamtverbrauch");
+    
+    
+    if ( $archive_id )
+      {
+      $aggtype = 1;   // Zaehler
+      if ( defined('AGGTYPE') )
         $aggtype = AGGTYPE;
-        
-    AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-    AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
-    AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-    AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
+
+      $archivlogging = true;
+      if ( defined('ARCHIVLOGGING') )
+        $archivlogging = ARCHIVLOGGING;
+    
+      if ($archivlogging == true)
+        {        
+        AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
+        AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
+        AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        }
+
+      }
     }
+
+
 
   //***************************************************************************
 	// Gruppe in DATA erstellen fuer Gesamtuebersicht einer Gruppe
@@ -187,10 +206,13 @@
 
         if ( $archive_id )
           { 
-          AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-          AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
-          AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-          AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+          if ($archivlogging == true)
+            {        
+            AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
+            AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+            AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
+            AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+            }
           }
 
         $x = $x + 10;

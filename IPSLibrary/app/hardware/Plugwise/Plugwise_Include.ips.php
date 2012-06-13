@@ -281,12 +281,18 @@ function createCircle($mac, $parentID){
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
         $aggtype = AGGTYPE;
- 
-  AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-  AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
-  AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-  AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
 
+    $archivlogging = true;
+    if ( defined('ARCHIVLOGGING') )
+        $archivlogging = ARCHIVLOGGING;
+
+   if ($archivlogging == true)
+      {
+  		AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
+  		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
+  		AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
+  		AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
+		}
 
 	$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
@@ -809,7 +815,7 @@ function statistikdaten($gesamtid)
 
 	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
-	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
 	$diff_wert = 0;
 	if ( $data )
 	   {
@@ -821,7 +827,7 @@ function statistikdaten($gesamtid)
 	
 	$start = mktime(0,0,0,date("m"),date("d"),date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d"),date("Y"));
-	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
 	if ( $data )
 	   {
 		$start_wert = floatval($data[0]['Value']);
@@ -988,7 +994,104 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 		
 	}
 
+/***************************************************************************//**
+*	Mysql-Anbindung
+*******************************************************************************/
+function mysql_add($type,$geraet,$wert)
+	{
+	$text = $type."-".$geraet."-".$wert;
+	
+	IPS_LogMessage("MYSQL",$text);
+	return;
+	
+	
+		$mysql = false;
+	if ( defined('MYSQL_ANBINDUNG') )
+	   $mysql = MYSQL_ANBINDUNG;
+	if ( $mysql == false ) return;
 
+
+   $server = mysql_connect(MYSQL_SERVER,MYSQL_USER,MYSQL_PASSWORD);
+	if ( !$server )
+	   {
+	   IPS_Logmessage("Plugwise MySql","Server nicht bereit");
+		return;
+		}
+
+   $db_exist = mysql_select_db(MYSQL_DATENBANK, $server);
+	if (!$db_exist)
+		{
+	   IPS_Logmessage("Plugwise MySql","Datenbank wird angelegt");
+		$mysqlstring = 'CREATE DATABASE ' . MYSQL_DATENBANK .";";
+    	$db_exist = mysql_query($mysqlstring);
+		}
+
+	if ( !$db_exist )
+	   {
+	   IPS_Logmessage("Plugwise MySql","Datenbank nicht bereit");
+		return;
+		}
+
+	if ( MYSQL_TABELLE_LEISTUNG != "" )
+	   {
+		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_LEISTUNG."'");
+		if (mysql_num_rows($result) == 0)
+  			{
+ 			IPS_Logmessage("Plugwise MySql","Tabelle nicht vorhanden wird erstellt");
+			$sql = "CREATE TABLE `" . MYSQL_TABELLE_LEISTUNG . "` ";
+			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
+			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
+			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL UNIQUE,";
+			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
+   		$sql = $sql . "`LEISTUNG` FLOAT NOT NULL ";
+   		$sql = $sql . " ) ENGINE = MYISAM ;";
+
+			$tab_exist = mysql_query($sql);
+			}
+		else
+	   	$tab_exist = true;
+
+		if ( !$tab_exist )
+	   	{
+	   	IPS_Logmessage("Plugwise MySql","Fehler bei Tabellenerstung Leistung");
+			return;
+			}
+		}
+
+	if ( MYSQL_TABELLE_GESAMT != "" )
+		{
+		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_GESAMT."'");
+		if (mysql_num_rows($result) == 0)
+  			{
+ 			IPS_Logmessage("Plugwise MySql","Tabelle nicht vorhanden wird erstellt");
+			$sql = "CREATE TABLE `" . MYSQL_TABELLE_GESAMT . "` ";
+			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
+			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
+			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL UNIQUE,";
+			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
+   		$sql = $sql . "`GESAMTVERBRAUCH` FLOAT NOT NULL ";
+   		$sql = $sql . " ) ENGINE = MYISAM ;";
+
+			$tab_exist = mysql_query($sql);
+			}
+		else
+	   	$tab_exist = true;
+
+		if ( !$tab_exist )
+	   	{
+	   	IPS_Logmessage("Plugwise MySql","Fehler bei Tabellenerstung Gesamt");
+			return;
+			}
+		}
+
+
+   mysql_close($server);
+
+
+	
+
+	}
+	
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/

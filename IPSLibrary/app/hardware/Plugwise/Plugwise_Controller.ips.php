@@ -43,13 +43,11 @@
   	IPSUtils_Include("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
-
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
    $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
    $idCatOthers    = get_ObjectIDByPath($OtherDataPath);
-
+	
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
@@ -779,11 +777,13 @@ function request_circle_data()
 *******************************************************************************/
 function hole_gesamtverbrauch()
 	{
+	
 	GLOBAL $idCatOthers;
 	GLOBAL $idCatCircles;
 	
-	$id1 = IPS_GetObjectIDByIdent('Gesamt',$idCatOthers);
-
+	
+	$id1 = IPS_GetObjectIDByIdent("SYSTEM_MAIN",$idCatOthers);
+	
 	if ( ID_GESAMTVERBRAUCH != 0 )
 		if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
 	   	{
@@ -815,7 +815,7 @@ function hole_gesamtverbrauch()
 			$g = $g + $data;
 
 			}
-				
+
 		$id = IPS_GetObjectIDByIdent('Leistung',$id1);
       if (GetValue($id) <> $l)
 			SetValue($id,$l);
@@ -838,7 +838,7 @@ function berechne_gruppenverbrauch()
 	GLOBAL $CircleGroups;
 	GLOBAL $idCatCircles;
 	GLOBAL $idCatOthers;
-
+   
 	$others = IPS_GetChildrenIDs($idCatOthers);
 
 
