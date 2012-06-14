@@ -1008,14 +1008,14 @@ function mysql_add($table,$time,$geraet,$wert)
 	   $mysql = MYSQL_ANBINDUNG;
 	if ( $mysql == false ) return;
 
-   $server = mysql_connect(MYSQL_SERVER,MYSQL_USER,MYSQL_PASSWORD);
+   $server = @mysql_connect(MYSQL_SERVER,MYSQL_USER,MYSQL_PASSWORD);
 	if ( !$server )
 	   {
 	   IPS_Logmessage("Plugwise MySql","Server nicht bereit");
 		return;
 		}
 
-   $db_exist = mysql_select_db(MYSQL_DATENBANK, $server);
+   $db_exist = @mysql_select_db(MYSQL_DATENBANK, $server);
 	if (!$db_exist)
 		{
 	   IPS_Logmessage("Plugwise MySql","Datenbank wird angelegt");
@@ -1090,8 +1090,11 @@ function mysql_add($table,$time,$geraet,$wert)
 		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
 		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
-      $error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
-		//IPS_LogMessage("Plugwise MySql",$error);
+      if ( mysql_error($server) )
+      	{
+      	$error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+			IPS_LogMessage("Plugwise MySql",$error);
+			}
 
  	   }
 	
@@ -1103,8 +1106,11 @@ function mysql_add($table,$time,$geraet,$wert)
 		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
 		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
-      $error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
-		//IPS_LogMessage("Plugwise MySql",$error);
+      if ( mysql_error($server) )
+      	{
+      	$error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+			IPS_LogMessage("Plugwise MySql",$error);
+			}
 
  	   }
 

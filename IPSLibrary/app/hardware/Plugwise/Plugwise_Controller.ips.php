@@ -48,6 +48,10 @@
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
    $idCatOthers    = get_ObjectIDByPath($OtherDataPath);
 	
+	//$time = date("Y-m-d H:i:s",time());
+	//mysql_add(MYSQL_TABELLE_GESAMT,$time, "Test" ,1007);
+	//mysql_add(MYSQL_TABELLE_LEISTUNG,$time, "Test" ,1007);
+
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
