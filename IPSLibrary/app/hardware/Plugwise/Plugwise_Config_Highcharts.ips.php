@@ -86,11 +86,11 @@
 	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
 		{
 
-		$idgesamt = IPS_GetObjectIDByIdent('Gesamt',$GroupsIdOData);
+		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
 		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
 		$objectname = "Gesamt";
 		}
-
+	
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];

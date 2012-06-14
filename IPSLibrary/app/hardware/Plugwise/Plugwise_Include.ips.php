@@ -377,44 +377,24 @@ function update_data1_data2()
 	   
 	   
 	   }
-	
+	   
+	if ( $gefunden == 0 )
+	   {
+		$gefunden = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsId);
+	   }
+	   
 	update_data1data2_sub($gefunden);
 	
 	}
 
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront und bei Systemsteuerung die Uebersicht
+*  Aufgerufen von Timer (Controller)
 *******************************************************************************/
 function update_data1data2()
 	{
-
-/*
-	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
-	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
-	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
-
-	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-
-   $IdData   = get_ObjectIDByPath($CircleDataPath);
-
-	foreach ( IPS_GetChildrenIDs($IdData) as $parent )
-		{
-      update_data1data2_sub($parent);
-		}
-
-	$OtherDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
-
-   $IdData   = get_ObjectIDByPath($OtherDataPath);
-
-	foreach ( IPS_GetChildrenIDs($IdData) as $parent )
-		{
-      update_data1data2_sub($parent,true);
-		}
-*/
-
    update_data1_data2();
 	update_uebersicht();
-		
 	}
 
 /***************************************************************************//**

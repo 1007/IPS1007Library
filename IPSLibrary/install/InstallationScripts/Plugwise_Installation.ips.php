@@ -342,6 +342,11 @@
          $x = $x + 10;
          }
       }
+    $id = CreateVariable("Sonstige", 1, $IDGroups, 9999, "Plugwise_MenuItem", $ActionScriptId, false);
+    IPS_SetInfo($id,"SYSTEM_REST");
+    IPS_SetIdent($id,"SYSTEM_REST");
+    $x = $x + 10;
+
 
 	//***************************************************************************
 	// Circlesmenu erstellen
