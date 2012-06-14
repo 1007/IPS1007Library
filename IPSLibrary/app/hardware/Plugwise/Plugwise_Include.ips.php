@@ -997,19 +997,16 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 /***************************************************************************//**
 *	Mysql-Anbindung
 *******************************************************************************/
-function mysql_add($type,$geraet,$wert)
+function mysql_add($table,$time,$geraet,$wert)
 	{
-	$text = $type."-".$geraet."-".$wert;
+	$text = $table."-".$geraet."-".$wert;
 	
-	IPS_LogMessage("MYSQL",$text);
-	return;
+	//IPS_LogMessage("MYSQL",$text);
 	
-	
-		$mysql = false;
+	$mysql = false;
 	if ( defined('MYSQL_ANBINDUNG') )
 	   $mysql = MYSQL_ANBINDUNG;
 	if ( $mysql == false ) return;
-
 
    $server = mysql_connect(MYSQL_SERVER,MYSQL_USER,MYSQL_PASSWORD);
 	if ( !$server )
@@ -1035,13 +1032,13 @@ function mysql_add($type,$geraet,$wert)
 	if ( MYSQL_TABELLE_LEISTUNG != "" )
 	   {
 		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_LEISTUNG."'");
-		if (mysql_num_rows($result) == 0)
+		if (@mysql_num_rows($result) == 0)
   			{
  			IPS_Logmessage("Plugwise MySql","Tabelle nicht vorhanden wird erstellt");
 			$sql = "CREATE TABLE `" . MYSQL_TABELLE_LEISTUNG . "` ";
 			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
 			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
-			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL UNIQUE,";
+			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL ,";
 			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
    		$sql = $sql . "`LEISTUNG` FLOAT NOT NULL ";
    		$sql = $sql . " ) ENGINE = MYISAM ;";
@@ -1061,13 +1058,13 @@ function mysql_add($type,$geraet,$wert)
 	if ( MYSQL_TABELLE_GESAMT != "" )
 		{
 		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_GESAMT."'");
-		if (mysql_num_rows($result) == 0)
+		if (@mysql_num_rows($result) == 0)
   			{
  			IPS_Logmessage("Plugwise MySql","Tabelle nicht vorhanden wird erstellt");
 			$sql = "CREATE TABLE `" . MYSQL_TABELLE_GESAMT . "` ";
 			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
 			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
-			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL UNIQUE,";
+			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL ,";
 			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
    		$sql = $sql . "`GESAMTVERBRAUCH` FLOAT NOT NULL ";
    		$sql = $sql . " ) ENGINE = MYISAM ;";
@@ -1084,6 +1081,32 @@ function mysql_add($type,$geraet,$wert)
 			}
 		}
 
+
+	if ( $table == MYSQL_TABELLE_LEISTUNG )
+	   {
+		$sql = "";
+		$sql = $sql . "INSERT INTO ".$table." ";
+		$sql = $sql . "(`DATUMUHRZEIT`,`GERAETENAME`,`LEISTUNG`) ";
+		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
+		//IPS_LogMessage("Plugwise MySql",$sql);
+      mysql_query($sql);
+      $error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+		//IPS_LogMessage("Plugwise MySql",$error);
+
+ 	   }
+	
+	if ( $table == MYSQL_TABELLE_GESAMT )
+	   {
+		$sql = "";
+		$sql = $sql . "INSERT INTO ".$table." ";
+		$sql = $sql . "(`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`) ";
+		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
+		//IPS_LogMessage("Plugwise MySql",$sql);
+      mysql_query($sql);
+      $error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+		//IPS_LogMessage("Plugwise MySql",$error);
+
+ 	   }
 
    mysql_close($server);
 
