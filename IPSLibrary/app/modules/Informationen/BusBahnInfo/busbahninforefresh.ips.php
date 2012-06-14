@@ -34,8 +34,8 @@
   	$CategoryData = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.BusBahnInfo");
   	$VisuData 	  = IPSUtil_ObjectIDByPath("Visualization.WebFront.Informationen.BusBahnInfo");
 
-	$imagepath  = "/user/BusBahnInfo/images/";
-	$csspath    = "/user/BusBahnInfo/";
+	$imagepath  = "./user/BusBahnInfo/images/";
+	$csspath    = "./user/BusBahnInfo/";
 
 	$debug 	= DEBUG_MODE;      /**< Debugmode true/false */
 	$log 		= LOG_MODE;
