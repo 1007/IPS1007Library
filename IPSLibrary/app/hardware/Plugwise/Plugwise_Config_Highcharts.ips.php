@@ -100,10 +100,11 @@
 		   if ( $idd != 0 )
 		      $id = $idd;
 		   }
-		   
-		
 		}
-	
+
+	if ( $objectname == "SYSTEM_REST" )
+      $objectname = "Sonstiges";
+      
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];

@@ -105,6 +105,7 @@
 	//***************************************************************************
 	define ( 'HIGHCHARTS' , true ) ;
 	define ( 'HIGHCHARTS_ZEITRAUM' , 24 ) ;   // Zeitraum fuer Graph in Stunden
+	define ( 'HIGHCHARTS_THEME' , 'ips.js' ) ;   // Highchart Theme
 
   //***************************************************************************
 	// Externe Stromdaten ( zB EKM )

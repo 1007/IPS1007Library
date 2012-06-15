@@ -55,10 +55,11 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	test();break;
+			Case "Execute"				:	berechne_restverbrauch();break;
 			Case "TimerEvent"			:	request_circle_data();
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
+												berechne_restverbrauch();
 												update_data1data2();
 												break;
 			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
@@ -852,21 +853,37 @@ function hole_gesamtverbrauch()
 function berechne_restverbrauch()
 	{
 	GLOBAL $idCatOthers;
-	echo $idCatOthers;
+
+   $id = IPS_GetObjectIDByIdent("SYSTEM_MAIN",$idCatOthers);
+   $so = IPS_GetObjectIDByIdent("SYSTEM_REST",$idCatOthers);
+
+	$gesamt_leistung = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
+	$gesamt_gesamt   = GetValue(IPS_GetObjectIDByIdent('Gesamtverbrauch',$id));
+
+	$sonstid_leistung = IPS_GetObjectIDByIdent('Leistung',$so);
+	$sonstid_gesamt   = IPS_GetObjectIDByIdent('Gesamtverbrauch',$so);
+
    $others = IPS_GetChildrenIDs($idCatOthers);
 
+	$sonst_leistung = $gesamt_leistung;
+	$sonst_gesamt   = $gesamt_gesamt;
+	
 	foreach ( $others as $other)
-	   {
-		$object = IPS_GetObject($other);
-		//echo print_r($object);
-		
-		//if ( $object['SYSTEM_MAIN'] );
-		
-		//if ( $object['SYSTEM_REST'] );
-		
-		
-	   }
+	   {  // gehe alle Gruppen durch ausser Hauptzaehler und Sonstige
 	   
+	   $object = IPS_GetObject($other);
+	   if ( $object['ObjectIdent'] != "SYSTEM_MAIN" )
+	   if ( $object['ObjectIdent'] != "SYSTEM_REST" )
+	      {
+			$gruppen_verbrauch = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$other));
+			$gruppen_leistung  = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$other));
+			$sonst_leistung = $sonst_leistung - $gruppen_leistung;
+			}
+	   }
+
+	SetValue($sonstid_leistung,$sonst_leistung);
+	SetValue($sonstid_gesamt,$sonst_gesamt);
+
 	
 	}
 
@@ -891,29 +908,43 @@ function berechne_gruppenverbrauch()
 			$array_verbrauch[$group[2]] = 0;
 			}
 		}
+
 	
 	foreach ( $CircleGroups as $group )
 		{
       if ( $group[0] != "" )
          {
-
-		$gruppe = $group[2];
-		$mac 	  = $group[0];
-
-		$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
+			$gruppe    = $group[2];
+			$mac 	     = $group[0];
+			
+			if ( isset($group[7]) )
+			   {
+				$in_gesamt = $group[7];
+				}
+			else
+			   {
+			   $in_gesamt = true;
+			   }
+			
+			
+			$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
 		
-		$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
-		if ( $id )
-		   {
-		   $leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
-		   $verbrauch = GetValue(IPS_GetObjectIDByIdent('Gesamtverbrauch',$id));
+			$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
+			if ( $id )
+		   	{
+		   	$leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
+		   	$verbrauch = GetValue(IPS_GetObjectIDByIdent('Gesamtverbrauch',$id));
 
-			$array_leistung[$gruppe] = $array_leistung[$gruppe] + $leistung;
-			$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
+				if ( $in_gesamt )
+				   {
+					$array_leistung[$gruppe]  = $array_leistung[$gruppe]  + $leistung;
+					$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
+					}
 
+				}
 			}
 		}
-		}
+
 
 	$keys = array_keys($array_leistung);
 	

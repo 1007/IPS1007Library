@@ -148,6 +148,7 @@
 	// Gruppenmenu
 	// Gruppe auswaehlen
 	//***************************************************************************
+	$sonstige = false;
 	if ( $object['ObjectName'] == 'Gruppen' )
 	   {
 	   if ( GetValue($IPS_VARIABLE) == 1 )
@@ -170,6 +171,11 @@
 	   			}
 			SetValue($IPS_VARIABLE, $IPS_VALUE);
 			IPS_SetHidden($IPS_VARIABLE,false);
+			$object = IPS_GetObject ($IPS_VARIABLE);
+			
+			if ( $object['ObjectIdent'] == "SYSTEM_REST" )
+			   $sonstige = true;
+
 			$hidecircles = false;
 			$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung aus
 			SetValue($id,0);
@@ -190,7 +196,8 @@
 			}
 		else
 		   {
-			IPS_SetHidden($CircleIdCData,false);   // Ueberschrift anzeigen
+			if ( $sonstige == false )
+			IPS_SetHidden($CircleIdCData,false);   // Ueberschrift anzeigen ausser bei Sonstige
 			}
 			
 		// Circles anzeigen die in der angewaehlten Gruppe sind
@@ -276,7 +283,7 @@
 	   		   {
 					$ok = true;
 					$aktuelle_gruppenid = $child;
-					$showid = $IPS_VARIABLE ;
+					$showid = $IPS_VARIABLE ; 
 					break;
 					}
 				}
@@ -300,10 +307,11 @@
 	   		   {
 					$ok = true;
 					$showid = $IPS_VARIABLE;
-					show_webfront($showid);
+					show_webfront($showid); 
 					return;
 					}
 				}
+
 	if ( !$ok )
 	   {  // Kein Circle angewaehlt - Gesamtverbrauch der Gruppe anzeigen
 					
