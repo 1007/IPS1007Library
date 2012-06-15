@@ -1,4 +1,8 @@
 <?php 
+
+	IPSUtils_Include ("IPSInstaller.inc.php",          "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+
 	// ab IPS-Highcharts Script V2.0000		 
 	// 07.05.2012 	geändert auf jquery/1.7.2
 	
@@ -82,8 +86,12 @@
 		if ($AdditionalConfigData['Theme'] != '')
 			$AdditionalConfigData['Theme']= 'js/themes/' . $AdditionalConfigData['Theme'];
 
-		//$AdditionalConfigData["Height"]="1200px";
-		//$AdditionalConfigData["Width"]="600px";
+    if ( defined('HIGHCHARTS_THEME') )
+      {
+      $theme = HIGHCHARTS_THEME;
+      $AdditionalConfigData['Theme']= 'js/themes/'.$theme;
+      }
+
 
 			
 	}
