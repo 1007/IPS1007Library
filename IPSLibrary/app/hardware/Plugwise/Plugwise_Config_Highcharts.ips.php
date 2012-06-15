@@ -22,6 +22,9 @@
 	$CategoryIdApp  = get_ObjectIDByPath($AppPath);
 	$ContentId      = get_ObjectIDByPath($ContentPath);
 
+  GLOBAL $ExterneStromzaehlerGroups;
+	GLOBAL $SystemStromzaehlerGroups;
+
 	// damit kann der Script auch von anderen Scripten aufgerufen werden
 	// und bereits mit CfgDaten vorkonfiguriert werden
 	Global $CfgDaten; 
@@ -85,31 +88,31 @@
 	
 	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
 		{
+		// Erst mal diese Daten nehmen
+		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
+		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
+		$objectname = "Gesamt";
+
 		if ( isset($SystemStromzaehlerGroups) )
 		   {
 		   //print_r($SystemStromzaehlerGroups);
-		   $id = $SystemStromzaehlerGroups[0][2];
-		   $objectname = "Gesamt";
-		   }
-		else
-			{
-			$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
-			$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
-			$objectname = "Gesamt";
+		   $idd = $SystemStromzaehlerGroups[0][2];
+		   if ( $idd != 0 )
+		      $id = $idd;
 		   }
 		   
 		
 		}
-		
-
+	
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];
 
-	$wird_geloggt = AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
+	$wird_geloggt = @AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
 	if ( !$wird_geloggt )
 	   {
-	   echo "Variable ". $id . "wird nicht geloggt";
+	   $text = "Variable ". $id . " wird nicht geloggt";
+	   SetValue($ContentId,$text);
 	   return;
 	   }
 	

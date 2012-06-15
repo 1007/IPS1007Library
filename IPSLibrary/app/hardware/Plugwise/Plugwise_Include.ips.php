@@ -20,7 +20,7 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-	
+
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
 *******************************************************************************/
@@ -327,12 +327,16 @@ function createCircle($mac, $parentID){
 *******************************************************************************/
 function update_data1_data2()
 	{
-	
+	GLOBAL $SystemStromzaehlerGroups;
+  	GLOBAL $ExterneStromzaehlerGroups;
+
 	// rausfinden welche Variable oder Gruppe aktuell
 	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1    = @get_ObjectIDByPath($Data1Path,true);
 	$object     = IPS_GetObject($IdData1);
 	
+	$extern_leistung= false;
+	$extern_gesamt = false;
 	
 	$info = "";
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
@@ -354,7 +358,7 @@ function update_data1_data2()
 	$gefunden = 0;
 	
 	foreach ( $circles as $circle )
-	   { 
+	   { // Suche in Circles
 		$object = IPS_GetObject($circle);
 		
 		if ( $object['ObjectIdent'] == $info )
@@ -364,7 +368,7 @@ function update_data1_data2()
 	   }
 
 	if ( $gefunden == 0 )
-	   {
+	   { // Suche in Gruppen
 		foreach ( $groups as $group )
 	   	{
 			$object = IPS_GetObject($group);
@@ -379,11 +383,20 @@ function update_data1_data2()
 	   }
 	   
 	if ( $gefunden == 0 )
-	   {
-		$gefunden = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsId);
-	   }
+	   { // Gesamt muss es sein
 	   
-	update_data1data2_sub($gefunden);
+		$gefunden = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsId);
+
+		$id1 = $SystemStromzaehlerGroups[0][2];
+		if ( $id1 != 0 )
+		     { $extern_leistung = $id1; $gefunden = false; }
+		$id2 = $SystemStromzaehlerGroups[0][3];
+		if ( $id2 != 0 )
+		      $extern_gesamt = $id2;
+		
+	   }
+	
+	update_data1data2_sub($gefunden,false,$extern_leistung,$extern_gesamt);
 	
 	}
 
@@ -606,14 +619,16 @@ function update_uebersicht()
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront ( Sub )
 *******************************************************************************/
-function update_data1data2_sub($parent,$groups = false)
+function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$extern_gesamt=false)
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
-
+	
 	$data1id = 0;
 	$data2id = 0;
+
+	
 
 	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1    = @get_ObjectIDByPath($Data1Path,true);
@@ -641,34 +656,33 @@ function update_data1data2_sub($parent,$groups = false)
 	if ( $data1id == 0 or $data2id == 0)
 	   return;
 	   
-	if ( $parent == 0 )
-	   {
-	   SetValueString($data1id,"");
-	   SetValueString($data2id,"");
-	   return;
+	if ( $parent == false )
+	   { // Externen Stromzaehler
+
+	   $leistungid = intval($extern_leistung);
+		$gesamtid = intval($extern_gesamt);
+	
+
 	   }
-	   
-/*
-	$data1id    = @IPS_GetVariableIDByName('WebData1',$parent);
-	if ($data1id === false) {echo "Variable WebData1 nicht gefunden!"; return ; }
-	$data2id    = @IPS_GetVariableIDByName('WebData2',$parent);
-	if ($data2id === false) {echo "Variable WebData2 nicht gefunden!"; return ; }
-*/
+	else
+	   {
+		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
+		if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
+		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
+		if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
+		}
 
 	
 	
-	$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
-	if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
-	$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
-	if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
-
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 		
 		$dateleistung = IPS_GetVariable($leistungid);
 		$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
 		
 		$leistung = round(GetValue($leistungid),1);
+
       $gesamt   = round(GetValue($gesamtid),1);
+
       $akt_tk   = aktuelle_kosten($parent,$leistung,$groups);  // aktuelle Kosten und Tarif
       $kosten   = $akt_tk['KOSTEN'];
       $akt_tarif= $akt_tk['TARIF'];
