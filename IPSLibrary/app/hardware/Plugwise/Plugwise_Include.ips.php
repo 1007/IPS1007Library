@@ -977,7 +977,7 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 /***************************************************************************//**
 *	Mysql-Anbindung
 *******************************************************************************/
-function mysql_add($table,$time,$geraet,$wert)
+function mysql_add($table,$time,$geraet,$wert,$id=0,$group="")
 	{
 	$text = $table."-".$geraet."-".$wert;
 	
@@ -1018,8 +1018,11 @@ function mysql_add($table,$time,$geraet,$wert)
 			$sql = "CREATE TABLE `" . MYSQL_TABELLE_LEISTUNG . "` ";
 			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
 			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
+			$sql = $sql . "`SSID` VARCHAR( 150 )NOT NULL UNIQUE,";
 			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL ,";
+			$sql = $sql . "`GERAETEID` INT  ,";
 			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
+			$sql = $sql . "`GERAETEGRUPPE` VARCHAR( 150 ),";
    		$sql = $sql . "`LEISTUNG` FLOAT NOT NULL ";
    		$sql = $sql . " ) ENGINE = MYISAM ;";
 
@@ -1044,8 +1047,11 @@ function mysql_add($table,$time,$geraet,$wert)
 			$sql = "CREATE TABLE `" . MYSQL_TABELLE_GESAMT . "` ";
 			$sql = $sql . "( `ID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY , ";
 			$sql = $sql . "`TIMESTAMP` TIMESTAMP NOT NULL ,";
+			$sql = $sql . "`SSID` VARCHAR( 150 )NOT NULL UNIQUE,";
 			$sql = $sql . "`DATUMUHRZEIT` DATETIME NOT NULL ,";
+			$sql = $sql . "`GERAETEID` INT  ,";
 			$sql = $sql . "`GERAETENAME` VARCHAR( 150 )NOT NULL ,";
+			$sql = $sql . "`GERAETEGRUPPE` VARCHAR( 150 ) ,";
    		$sql = $sql . "`GESAMTVERBRAUCH` FLOAT NOT NULL ";
    		$sql = $sql . " ) ENGINE = MYISAM ;";
 
@@ -1066,8 +1072,8 @@ function mysql_add($table,$time,$geraet,$wert)
 	   {
 		$sql = "";
 		$sql = $sql . "INSERT INTO ".$table." ";
-		$sql = $sql . "(`DATUMUHRZEIT`,`GERAETENAME`,`LEISTUNG`) ";
-		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
+		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`LEISTUNG`,`GERAETEID`) ";
+		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id."); ";
 		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
       if ( mysql_error($server) )
@@ -1082,8 +1088,8 @@ function mysql_add($table,$time,$geraet,$wert)
 	   {
 		$sql = "";
 		$sql = $sql . "INSERT INTO ".$table." ";
-		$sql = $sql . "(`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`) ";
-		$sql = $sql . "VALUES ('".$time."','".$geraet."',".$wert."); ";
+		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`,`GERAETEID`) ";
+		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id."); ";
 		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
       if ( mysql_error($server) )

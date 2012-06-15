@@ -85,19 +85,33 @@
 	
 	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
 		{
-
-		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
-		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
-		$objectname = "Gesamt";
+		if ( isset($SystemStromzaehlerGroups) )
+		   {
+		   //print_r($SystemStromzaehlerGroups);
+		   $id = $SystemStromzaehlerGroups[0][2];
+		   $objectname = "Gesamt";
+		   }
+		else
+			{
+			$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
+			$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
+			$objectname = "Gesamt";
+		   }
+		   
+		
 		}
-	
+		
+
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];
-		
-	$wird_geloggt = AC_GetLoggingStatus($cfg['ArchiveHandlerId'],$id);
+
+	$wird_geloggt = AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
 	if ( !$wird_geloggt )
+	   {
+	   echo "Variable ". $id . "wird nicht geloggt";
 	   return;
+	   }
 	
 	// ID der String Variable in welche die Daten geschrieben werdern
 	$CfgDaten['ContentVarableId']= $ContentId;
