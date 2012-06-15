@@ -147,7 +147,7 @@
 	// Dieser Bereich wurde (soweit möglich) identisch der Originalstruktur gehalten.
 	// Informationen über die Parametrierung findet man unter http://www.highcharts.com/ref/
 	
-   $CfgDaten['chart']['backgroundColor'] = "#003366";
+   //$CfgDaten['chart']['backgroundColor'] = "#003366";
 	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
 	$CfgDaten['title']['style']['color'] = "#FFFFFF";
 
