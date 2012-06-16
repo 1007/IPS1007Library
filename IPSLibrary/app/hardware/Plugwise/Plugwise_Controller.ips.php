@@ -55,7 +55,7 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	hole_gesamtverbrauch();;break;
+			Case "Execute"				:	break;
 			Case "TimerEvent"			:	request_circle_data();
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
@@ -814,10 +814,10 @@ function hole_gesamtverbrauch()
 			$id_leistung = ID_LEISTUNG;
 
 	if ( isset( $SystemStromzaehlerGroups[0][2] ) )
-      $id_leistung = $SystemStromzaehlerGroups[0][2];
+      $id_leistung = intval($SystemStromzaehlerGroups[0][2]);
 
 	if ( isset( $SystemStromzaehlerGroups[1][2] ) )
-      $id_gesamt = $SystemStromzaehlerGroups[1][2];
+      $id_gesamt = intval($SystemStromzaehlerGroups[1][2]);
 
 	// wenn id nicht 0 kopiere Gesamtverbrauch nach Plugwise
 	if ( $id_gesamt != 0 )
@@ -891,7 +891,7 @@ function berechne_restverbrauch()
 
 	$sonst_leistung = $gesamt_leistung;
 	$sonst_gesamt   = $gesamt_gesamt;
-	echo "\nGesamt:".$sonst_leistung;
+	
 	foreach ( $others as $other)
 	   {  // gehe alle Gruppen durch ausser Hauptzaehler und Sonstige
 	   
@@ -901,7 +901,7 @@ function berechne_restverbrauch()
 	      {
 			$gruppen_verbrauch = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$other));
 			$gruppen_leistung  = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$other));
-			echo "\n".$gruppen_leistung;
+			
 			$sonst_leistung = $sonst_leistung - $gruppen_leistung;
 			}
 	   }

@@ -205,7 +205,7 @@
 
 	// Abmessungen des erzeugten Charts
 	$CfgDaten['HighChart']['Width'] = 0; 			// in px,  0 = 100%
-	$CfgDaten['HighChart']['Height'] = 320; 		// in px
+	$CfgDaten['HighChart']['Height'] = 315; 		// in px
 
 	//***************************************************************************
 	// und jetzt los ......

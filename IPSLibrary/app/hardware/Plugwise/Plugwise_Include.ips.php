@@ -709,7 +709,7 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 		
       
 		$html1 = "";
-		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='192' cellspacing='0'  >";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td style='text-align:left;'>";
 		$html1 = $html1 . "<span style='font-family:arial;color:white;font-size:15px;'>Aktuell<br></span>";
@@ -742,7 +742,7 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 		$fontsize1 = "20px";
 
 		$html1 = "";
-		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='10'>";
+		$html1 = $html1 . "<table border='0' bgcolor=$hintergrundfarbe width='100%' height='192' cellspacing='10'>";
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td style='text-align:left;'><span style='font-family:arial;color:white;font-size:$fontsize;'>Verbrauch Gesamt</span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize1;'>$gesamt</span></td>";
@@ -768,6 +768,7 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
+/*
 		$html1 = $html1 . "<tr>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
@@ -783,7 +784,7 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 		$html1 = $html1 . "<td align=right><span style='font-family:arial;font-weight:bold;color:#FFCC00;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "<td align=left><span style='font-family:arial;color:white;font-size:$fontsize;'></span></td>";
 		$html1 = $html1 . "</tr>";
-
+*/
 		$html1 = $html1 . "</table>";
 
       SetValueString($data2id,$html1);
