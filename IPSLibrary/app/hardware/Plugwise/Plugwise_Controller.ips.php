@@ -55,7 +55,7 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	berechne_restverbrauch();break;
+			Case "Execute"				:	hole_gesamtverbrauch();;break;
 			Case "TimerEvent"			:	request_circle_data();
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
@@ -794,18 +794,36 @@ function hole_gesamtverbrauch()
 	
 	GLOBAL $idCatOthers;
 	GLOBAL $idCatCircles;
+	GLOBAL $SystemStromzaehlerGroups;
 	
-	
+	// Wo soll der Gesamtverbrauch hin
 	$id1 = @IPS_GetObjectIDByIdent("SYSTEM_MAIN",$idCatOthers);
-	
 	if ( $id1 == false )
 		$id1 = IPS_GetObjectIDByIdent("Gesamt",$idCatOthers);
 
+	// IDs aus der Konfig lesen
+	$id_gesamtverbrauch = 0;
+	$id_leistung = 0;
+
    if ( defined('ID_GESAMTVERBRAUCH') )
-	if ( ID_GESAMTVERBRAUCH != 0 )
-		if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
+		if ( ID_GESAMTVERBRAUCH != 0 )
+			$id_gesamtverbrauch = ID_GESAMTVERBRAUCH;
+
+   if ( defined('ID_LEISTUNG') )
+		if ( ID_LEISTUNG != 0 )
+			$id_leistung = ID_LEISTUNG;
+
+	if ( isset( $SystemStromzaehlerGroups[0][2] ) )
+      $id_leistung = $SystemStromzaehlerGroups[0][2];
+
+	if ( isset( $SystemStromzaehlerGroups[1][2] ) )
+      $id_gesamt = $SystemStromzaehlerGroups[1][2];
+
+	// wenn id nicht 0 kopiere Gesamtverbrauch nach Plugwise
+	if ( $id_gesamt != 0 )
+		if ( IPS_ObjectExists($id_gesamt) )
 	   	{
-      	$d = GetValue(ID_GESAMTVERBRAUCH);
+      	$d = GetValue($id_gesamt);
 			$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
 			if (GetValue($id) <> $d)
 				SetValue($id,$d);
@@ -813,19 +831,20 @@ function hole_gesamtverbrauch()
 	   	}
 	   	
 	   	
-   if ( defined('ID_LEISTUNG') )
-   if ( ID_LEISTUNG != 0 )
-		if ( IPS_ObjectExists(ID_LEISTUNG) )
+  
+	// wenn id nicht 0 kopiere Gesamtleistung nach Plugwise
+   if ( $id_leistung != 0 )
+		if ( IPS_ObjectExists($id_leistung) )
 	   	{
-      	$d = GetValue(ID_LEISTUNG);
+      	$d = GetValue($id_leistung);
 			$id = IPS_GetObjectIDByIdent('Leistung',$id1);
 			if (GetValue($id) <> $d)
 				SetValue($id,$d);
 
 	   	}
-   if ( defined('ID_GESAMTVERBRAUCH') )
-   if ( defined('ID_LEISTUNG') )
-   if ( ID_LEISTUNG == 0 and ID_GESAMTVERBRAUCH == 0)
+	   	
+	// wenn 0 dann alle Circles addieren
+   if ( $id_leistung == 0 and $id_gesamt == 0)
       {
 		$l = 0;
 		$g = 0;
@@ -872,7 +891,7 @@ function berechne_restverbrauch()
 
 	$sonst_leistung = $gesamt_leistung;
 	$sonst_gesamt   = $gesamt_gesamt;
-	
+	echo "\nGesamt:".$sonst_leistung;
 	foreach ( $others as $other)
 	   {  // gehe alle Gruppen durch ausser Hauptzaehler und Sonstige
 	   
@@ -882,6 +901,7 @@ function berechne_restverbrauch()
 	      {
 			$gruppen_verbrauch = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$other));
 			$gruppen_leistung  = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$other));
+			echo "\n".$gruppen_leistung;
 			$sonst_leistung = $sonst_leistung - $gruppen_leistung;
 			}
 	   }
