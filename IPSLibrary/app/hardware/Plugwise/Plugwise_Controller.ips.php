@@ -801,6 +801,7 @@ function hole_gesamtverbrauch()
 	if ( $id1 == false )
 		$id1 = IPS_GetObjectIDByIdent("Gesamt",$idCatOthers);
 
+   if ( defined('ID_GESAMTVERBRAUCH') )
 	if ( ID_GESAMTVERBRAUCH != 0 )
 		if ( IPS_ObjectExists(ID_GESAMTVERBRAUCH) )
 	   	{
@@ -810,6 +811,9 @@ function hole_gesamtverbrauch()
 				SetValue($id,$d);
 		      
 	   	}
+	   	
+	   	
+   if ( defined('ID_LEISTUNG') )
    if ( ID_LEISTUNG != 0 )
 		if ( IPS_ObjectExists(ID_LEISTUNG) )
 	   	{
@@ -819,7 +823,8 @@ function hole_gesamtverbrauch()
 				SetValue($id,$d);
 
 	   	}
-
+   if ( defined('ID_GESAMTVERBRAUCH') )
+   if ( defined('ID_LEISTUNG') )
    if ( ID_LEISTUNG == 0 and ID_GESAMTVERBRAUCH == 0)
       {
 		$l = 0;
