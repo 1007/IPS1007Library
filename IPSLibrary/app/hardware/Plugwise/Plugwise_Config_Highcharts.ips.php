@@ -108,11 +108,12 @@
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];
-
+	
 	$wird_geloggt = @AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
 	if ( !$wird_geloggt )
 	   {
 	   $text = "Variable ". $id . " wird nicht geloggt";
+	   
 	   SetValue($ContentId,$text);
 	   return;
 	   }
