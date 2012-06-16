@@ -118,7 +118,7 @@
   //***************************************************************************
 	// MySql Anbindung
 	//***************************************************************************
-	define ( 'MYSQL_ANBINDUNG' , 			true );
+	define ( 'MYSQL_ANBINDUNG' , 			false );
 	define ( 'MYSQL_SERVER' , 				'121.11.58.34' );
 	define ( 'MYSQL_USER' , 				'xxxx' );
 	define ( 'MYSQL_PASSWORD' , 			'xxxx' );
