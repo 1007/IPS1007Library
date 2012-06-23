@@ -42,6 +42,10 @@
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
 	$GroupDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Groups";
+
+	$cssDefault    = IPS_GetKernelDir()."webfront\user\Plugwise\Default\Plugwise.css";
+	$cssFile       = IPS_GetKernelDir()."webfront\user\Plugwise\Plugwise.css";
+
   
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
   
@@ -415,6 +419,16 @@
 
 
     }
+
+  if ( file_exists($cssFile))
+	   {
+	   echo "\nUser-CSS-File existiert. Wird nicht ueberschrieben";
+		}
+	else
+	   {
+	   echo "\nUser-CSS-File existiert nicht . Default wird kopiert";
+	   copy($cssDefault,$cssFile);
+		}
 
   
   ReloadAllWebFronts() ;

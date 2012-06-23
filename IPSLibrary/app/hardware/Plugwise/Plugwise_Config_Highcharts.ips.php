@@ -122,7 +122,7 @@
 	$CfgDaten['ContentVarableId']= $ContentId;
    // ID des Highcharts Scripts
 	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts', $CategoryIdApp );  				
-                                    
+	  echo $CfgDaten['HighChartScriptId'];
 	// Highcharts oder Highstock (default = Highcharts
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
 	
@@ -214,6 +214,7 @@
 	// und jetzt los ......
 	//***************************************************************************
 	//$s = IPS_GetScript($CfgDaten['HighChartScriptId']);
+	
 	//include($s['ScriptFile']);
 
 	IPSUtils_Include ("Highcharts.ips.php",      "IPSLibrary::app::hardware::Plugwise");

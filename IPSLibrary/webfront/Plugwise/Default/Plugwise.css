@@ -1,0 +1,82 @@
+/* Tabelleneigenschaften*/
+.table {
+        width:100%;
+        height:192px;
+        border-style:solid;
+        border-width:0px;
+        bordercolor: #FFFFFF;       
+        background: #000000;
+        background-color : transparent;
+        margin-top:0px; 
+        margin-left:0px;
+       }      
+
+/* Eigenschaften fuer die Verbrauchsschriften */
+.verbrauchschrift { 
+        color:#6699FF;
+        font-size:15px;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Verbrauchsdaten */
+.verbrauchdaten { 
+        color:#FFCC00;
+        font-size:20px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Tarifanzeige */
+.tarifschrift { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Tarifanzeige Daten */
+.tarifdaten { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Zeitanzeige */
+.zeitschrift { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Zeitanzeige Daten */
+.zeitdaten { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Leistung Schrift */
+.leistungschrift { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Leistung Daten */
+.leistungdaten { 
+        color:#FFFF90;
+        font-size:40px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Kosten Schrift */
+.kostenschrift { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Kosten Daten */
+.kostendaten { 
+        color:#FFFF90;
+        font-size:40px;
+        font-weight:bold;
+        text-align:center;
+        }      

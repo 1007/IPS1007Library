@@ -374,9 +374,9 @@ function plugwise_0013_received($buf)
 		if ( GetValueFloat($id) != $Leistung )
 			SetValueFloat($id,$Leistung);
 
-		$id = IPS_GetVariableIDByName ("Status", $myCat);
-		if ( GetValue($id) <> true)
-			SetValue($id,True);
+//		$id = IPS_GetVariableIDByName ("Status", $myCat);
+//		if ( GetValue($id) <> true)
+//			SetValue($id,True);
 
 		$time = date('Y-m-d H:i:s');
 		
@@ -468,8 +468,10 @@ function plugwise_0024_received($buf)
 
 	$einaus = substr($buf,41,1);
 	$id = IPS_GetVariableIDByName("Status",$myCat);
-	if ( GetValue($id) != $einaus )
-		SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);
+	$aktstatus1 = GetValue($id);
+	
+	if ( GetValue($id) != $einaus ){ 
+		SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);}
 
 	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
 	
@@ -943,7 +945,10 @@ function berechne_restverbrauch()
 
    $sonst_leistung = $gesamt_leistung - $l ;
    $sonst_gesamt   = $gesamt_gesamt - $g ;
-   
+
+	if ( $sonst_leistung < 0 ) $sonst_leistung = 0;
+	if ( $sonst_gesamt < 0 ) $sonst_gesamt = 0;
+
 	//echo "\n".$sonst_leistung."-".$sonst_gesamt;
 	SetValue($sonstid_leistung,$sonst_leistung);
 	SetValue($sonstid_gesamt,$sonst_gesamt);
