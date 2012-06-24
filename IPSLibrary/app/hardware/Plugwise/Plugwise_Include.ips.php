@@ -19,7 +19,7 @@
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 
-
+   
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
 *******************************************************************************/
@@ -993,9 +993,31 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 	}
 
 /***************************************************************************//**
+*	Gruppe finden fuer Ident
+*******************************************************************************/
+function find_group($ident="")
+	{
+	GLOBAL $CircleGroups;
+	
+	
+	
+	$group = "";
+	
+	foreach($CircleGroups as $circle)
+	   {
+	   if ( $circle[0] == $ident )
+	      { $group = $circle[2]; break; }
+	   }
+	   
+	//IPS_LogMessage("...",$ident."-".$group);
+	return $group;
+	}
+	
+
+/***************************************************************************//**
 *	Mysql-Anbindung
 *******************************************************************************/
-function mysql_add($table,$time,$geraet,$wert,$id=0,$group="")
+function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000000")
 	{
 	$text = $table."-".$geraet."-".$wert;
 	
@@ -1088,10 +1110,40 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="")
 
 	if ( $table == MYSQL_TABELLE_LEISTUNG )
 	   {
+	   $gefunden = false;
+	   
+	   $result = mysql_query("SHOW COLUMNS FROM $table ");
+		if (!$result)
+			{
+    		echo 'Konnte Abfrage nicht ausführen: ' . mysql_error();
+    		exit;
+			}
+		if (mysql_num_rows($result) > 0)
+			{
+    		while ($row = mysql_fetch_assoc($result))
+			 	{
+        		$item = $row['Field'];
+        		//IPS_LogMessage("Plugwise MySql",$item);
+				if ( $item == 'LOGADRESSE' ) $gefunden = true;
+        		   
+    			}
+			}
+		if ( $gefunden == false )
+		   {
+	   	$sql = "ALTER TABLE ".$table." ADD `LOGADRESSE` VARCHAR( 150 );";
+      	mysql_query($sql);
+      	if ( mysql_error($server) )
+      		{
+      		$error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+				IPS_LogMessage("Plugwise MySql",$error);
+				}
+			}
+
+
 		$sql = "";
 		$sql = $sql . "INSERT INTO ".$table." ";
-		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`LEISTUNG`,`GERAETEID`) ";
-		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id."); ";
+		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`LEISTUNG`,`GERAETEID`,`GERAETEGRUPPE`,`LOGADRESSE`) ";
+		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id.",'".$group."','".$logadresse."'); ";
 		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
       if ( mysql_error($server) )
@@ -1104,11 +1156,43 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="")
 	
 	if ( $table == MYSQL_TABELLE_GESAMT )
 	   {
+	   $gefunden = false;
+
+	   $result = mysql_query("SHOW COLUMNS FROM $table ");
+		if (!$result)
+			{
+    		echo 'Konnte Abfrage nicht ausführen: ' . mysql_error();
+    		exit;
+			}
+		if (mysql_num_rows($result) > 0)
+			{
+    		while ($row = mysql_fetch_assoc($result))
+			 	{
+        		$item = $row['Field'];
+        		//IPS_LogMessage("Plugwise MySql",$item);
+				if ( $item == 'LOGADRESSE' ) $gefunden = true;
+
+    			}
+			}
+		if ( $gefunden == false )
+		   {
+	   	$sql = "ALTER TABLE ".$table." ADD `LOGADRESSE` VARCHAR( 150 );";
+      	mysql_query($sql);
+      	if ( mysql_error($server) )
+      		{
+      		$error =  mysql_errno($server) . ": " . mysql_error($server) . "\n";
+				IPS_LogMessage("Plugwise MySql",$error);
+				}
+			}
+
+
+
+
 		$sql = "";
 		$sql = $sql . "INSERT INTO ".$table." ";
-		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`,`GERAETEID`) ";
-		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id."); ";
-		//IPS_LogMessage("Plugwise MySql",$sql);
+		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`,`GERAETEID`,`GERAETEGRUPPE`,`LOGADRESSE`) ";
+		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id.",'".$group."','".$logadresse."'); ";
+		IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
       if ( mysql_error($server) )
       	{

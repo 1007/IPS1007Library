@@ -314,6 +314,14 @@
 	$IDCircles   = CreateDummyInstance("Stromzähler",$VisuID_menu,20);
   IPS_SetHidden($IDCircles,true);
   
+  // alternativer button ?
+  if ( defined('ALT_BUTTON_NORMAL') )
+    if (ALT_BUTTON_NORMAL!= FALSE )
+      {
+      $WFC_TabPaneName = "<img src='".ALT_BUTTON_NORMAL."' height=32  width=150 align='top' alt='Plugwise'>";
+
+      }
+  
 	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , 20 , $WFC_TabPaneName   , ''  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 

@@ -132,11 +132,7 @@
 
 		if ( $self['ObjectName'] == 'Versionsinfo' )
 		   {
-		   IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
-   		$moduleManager = new IPSModuleManager('Plugwise');
-			$version = "<h3>Version : " .$moduleManager->VersionHandler()->GetModuleVersion() ."</h3>";
-		   
-		   SetValue($id,$version);
+		   SetValue($id,get_version());
 		   }
 
 		   
@@ -320,7 +316,30 @@
 
 		}
 
+/***************************************************************************//**
+*	VersionsInfo mit Changelog zurueckgeben
+*******************************************************************************/
+function get_version()
+	{
+	IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+   $moduleManager = new IPSModuleManager('Plugwise');
+	$version = "<h3>Version : " .$moduleManager->VersionHandler()->GetModuleVersion() ."</h3>";
 
+	$pfad =IPS_GetKernelDir()."webfront\\User\\Plugwise";
+	$file = $pfad . "\\Changelog.txt";
+	
+	//$version = $version . "<br>" . $file;
+	if ( file_exists ( $file ) )
+		$string = file_get_contents($file);
+	else
+	   $string = "<br>Changelog.txt nicht gefunden<br>";
+	$string = nl2br($string);
+	
+	$version = $version . "<br>" . $string;
+
+	return $version;
+	}
+	
 //******************************************************************************
 // zeigt Data1 , Data2 , Graph
 //******************************************************************************

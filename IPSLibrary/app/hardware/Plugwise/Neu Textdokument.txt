@@ -1,6 +1,0 @@
-test
-
-call test.bat
-
-rem test
-
