@@ -866,8 +866,7 @@ function hole_gesamtverbrauch()
 
 		foreach($CircleGroups as $item)
 		   {
-		   
-		   if ( $item[7] == true or $item[7] == 1 or $item[7] == "1" )
+		   if ( (isset($item[7]) and $item[7] == true) or (isset($item[7]) and $item[7] == 1) or (isset($item[7]) and $item[7] == "1") )
 		      {
 		      
 		   	$id = @IPS_GetObjectIDByIdent($item[0],$idCatCircles);
@@ -929,7 +928,7 @@ function berechne_restverbrauch()
 	foreach($CircleGroups as $item)
 		{
 
-		if ( $item[7] == true or $item[7] == 1 or $item[7] == "1" )
+		if ( (isset($item[7]) and $item[7] == true) or (isset($item[7]) and $item[7] == 1) or (isset($item[7]) and $item[7] == "1") )
 		   {
 
 		   $id = @IPS_GetObjectIDByIdent($item[0],$idCatCircles);
