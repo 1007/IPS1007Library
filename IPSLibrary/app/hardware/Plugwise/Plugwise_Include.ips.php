@@ -1020,6 +1020,7 @@ function find_group($ident="")
 function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000000")
 	{
 	$text = $table."-".$geraet."-".$wert;
+	$logadresse = strtoupper($logadresse);
 	
 	//IPS_LogMessage("MYSQL",$text);
 	

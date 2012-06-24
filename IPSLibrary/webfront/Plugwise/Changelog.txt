@@ -1,5 +1,8 @@
-Version=1.2.1016
+Version=1.2.1017
  - Mysql: Geraetegruppe wird mit abgespeichert
  - css-File fuer eigene Webfrontgestaltung
  - Changelog-Anzeige in der Versionsanzeige
  - Mysql: Logadresse mit in Tabelle Gesamt
+ - alternativer Button fuer PlugwiseTab moeglich
+ - automatische Benachrichtigung bei neuen Updates
+ 

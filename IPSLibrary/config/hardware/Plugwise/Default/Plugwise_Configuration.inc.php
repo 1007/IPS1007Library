@@ -47,7 +47,7 @@
 *                       Daten der Circles muessen trotzdem unten eingetragen werden                                        
 *   CHECK_VERSION     - suche nach neuer Version ( Standard FALSE )
 *   CHECK_VERSION_TIME- Uhrzeit zu der nach einem Update gesucht wird.
-*                       Nur wenn CHECK_VERSION auf TRUE                    
+*                       Nur wenn CHECK_VERSION auf TRUE   ( Stunde )                 
 *   ALT_BUTTON_NORMAL - benutze eigenen Button fuer Tab im Webfront
 *                       ( Standard FALSE )
 *                       zum aktivieren Filenamen eingeben.
@@ -64,7 +64,7 @@
 	define ( 'WAIT_TIME'         , 300    );          
   define ( 'AUTOCREATECIRCLE'  , false  );    
 	define ( 'CHECK_VERSION'     , false  ); 	
-	define ( 'CHECK_VERSION_TIME', "04:00"); 	
+	define ( 'CHECK_VERSION_TIME', 4      ); 	
   define ( 'ALT_BUTTON_NORMAL' , false  ); 	
   define ( 'ALT_BUTTON_RED'    , false  ); 	
 

@@ -19,62 +19,93 @@
 /***************************************************************************//**
 * @ingroup plugwise
 * @{
-* @defgroup Plugwise_Readbuffer Plugwise Readbuffer
+* @defgroup Plugwise_CheckUpdate Plugwise CheckUpdate
 * @{
 *
-* @file       Plugwise_Readbuffer.ips.php
-* @author     Axel Philippson (axelp) , Juergen Gerharz (1007)
+* @file       Plugwise_CheckUpdate.ips.php
+* @author     Juergen Gerharz (1007)
 * @version    Version 1.0.0
-* @date       18.05.2012
+* @date       23.06.2012
 *
 *
-*  @brief   Plugwise Readbuffer - sendet Anfrage fuer Buffer
-	         Aufbau des Buffers :
-						278528			0044000 - 0044007  umgerechnete Logadresse  0
-						278536			0044008 - 004400F
-						278544			0044010 - 0044017
-											0044018 - 004401F
-											0044020 - 0044027  umgerechnete Logadresse  1
-											....... - .......
-											....... - .......
-
-						282592			0044FE0 - 0044FE7  umgerechnete Logadresse  127
-						282600			0044FE8 - 0044FEF
-						282608			0044FF0 - 0044FF7
-						282616			0044FF8 - 0044FFF
-
-											0045000            umgerechnete Logadresse  128
-* @todo
+*  @brief   Plugwise CheckUpdate - checkt ob Update verfuegbar
 *
 *******************************************************************************/
 
+
+		
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
   	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 
-	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-   $idCatCircles = get_ObjectIDByPath($CircleDataPath);
-
-	foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
-		{	// alle Unterobjekte durchlaufen
-		$id_info = IPS_GetObject($item);
-		$LogAddress = GetValue(IPS_GetVariableIDByName ("LogAddress", $item));
-		$LogAddress = $LogAddress - 24;
-		if ( $LogAddress < 278528 )
-		   $LogAddress = 278528;
-		
-		$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
-      
-		PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
+	if ( defined('CHECK_VERSION') )
+	   if ( CHECK_VERSION == false )
+	      {
+	      return;
+	      }
+		else
+		   {
+			}
+	else
+		{
+	   return;
 		}
 
+	$local_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\Changelog.txt";
+	
+	
+	$remote_file = "https://raw.github.com/1007/IPS1007Library/master/IPSLibrary/webfront/Plugwise/Changelog.txt";
 
-	//$LogAddress = str_pad(strtoupper(dechex(282624)), 8 ,'0', STR_PAD_LEFT);
+   $sourceFile = str_replace('\\','/',$remote_file);
+	//echo 'Load File '.$sourceFile."\n";
+	$curl_handle=curl_init();
+	curl_setopt($curl_handle, CURLOPT_URL,$sourceFile);
+	curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT,10);
+	curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl_handle, CURLOPT_FAILONERROR, true);
+	$fileContent = curl_exec($curl_handle);
 
-	//PW_SendCommand("0048000D6F0000C3B1DA".$LogAddress);
+	if ($fileContent===false)
+		{
+		throw new Exception('Download of File '.$sourceFile.' failed !!!');
+		}
+	curl_close($curl_handle);
 
+	$remote_file = explode("\n", $fileContent);
+	$local_file  = explode("\n", file_get_contents($local_file));
+
+	$update = $remote_file;
+
+	$remote_file = trim($remote_file[0]);
+	$local_file  = trim($local_file[0]);
+	//echo "\n".$remote_file;
+	//echo "\n".$local_file;
+
+	if ( $remote_file != $local_file)
+		{
+		// neue Version vorhanden
+		if ( defined('ALT_BUTTON_RED') )
+		   {
+      	$normal_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\".ALT_BUTTON_RED;
+      	$dest_file    = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\tabPane.png";
+      	copy ( $normal_file,$dest_file);
+      	IPS_logmessage("Plugwise","Neue Version vorhanden");
+         if ( $IPS_SENDER != 'Timer' )
+      		ReloadAllWebFronts() ;
+			}
+		}
+
+	for ($x=0;$x<10;$x++)
+	   {
+		$s = @$update[$x];
+		$s = $s ."<br>";
+		echo $s;
+		}
 
 	dummy();
 
+	
+	
 /***************************************************************************//**
 * Dummy Routine gegen DoxygenBug
 * wenn foreach() als letzter Befehl im Kopf dann wird foreach

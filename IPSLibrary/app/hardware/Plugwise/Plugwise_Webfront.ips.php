@@ -130,6 +130,13 @@
 			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_SetTime",$IdApp));
 		   }
 
+		if ( $self['ObjectName'] == 'Update vorhanden?' )
+		   {
+		   SetValue($id,"Update wird gesucht");
+			$string = IPS_RunScriptWait(IPS_GetScriptIDByName("Plugwise_CheckUpdate",$IdApp));
+		   SetValue($id,$string);
+		   }
+
 		if ( $self['ObjectName'] == 'Versionsinfo' )
 		   {
 		   SetValue($id,get_version());
