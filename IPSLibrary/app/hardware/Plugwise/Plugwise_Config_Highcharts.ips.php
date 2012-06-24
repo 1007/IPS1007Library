@@ -122,7 +122,8 @@
 	$CfgDaten['ContentVarableId']= $ContentId;
    // ID des Highcharts Scripts
 	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts', $CategoryIdApp );  				
-	  echo $CfgDaten['HighChartScriptId'];
+	  //echo $CfgDaten['HighChartScriptId'];
+	  //echo "<a href='http://www.ip-symcon.de/forum/'>forum</a>";
 	// Highcharts oder Highstock (default = Highcharts
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
 	

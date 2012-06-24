@@ -346,7 +346,26 @@ function plugwise_0013_received($buf)
 		$gainB	 = GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
 		$offTotal = GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
 		$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
+      
+		$kalib_str = @GetValueString(IPS_GetVariableIDByName("Kalibrierdaten", $myCat));
+		if ( $kalib_str != false )
+		   {
+         
+		   //IPS_LogMessage("Kalibrierdaten vorhanden",$kalib_str);
+		   $kalib_array = explode(";", $kalib_str);
+         $gainA_    = @floatval($kalib_array[0]);
+         $gainB_    = @$kalib_array[1];
+			$offTotal_ = @$kalib_array[2];
+			$offNoise_ = @$kalib_array[3];
 
+			$diff = $gainA - $gainA_;
+			
+			//if ($gainA != $gainA_ )
+			   //IPS_LogMessage("Kalibrierdaten ungleich gainA","[".$gainA."][".$gainA_."]".$diff);
+
+
+		   }
+		
 		// keine Kalibrierung
 		if ( $gainA == 0 and $gainB == 0 and $offTotal == 0 and $offNoise == 0 )
 		   {
@@ -522,13 +541,30 @@ function plugwise_0027_received($buf)
 		return;
 	   }
 	   
-	SetValueFloat(CreateVariable("gaina",2,$myCat,0,""),bintofloat(substr($buf,24,8)));
-	SetValueFloat(CreateVariable("gainb",2,$myCat,0,""),bintofloat(substr($buf,32,8)));
+	$gaina    = bintofloat(substr($buf,24,8));
+	$gainb    = bintofloat(substr($buf,32,8));
+	$offTotal = bintofloat(substr($buf,40,8));
+	$offNoise = bintofloat(substr($buf,48,8));
+
+	SetValueFloat(CreateVariable("gaina",2,$myCat,0,"")	,bintofloat(substr($buf,24,8)));
+	SetValueFloat(CreateVariable("gainb",2,$myCat,0,"")	,bintofloat(substr($buf,32,8)));
 	SetValueFloat(CreateVariable("offTotal",2,$myCat,0,""),bintofloat(substr($buf,40,8)));
 	if (substr($buf,48,8)=="00000000")
+	   {
 		SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),0);
+      $offNoise = 0;
+		}
 	else
+		{
 		SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),bintofloat(substr($buf,48,8)));
+      $offNoise = bintofloat(substr($buf,48,8));
+		}
+		
+	$kal_str  = $gaina.";".$gainb.";".$offTotal.";".$offNoise;
+	//IPS_LogMessage("kalib",$offNoise."-".substr($buf,48,8));
+
+	SetValue(CreateVariable("Kalibrierdaten", 3,$myCat,0,"",0,0),$kal_str);
+
 
 	$text = IPS_GetName($myCat) . "Kalibrierungsdaten empfangen [".$buf."]";
 	

@@ -307,6 +307,8 @@ function createCircle($mac, $parentID){
 	IPS_SetHidden($myVar, True);
    $myVar = CreateVariable("LastMessage", 3,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
+   $myVar = CreateVariable("Kalibrierdaten", 3,$item,0,"",0,0);
+	IPS_SetHidden($myVar, True);
 
 	// Kalibrierungsdaten vom Circle abrufen
 	PW_SendCommand("0026".$mac);
@@ -1193,7 +1195,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 		$sql = $sql . "INSERT INTO ".$table." ";
 		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`,`GERAETEID`,`GERAETEGRUPPE`,`LOGADRESSE`) ";
 		$sql = $sql . "VALUES ('".$time."-".$geraet."','".$time."','".$geraet."',".$wert.",".$id.",'".$group."','".$logadresse."'); ";
-		IPS_LogMessage("Plugwise MySql",$sql);
+		//IPS_LogMessage("Plugwise MySql",$sql);
       mysql_query($sql);
       if ( mysql_error($server) )
       	{
