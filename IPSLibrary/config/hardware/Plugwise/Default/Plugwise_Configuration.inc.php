@@ -215,6 +215,8 @@
 *   MYSQL_DATENBANK         - MySQL-Datenbankname (Standard = Plugwise)
 *   MYSQL_TABELLE_LEISTUNG  - MySQL-Tab Leistung  (Standard = Leistung)
 *   MYSQL_TABELLE_GESAMT    - MySQL-Tab Verbrauch (Standard = Gesamtverbrauch)
+* wird eine Variable angegeben zB aus der ____autoload.php muss diese als
+* GLOBAL definiert werden. ( GLOBAL $MYSQL_SERVER; )
 *******************************************************************************/
 	define ( 'MYSQL_ANBINDUNG'         , false );
 	define ( 'MYSQL_SERVER'            , '192.168.10.1' );
