@@ -692,7 +692,8 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 		$akt_tarif= $akt_tarif . " " . $kt_preis ." Cent/kWh";
 
       $waehrung = "Cent/h";
-      $vergleich = 0.1 ;
+      $vergleich = 10 ;
+      
       if ( $kosten > $vergleich )
          { 
          $kosten = $kosten/100;
