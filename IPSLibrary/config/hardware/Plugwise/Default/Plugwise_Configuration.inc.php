@@ -76,6 +76,8 @@
 *   Feld 02   -   Name          - Anzeigename
 *   Feld 03   -   Gruppe        - in welcher Gruppe ist dieser Circle
 *   Feld 04   -   Ein/Aus       - Im Webfront schaltbar ( 0/1 oder true/false )
+*                                 hier kann auch eine VariablenID angegeben 
+*                                 werden die den Circle entsprechend schaltet                               
 *   Feld 05   -   Watt          - max Watt Anzeige im Graph ( rot ) ( 0 = disabled )
 *   Feld 06   -   kWh           - zur Zeit ohne Funktion
 *   Feld 07   -   Tarifgruppe   - Tarifgruppe des Circles (siehe Tarife )
