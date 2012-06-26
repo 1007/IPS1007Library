@@ -342,10 +342,10 @@ function plugwise_0013_received($buf)
 		}
 	else
 		{
-		$gainA	 = GetValueFloat(IPS_GetVariableIDByName("gaina", $myCat));
-		$gainB	 = GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
-		$offTotal = GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
-		$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
+		$gainA	 = @GetValueFloat(IPS_GetVariableIDByName("gaina", $myCat));
+		$gainB	 = @GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
+		$offTotal = @GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
+		$offNoise = @GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
       
 		$kalib_str = @GetValueString(IPS_GetVariableIDByName("Kalibrierdaten", $myCat));
 		if ( $kalib_str != false )

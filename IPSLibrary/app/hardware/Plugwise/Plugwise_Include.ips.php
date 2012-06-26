@@ -294,14 +294,14 @@ function createCircle($mac, $parentID){
   		AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
 		}
 
-	$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
-	IPS_SetHidden($myVar, True);
-	$myVar = CreateVariable("gainb",2,$item,0,"", 0,0);
-	IPS_SetHidden($myVar, True);
-	$myVar = CreateVariable("offTotal",2,$item,0,"",0,0);
-	IPS_SetHidden($myVar, True);
-	$myVar = CreateVariable("offNoise",2,$item,0,"",0,0);
-	IPS_SetHidden($myVar, True);
+	//$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
+	//IPS_SetHidden($myVar, True);
+	//$myVar = CreateVariable("gainb",2,$item,0,"", 0,0);
+	//IPS_SetHidden($myVar, True);
+	//$myVar = CreateVariable("offTotal",2,$item,0,"",0,0);
+	//IPS_SetHidden($myVar, True);
+	//$myVar = CreateVariable("offNoise",2,$item,0,"",0,0);
+	//IPS_SetHidden($myVar, True);
    $myVar = CreateVariable("LogAddress", 1,$item,0,"",0,0);
 	IPS_SetHidden($myVar, True);
    $myVar = CreateVariable("Error", 1,$item,0,"",0,0);
