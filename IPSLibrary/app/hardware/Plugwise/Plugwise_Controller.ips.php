@@ -860,6 +860,11 @@ function request_circle_data()
       	$id = IPS_GetVariableIDByName("Error", $item);
 			if ( GetValue($id ) != 1 )
 				SetValue($id,1);
+			// wenn Circle nicht erreichbar Leistung auf 0
+      	$id = IPS_GetVariableIDByName("Leistung", $item);
+			if ( GetValue($id ) != 0 )
+				SetValue($id,0);
+
 			}
 		else
 		   {
