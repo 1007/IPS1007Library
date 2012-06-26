@@ -643,7 +643,7 @@ function plugwise_0049_received($buf)
 	$mcID = substr($buf,8,16);
 
 	$group_name = find_group($mcID);
-
+	
 	$LogAddressRaw = substr($buf,88,8);
 
 	if ( !$myCat)
@@ -656,10 +656,32 @@ function plugwise_0049_received($buf)
 	//***************************************************************************
 	// Kalibrierungsdaten laden
 	//***************************************************************************
-	$gaina	 = GetValueFloat(IPS_GetVariableIDByName("gaina", $myCat));
-	$gainb	 = GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
-	$offTotal = GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
-	$offNoise = GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
+	$gaina	 = @GetValueFloat(IPS_GetVariableIDByName("gaina", $myCat));
+	$gainb	 = @GetValueFloat(IPS_GetVariableIDByName("gainb", $myCat));
+	$offTotal = @GetValueFloat(IPS_GetVariableIDByName("offTotal", $myCat));
+	$offNoise = @GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
+
+	$kalib_str = @GetValueString(IPS_GetVariableIDByName("Kalibrierdaten", $myCat));
+	if ( $kalib_str != false )
+		{
+		//IPS_LogMessage("Kalibrierdaten vorhanden",$kalib_str);
+		$kalib_array = explode(";", $kalib_str);
+      $gainA_      = @floatval($kalib_array[0]);
+      $gainB_      = @floatval($kalib_array[1]);
+		$offTotal_   = @floatval($kalib_array[2]);
+		$offNoise_   = @floatval($kalib_array[3]);
+
+		$gaina	 = $gainA_;
+		$gainb	 = $gainB_;
+		$offTotal = $offTotal_;
+		$offNoise = $offNoise_;
+
+		}
+
+	//IPS_logMessage("........",$gaina);
+	//IPS_logMessage("........",$gainb);
+	//IPS_logMessage("........",$offTotal);
+	//IPS_logMessage("........",$offNoise);
 
 	$verbrauch = 0;
 	$bufferstelle = 0;
@@ -727,7 +749,15 @@ function plugwise_0049_received($buf)
 		   {
 			$ti1 = date('Y-m-d H:i:s',$ti1);
 			$ti2 = date('Y-m-d H:i:s',$usedlogdate);
-      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch);
+			
+			//$time = date('d.m.y H:i:s');
+			$lad = hexdec($LogAddressRaw);
+			$lad = $lad + ( $bufferstelle * 8 );
+			$lad = dechex($lad);
+
+      	//mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch);
+      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
+     		
 
 			//IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
 			}
