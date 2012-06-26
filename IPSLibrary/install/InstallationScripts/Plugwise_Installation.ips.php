@@ -323,7 +323,7 @@
 	{
 	CreateProfile_Associations ("Plugwise_MenuItem", array(
 												0	=> "",
-												1 	=> "-----"
+												1 	=> "———"
 												),
 												'', array(
 												0  =>	0xFFCC00,
@@ -364,9 +364,12 @@
   $graphid  = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
 
+  $IDAllgemein = CreateDummyInstance("Allgemeines",$VisuID_menu,10);
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Stromzähler",$VisuID_menu,20);
   IPS_SetHidden($IDCircles,true);
+	$IDSystemst  = CreateDummyInstance("Systemsteuerung",$VisuID_menu,30);
+  IPS_SetHidden($IDSystemst,true);
   
   // alternativer button ?
   if ( defined('ALT_BUTTON_NORMAL') )
@@ -394,7 +397,7 @@
 	//***************************************************************************
 	// Systemsteuerung erstellen
 	//***************************************************************************
-  $id = CreateVariable("Systemsteuerung", 1, $VisuID_menu, 0, "Plugwise_MenuItem", $ActionScriptId, false);
+  $id = CreateVariable("Systemsteuerung", 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
 
 	//***************************************************************************
 	// Gruppenmenu erstellen fuer Circles und Externe
@@ -457,20 +460,20 @@
 	// Scriptlinks erstellen
 	//***************************************************************************
 
-    $id = CreateVariable("Kalibrierung", 1, $VisuID_data1, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Kalibrierung", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circles suchen", 1, $VisuID_data1, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circles suchen", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit lesen", 1, $VisuID_data1, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circlezeit lesen", 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit setzen", 1, $VisuID_data1, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circlezeit setzen", 1, $IDSystemst, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
 
-    $id = CreateVariable("OnlineUpdate", 1, $VisuID_data2, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("OnlineUpdate", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Versionsinfo", 1, $VisuID_data2, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Versionsinfo", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Update vorhanden?", 1, $VisuID_data2, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Update vorhanden?", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     
 

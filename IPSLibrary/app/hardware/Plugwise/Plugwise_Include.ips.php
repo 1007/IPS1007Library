@@ -424,8 +424,13 @@ function update_uebersicht()
    $IdMenu    = @get_ObjectIDByPath($VisuPath,true);
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
    $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    = get_ObjectIDByPath($AllgPath);
 
-	$id = @IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung
+	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
+   $IdSystemst    = get_ObjectIDByPath($SystemstPath);
+
+	$id = IPS_GetObjectIDByName('Systemsteuerung',$IdAllg);  // Systemsteuerung
   	if ( !$id ) return;
 	if ( @GetValue($id) != 1 ) return;
 

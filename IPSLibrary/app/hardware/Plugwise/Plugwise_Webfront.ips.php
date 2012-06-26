@@ -50,6 +50,11 @@
    $IdGraph   = get_ObjectIDByPath($VisuPath);
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
    $IdMenu    = get_ObjectIDByPath($VisuPath);
+	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    = get_ObjectIDByPath($AllgPath);
+
+	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
+   $IdSystemst    = get_ObjectIDByPath($SystemstPath);
 
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
@@ -81,11 +86,13 @@
 			{
 			reset_groups(true);
 			SetValue($IPS_VARIABLE, 1);
+			IPS_SetHidden($IdSystemst,false);
 			}
 		else
 		   {
-			reset_groups(true);
+			reset_groups(false);
 		   SetValue($IPS_VARIABLE,0);
+		   IPS_SetHidden($IdSystemst,true);
 		   }
 		}
 	//***************************************************************************
@@ -180,7 +187,7 @@
 			   $sonstige = true;
 
 			$hidecircles = false;
-			$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung aus
+			$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg);  // Systemsteuerung aus
 			SetValue($id,0);
 			}
 
@@ -298,7 +305,7 @@
    hide_data1data2();
 	$showid = false;
 	
-	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung 
+	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg);  // Systemsteuerung
 
 	if ( GetValue($id) > 0 )
 	   { // Systemsteuerung soll angezeigt werden
@@ -444,7 +451,7 @@ function show_main($IdData1,$IdData2)
 //******************************************************************************
 // Reset Gruppen und Circlegruppe verstecken
 //******************************************************************************
-function reset_groups()
+function reset_groups($hide = false)
 	{
 	GLOBAL $IdMenu;
 	GLOBAL $CircleIdCData;
@@ -466,6 +473,11 @@ function reset_groups()
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
 	IPS_SetHidden($id,true);
 
+
+	if ( $hide == true )
+	   IPS_SetHidden($parent,true);
+	else
+	   IPS_SetHidden($parent,false);
 
 	}
 	
