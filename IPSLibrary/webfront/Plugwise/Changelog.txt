@@ -1,3 +1,6 @@
+Version=1.2.1018
+ - Kalibrierdaten werden in einer Variablen gespeichert
+ - andere Stromzaehler werden unterstuetzt
 Version=1.2.1017
  - Mysql: Geraetegruppe wird mit abgespeichert
  - css-File fuer eigene Webfrontgestaltung

@@ -202,11 +202,13 @@
 			if ( $sonstige == false )
 			IPS_SetHidden($CircleIdCData,false);   // Ueberschrift anzeigen ausser bei Sonstige
 			}
+
 			
 		// Circles anzeigen die in der angewaehlten Gruppe sind
 		$gruppenname = IPS_GetObject($IPS_VARIABLE);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
+	
 		foreach ( $CircleGroups as $group ) array_push($array,$group[1]);
 		
 		$x = 0 ;
@@ -228,6 +230,35 @@
         			}
 				
       		}
+		// Externe anzeigen die in der angewaehlten Gruppe sind
+		$gruppenname = IPS_GetObject($IPS_VARIABLE);
+		$gruppenname = $gruppenname['ObjectName'];
+		$array = array();
+
+		foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);
+
+		$x = 0 ;
+  		foreach ( $ExterneStromzaehlerGroups as $extern )
+      		{
+      		if ( $extern[0] != "" )
+        			{
+         		$id = IPS_GetObjectIDByName($extern[0],$CircleIdCData);
+
+					if ( $gruppenname == $extern[1] and !$hidecircles)
+						{
+						IPS_SetHidden($id,false);
+						}
+					else
+			   		{
+						IPS_SetHidden($id,true);
+						}
+
+        			}
+
+      		}
+
+      		
+      		
 		}
 	//***************************************************************************
 
@@ -270,7 +301,7 @@
 	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdMenu);  // Systemsteuerung 
 
 	if ( GetValue($id) > 0 )
-	   { 
+	   { // Systemsteuerung soll angezeigt werden
 	   show_main($IdData1,$IdData2);
 	   return;
 	   }
@@ -279,17 +310,19 @@
 	
 	$id = IPS_GetObjectIDByIdent('Gruppen',$IdMenu);  // Gruppen
 	$childs = IPS_GetChildrenIDs($id);
+	
 	$ok = false;
 	foreach ( $childs as $child )
 	   		{
 	   		if ( GetValue($child) > 0 )
-	   		   {
+	   		   { // Gruppe angewaehlt
 					$ok = true;
 					$aktuelle_gruppenid = $child;
 					$showid = $IPS_VARIABLE ; 
 					break;
 					}
 				}
+
 	if ( !$ok )
 	   {  // Keine Gruppe angewaehlt - Gesamtverbrauch anzeigen
 
@@ -303,6 +336,7 @@
 	//$id = IPS_GetObjectIDByIdent('GruppenItem',$IdMenu);  // Circles
 	$id = $CircleIdCData;
 	$childs = IPS_GetChildrenIDs($id);
+	
 	$ok = false;
 	foreach ( $childs as $child )
 	   		{
@@ -314,6 +348,8 @@
 					return;
 					}
 				}
+
+
 
 	if ( !$ok )
 	   {  // Kein Circle angewaehlt - Gesamtverbrauch der Gruppe anzeigen

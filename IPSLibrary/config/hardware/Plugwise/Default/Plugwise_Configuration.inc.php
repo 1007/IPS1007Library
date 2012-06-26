@@ -96,16 +96,18 @@
 
 
 /***************************************************************************//**
-* Externe Stromzaehler Gruppen
-*                 zur Zeit noch nicht aktiv !!!!!!!!     
-*   Feld 01   -   Anzeigename
+* Externe Stromzaehler Gruppen . Hier koennen "externe" Stromzaehler ( zB EKM )
+* definiert werden. Eingetragen wird die VariablenID der akt Leistung (Watt)und 
+* die VariablenID des Verbrauchs (kWh)
+*                      
+*   Feld 01   -   Name  dieser muss eindeutig sein - keine doppelten
 *   Feld 02   -   Gruppe
-*   Feld 03   -   ID-Leistung
-*   Feld 04   -   ID-Verbrauch
+*   Feld 03   -   VariablenID-Leistung
+*   Feld 04   -   VariablenID-Verbrauch
 *   Feld 05   -   Watt
-*   Feld 06   -   kWh
+*   Feld 06   -   kWh   wird nicht verwendet
 *   Feld 07   -   Tarifgruppe
-*   Feld 08   -   in Gesamt
+*   Feld 08   -   in Gesamt der Gruppe
 * 
 *******************************************************************************/
 	$ExterneStromzaehlerGroups = array(
@@ -118,8 +120,8 @@
 * System Stromzaehler Gruppen 
 *           Hier sind nur 2 Stromzaehler definiert
 *           Hauptstromzaehler und der Reststromzaehler
-*           Sollte beim Gesamtzaehler die bieden IDs auf 0/false sein gibt es keine
-*           Gesamtstromzaehler und es werden alle hier definierten Stromzaehler
+*           Sollte beim Gesamtzaehler die bieden IDs auf 0/false sein gibt es keinen
+*           Gesamtstromzaehler und es werden alle oben definierten Stromzaehler
 *           die markiert sind als ( in Gesamt ) addiert.
 *           Sonstige ist ein Platzhalter fuer den hier nicht erfassten Teil des 
 *           Stromverbrauches.

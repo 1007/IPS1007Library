@@ -1,110 +1,26 @@
 <?php
 
-	IPSUtils_Include ("IPSInstaller.inc.php",          "IPSLibrary::install::IPSInstaller");
-	IPSUtils_Include ("IPSMessageHandler.class.php",   "IPSLibrary::app::core::IPSMessageHandler");
-	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
 
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
-	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-	$OthersDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+	$CategoryIdApp  = get_ObjectIDByPath($AppPath);
 
 	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Uebersicht";
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
-  	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
-
-	$GruppenVisuPath= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
-  	$GroupsIdData   = get_ObjectIDByPath($GruppenVisuPath);
-  	$GroupsIdOData  = get_ObjectIDByPath($OthersDataPath);
-
-
-  	$CircleIdData   = get_ObjectIDByPath($CircleDataPath);
-	$CategoryIdApp  = get_ObjectIDByPath($AppPath);
 	$ContentId      = get_ObjectIDByPath($ContentPath);
 
-  GLOBAL $ExterneStromzaehlerGroups;
-	GLOBAL $SystemStromzaehlerGroups;
 
 	// damit kann der Script auch von anderen Scripten aufgerufen werden
 	// und bereits mit CfgDaten vorkonfiguriert werden
 	Global $CfgDaten; 
 
-	$id = 0;
-	$maxleistung = 0;
-	//***************************************************************************
-	// Welcher Circle soll dargestellt werden
-	//***************************************************************************
-
-	$childs = IPS_GetChildrenIDs($CircleIdCData);
-	foreach ( $childs as $child )
-	   {
-	   $object = IPS_GetObject($child);
-
-	   if ( GetValueInteger($child) == 1 )
-	      {
-	      $info = $object['ObjectInfo'];
-	      $objectname = $object['ObjectName'];
-	      $parent = IPS_GetObjectIDByIdent($info,$CircleIdData);
-			$id = IPS_GetObjectIDByName('Leistung',$parent);
-			foreach ($CircleGroups as $circle )
-	   		{	// Maxwert fuer Circle aus Config
-	    		if ( $info == $circle[0] )
-					{
-					$maxleistung = $circle[4];
-	      		break;
-	      		}
-				}
-
-	      break;
-	      }
-	   }
-	   
-	   
-
-	   
-	if ( $id == 0 )   // Kein Circle dann nach Gruppe suchen
-		{
-		$childs = IPS_GetChildrenIDs($GroupsIdData);
-		foreach ( $childs as $child )
-	   	{
-	   	$object = IPS_GetObject($child);
-			
-	   	if ( GetValueInteger($child) == 1 )
-	      	{
-	      	$ident = $object['ObjectIdent'];
-	      	
-	      	$objectname = $object['ObjectIdent'];
-	      	$parent1 = IPS_GetObjectIDByIdent($ident,$GroupsIdOData);
-	      	
-				$id = IPS_GetObjectIDByIdent('Leistung',$parent1);
-				$maxleistung = 0;
-				
-				}
-
-	      
-	      }
-	   }
+	$result = find_id_toshow();
+	$id 			 = $result['ID'];
+	$maxleistung = $result['MAXLEISTUNG'];
+	$objectname  = $result['OBJECTNAME'];
+	$info        = $result['INFO'];
 
 	
-	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
-		{
-		// Erst mal diese Daten nehmen
-		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
-		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
-		$objectname = "Gesamt";
 
-		if ( isset($SystemStromzaehlerGroups) )
-		   {
-		   //print_r($SystemStromzaehlerGroups);
-		   $idd = $SystemStromzaehlerGroups[0][2];
-		   if ( $idd != 0 )
-		      $id = $idd;
-		   }
-		}
-
-	if ( $objectname == "SYSTEM_REST" )
-      $objectname = "Sonstiges";
-      
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];

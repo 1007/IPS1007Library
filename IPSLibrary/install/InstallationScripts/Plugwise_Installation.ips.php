@@ -42,6 +42,7 @@
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
 	$OtherDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Others";
 	$GroupDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Groups";
+	$ExternDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Extern";
 
 	$cssDefault    = IPS_GetKernelDir()."webfront\user\Plugwise\Default\Plugwise.css";
 	$cssFile       = IPS_GetKernelDir()."webfront\user\Plugwise\Plugwise.css";
@@ -56,7 +57,7 @@
 	$CategoryIdHw     = CreateCategoryPath($HardwarePath);
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
   $CategoryIdOData  = CreateCategoryPath($OtherDataPath);
-  //$CategoryIdGData  = CreateCategoryPath($GroupDataPath);
+  //$CategoryIdEData  = CreateCategoryPath($ExternDataPath);
   
   EmptyCategory($CategoryIdVisu);
   EmptyCategory($CategoryIdMobile);
@@ -203,12 +204,54 @@
     }
 
 
+  //****************************************************************************
+  //  Externe Zaehler anlegen
+  //****************************************************************************
+  if ( isset($ExterneStromzaehlerGroups) )
+  if ( TRUE == FALSE )       
+  foreach( $ExterneStromzaehlerGroups as $externzaehler )
+    {
+    $name  = $externzaehler[0];
+    $ident = $externzaehler[0];
+   
+    $item = CreateDummyInstance ($name, $CategoryIdEData , 0);
+    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+    IPS_SetIdent($item,$ident);
+    IPS_SetIdent($id1,"Leistung");
+    IPS_SetIdent($id2,"Gesamtverbrauch");
+    
+    
+    if ( $archive_id )
+      {
+      $aggtype = 1;   // Zaehler
+      if ( defined('AGGTYPE') )
+        $aggtype = AGGTYPE;
+
+      $archivlogging = true;
+      if ( defined('ARCHIVLOGGING') )
+        $archivlogging = ARCHIVLOGGING;
+    
+      if ($archivlogging == true)
+        {        
+        AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
+        AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
+        AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        }
+
+      }
+    }
+
 
   //***************************************************************************
 	// Gruppe in DATA erstellen fuer Gesamtuebersicht einer Gruppe
 	//***************************************************************************
    $array = array();
    foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
+   if ( isset($ExterneStromzaehlerGroups) ) 
+   foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);  // Externe
+
    $groups = array_unique($array);
 	 $x = 10;
    foreach ( $groups as $group )
@@ -354,10 +397,13 @@
   $id = CreateVariable("Systemsteuerung", 1, $VisuID_menu, 0, "Plugwise_MenuItem", $ActionScriptId, false);
 
 	//***************************************************************************
-	// Gruppenmenu erstellen
+	// Gruppenmenu erstellen fuer Circles und Externe
 	//***************************************************************************
    $array = array();
-   foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
+   foreach ( $CircleGroups as $group )              array_push($array,$group[2]);  // Circles
+   if ( isset($ExterneStromzaehlerGroups) ) 
+   foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);  // Externe
+   
    $groups = array_unique($array);
 	 $x = 10;
    foreach ( $groups as $group )
@@ -369,6 +415,8 @@
          $x = $x + 10;
          }
       }
+      
+    // Sonstiges / Rest  
     $id = CreateVariable("Sonstige", 1, $IDGroups, 9999, "Plugwise_MenuItem", $ActionScriptId, false);
     IPS_SetInfo($id,"SYSTEM_REST");
     IPS_SetIdent($id,"SYSTEM_REST");
@@ -376,7 +424,22 @@
 
 
 	//***************************************************************************
-	// Circlesmenu erstellen
+	// Externsmenu erstellen
+	//***************************************************************************
+	$x = 10;
+	if ( isset($ExterneStromzaehlerGroups) ) 
+	foreach ( $ExterneStromzaehlerGroups as $extern )
+		{
+		if ( $extern[0] != "" )
+		   {
+         $id = CreateVariable($extern[0], 1, $IDCircles, 0, "Plugwise_MenuItem", $ActionScriptId, false);
+         IPS_SetInfo($id,$extern[0]);
+			   IPS_SetHidden($id,true);
+         $x = $x + 10;
+		   }
+		}
+	//***************************************************************************
+	//  Circlesmenu erstellen
 	//***************************************************************************
 	$x = 10;
 	foreach ( $CircleGroups as $circle )

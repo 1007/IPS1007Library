@@ -19,7 +19,8 @@
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 
-   
+ 
+ 
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
 *******************************************************************************/
@@ -1212,7 +1213,142 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 	
 
 	}
+
+/***************************************************************************//**
+*	Welche ID soll im Graph dargestellt werden
+*******************************************************************************/
+function find_id_toshow()
+	{
+	GLOBAL $CircleGroups;
+	GLOBAL $ExterneStromzaehlerGroups;
+
+	$id_result = array();
+
+	$id = 0;
+	$maxleistung = 0;
+	$info = "";
+	$objectname = "";
 	
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
+  	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
+
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+  	$CircleIdData   = get_ObjectIDByPath($CircleDataPath);
+
+	$GruppenVisuPath= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
+  	$GroupsIdData   = get_ObjectIDByPath($GruppenVisuPath);
+
+	$OthersDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Others";
+  	$GroupsIdOData  = get_ObjectIDByPath($OthersDataPath);
+
+	//***************************************************************************
+	// Welcher Stromzaehler soll dargestellt werden
+	//***************************************************************************
+	$childs = IPS_GetChildrenIDs($CircleIdCData);
+	foreach ( $childs as $child )
+	   {  // suche in allen Stromzaehler
+	   $object = IPS_GetObject($child);
+
+	   if ( GetValueInteger($child) == 1 )
+	      {  // gefunden
+	      $info = $object['ObjectInfo'];
+	      $objectname = $object['ObjectName'];
+	      //echo $objectname."-".$info;
+	      
+	      // suche in Circles
+	      $parent = @IPS_GetObjectIDByIdent($info,$CircleIdData);
+	      if ( $parent )
+	         {
+				$id = IPS_GetObjectIDByName('Leistung',$parent);
+				foreach ($CircleGroups as $circle )
+	   			{	// Maxwert fuer Circle aus Config
+	    			if ( $info == $circle[0] )
+						{
+						$maxleistung = $circle[4];
+	      			break;
+	      			}
+					}
+				}
+			else
+			   { // suche in Externen
+			   //echo"\nkeine Circle".$info;
+				foreach($ExterneStromzaehlerGroups as $extern)
+				   {
+				   if ( $extern[0] == $info )
+				      {
+				      //echo"\ngefunden".$info;
+				      $id = $extern[2];
+				      $maxleistung = $extern[4];
+				      break;
+				      }
+				   }
+			   }
+				
+				
+	      break;
+	      }
+
+	   }
+
+	//***************************************************************************
+	// kein Stromzaehler oder Extern , dann Gruppe suchen
+	//***************************************************************************
+	if ( $id == 0 )   // Kein Circle oder Extern dann nach Gruppe suchen
+		{
+		$childs = IPS_GetChildrenIDs($GroupsIdData);
+		foreach ( $childs as $child )
+	   	{
+	   	$object = IPS_GetObject($child);
+
+	   	if ( GetValueInteger($child) == 1 )
+	      	{
+	      	$ident = $object['ObjectIdent'];
+
+	      	$objectname = $object['ObjectIdent'];
+
+	      	$parent1 = IPS_GetObjectIDByIdent($ident,$GroupsIdOData);
+
+				$id = IPS_GetObjectIDByIdent('Leistung',$parent1);
+				$maxleistung = 0;
+
+				}
+
+
+	      }
+	   }
+
+	//***************************************************************************
+	// kein Stromzaehler oder Extern oder Gruppe  dann Gesamt
+	//***************************************************************************
+	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
+		{
+		// Erst mal diese Daten nehmen
+		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
+		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
+		$objectname = "Gesamt";
+
+		if ( isset($SystemStromzaehlerGroups) )
+		   {
+		   //print_r($SystemStromzaehlerGroups);
+		   $idd = $SystemStromzaehlerGroups[0][2];
+		   if ( $idd != 0 )
+		      $id = $idd;
+		   }
+		}
+
+	if ( $objectname == "SYSTEM_REST" )
+      $objectname = "Sonstiges";
+
+
+	$id_result['ID']          = $id;
+	$id_result['MAXLEISTUNG'] = $maxleistung;
+	$id_result['INFO']        = $info;
+	$id_result['OBJECTNAME']  = $objectname;
+
+	return $id_result;
+	}
+	
+
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/
