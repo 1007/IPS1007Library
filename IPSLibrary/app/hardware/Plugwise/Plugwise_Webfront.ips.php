@@ -85,6 +85,7 @@
 	   if ( GetValue($IPS_VARIABLE) == 0 )
 			{
 			reset_groups(true);
+			hide_all_status_in_menu();
 			SetValue($IPS_VARIABLE, 1);
 			IPS_SetHidden($IdSystemst,false);
 			}
@@ -504,7 +505,7 @@ function hide_data1data2()
 	}
 	
 	
-function show_status_in_menu($id)
+function show_status_in_menu($id,$hideall = false)
 	{
 	GLOBAL $IdMenu;
 	
@@ -517,13 +518,18 @@ function show_status_in_menu($id)
 		$object = IPS_GetObject($child);
 		if ( $object['ObjectType'] == 6 )   // Link
 		   {
-		   if ( $object['ObjectInfo'] == $info )
-		   	{
-				IPS_SetHidden($child,false);
-				}
+			if ( $hideall == true )
+				IPS_SetHidden($child,true);
 			else
-				{
-		   	IPS_SetHidden($child,true);
+			   {
+				if ( $object['ObjectInfo'] == $info )
+		   		{
+					IPS_SetHidden($child,false);
+					}
+				else
+					{
+		   		IPS_SetHidden($child,true);
+					}
 				}
 		   }
 
@@ -531,6 +537,25 @@ function show_status_in_menu($id)
 		}
 
 	}
+
+//******************************************************************************
+// verstecke alle Status
+//******************************************************************************
+function hide_all_status_in_menu()
+	{
+	GLOBAL $IdMenu;
+
+	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
+		{
+		$object = IPS_GetObject($child);
+		if ( $object['ObjectType'] == 6 )   // Link
+		   {
+			IPS_SetHidden($child,true);
+		   }
+		}
+
+	}
+
 	
 //******************************************************************************
 // zeigt die in $id uebergebenen Daten in Data1 und Data2 an
