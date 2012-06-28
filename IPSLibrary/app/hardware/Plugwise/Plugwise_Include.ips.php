@@ -731,7 +731,7 @@ function statistikdaten($gesamtid)
 
 	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
-	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data  = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
    /*
 	foreach($data as $d)
 		{
@@ -801,6 +801,11 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 
 	$tarifgruppe = false;
 
+	foreach( $CircleGroups as $circle )
+			$standardtarifgruppe = $circle[6] ;   // letzter Eintrag nehmen als Standard
+
+
+
 	if ( $type == "ZAEHLER" )  // suche bei Circles
 	   {
 	   $object = IPS_GetObject($parent);
@@ -812,7 +817,6 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 				$tarifgruppe = $circle[6] ;
 				break ;
 				}
-			//$tarifgruppe = $circle[6] ;   // Wenn keine Gruppe gefunden dann letzten Eintrag
 	   	}
 		//if ( $tarifgruppe != false )
 	   	//IPS_LogMessage("tarif gefnden fuer Circle",$ident."-".$tarifgruppe);
@@ -834,7 +838,9 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 
 	if ( $type == "GRUPPE" )  // suche Gruppe
 	   {
-	   
+		if ( $objectname == "Sonstiges" )
+			$tarifgruppe = $standardtarifgruppe;
+
 		foreach( $ExterneStromzaehlerGroups as $extern ) // suche in Extern
 	   	{//Tarifgruppe fuer diesen Circle suchen
 	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$extern[1]);
@@ -844,7 +850,7 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 				break ;
 				}
 	   	}
-		foreach( $CircleGroups as $circle ) // suche in Extern
+		foreach( $CircleGroups as $circle ) // suche in Circles
 	   	{//Tarifgruppe fuer diesen Circle suchen
 	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$circle[2]);
 	   	if ( $circle[2] == $objectname )
@@ -1358,12 +1364,14 @@ function find_id_toshow()
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/
-function logging($text,$file = 'plugwise.log' )
+function logging($text,$file = 'plugwise.log' ,$force = false)
 	{
 	
 	if ( $file != 'plugwiseerror.log' )
-	if ( !LOG_MODE )
-	   return;
+	if ( !$force )
+		if ( !LOG_MODE )
+	   	return;
+
 	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
