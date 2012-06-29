@@ -55,7 +55,7 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	hole_gesamtverbrauch();break;
+			Case "Execute"				:	berechne_gruppenverbrauch();break;
 			Case "TimerEvent"			:	
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
@@ -1045,8 +1045,13 @@ function berechne_restverbrauch()
 	$l = 0;
 	$g = 0;
 
+	$text = "Berechne Restverbrauch";
+   logging($text,"Gesamtleistung.log",true);
+	$text = "Start:".$gesamt_leistung."-".$gesamt_gesamt;
+   logging($text,"Gesamtleistung.log",true);
+
 	foreach($CircleGroups as $item)
-		{  // Circles
+		{  
 		if ( (isset($item[7]) and $item[7] == true) or (isset($item[7]) and $item[7] == 1) or (isset($item[7]) and $item[7] == "1") )
 		   {
 		   $id = @IPS_GetObjectIDByIdent($item[0],$idCatCircles);
@@ -1082,13 +1087,18 @@ function berechne_restverbrauch()
    $sonst_leistung = $gesamt_leistung - $l ;
    $sonst_gesamt   = $gesamt_gesamt - $g ;
 
-	if ( $sonst_leistung < 0 ) $sonst_leistung = 0;
-	if ( $sonst_gesamt < 0 ) $sonst_gesamt = 0;
+	$text = "Ergebnis:".$sonst_leistung."|".$sonst_gesamt;
+   logging($text,"Gesamtleistung.log",true);
+
+	if ( $sonst_leistung < 0 )
+		$sonst_leistung = 0;
+	if ( $sonst_gesamt < 0 )
+		$sonst_gesamt = 0;
+
 
 	SetValue($sonstid_leistung,$sonst_leistung);
-	SetValue($sonstid_gesamt,$sonst_gesamt);
+	SetValue($sonstid_gesamt  ,$sonst_gesamt);
 
-	
 	}
 
 /***************************************************************************//**
@@ -1102,27 +1112,24 @@ function berechne_gruppenverbrauch()
    GLOBAL $ExterneStromzaehlerGroups;
    
 	$others = IPS_GetChildrenIDs($idCatOthers);
-
-
+	$text = "Berechne Gruppenverbrauch";
+   logging($text,"Gesamtleistung.log",true);
+   
    // erstelle ein array mit den Gruppen aus den Circles
    foreach ( $CircleGroups as $group )
-      {
       if ( $group[0] != "" )
          {
 			$array_leistung[$group[2]]  = 0;
 			$array_verbrauch[$group[2]] = 0;
 			}
-		}
+
 	// fuege die externen Gruppen hinzu
    foreach ( $ExterneStromzaehlerGroups as $group )
-      {
-      if ( $group[0] != "" )
+   	if ( $group[0] != "" )
          {
 			$array_leistung[$group[1]]  = 0;
 			$array_verbrauch[$group[1]] = 0;
 			}
-		}
-
 
 	// gehe alle Circles durch
 	foreach ( $CircleGroups as $group )
@@ -1133,14 +1140,9 @@ function berechne_gruppenverbrauch()
 			$mac 	     = $group[0];
 			
 			if ( isset($group[7]) )
-			   {
 				$in_gesamt = $group[7];
-				}
 			else
-			   {
 			   $in_gesamt = true;
-			   }
-			
 			
 			$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
 		
@@ -1189,7 +1191,8 @@ function berechne_gruppenverbrauch()
 		   	$verbrauch = GetValue($id_verbrauch);
 				$array_leistung[$gruppe]  = $array_leistung[$gruppe]  + $leistung;
 				$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
-
+				$text = "Gruppe:".$gruppe."-".$verbrauch."SUMME:".$array_verbrauch[$gruppe];
+   			logging($text,"Gesamtleistung.log",true);
 
 			   }
 
@@ -1215,10 +1218,10 @@ function berechne_gruppenverbrauch()
 			SetValue($id,$wert);
 
 	   }
+
+
+
 	   
-	   
-	//print_r($array_leistung);
-	//print_r($array_verbrauch);
 	}
 
 /***************************************************************************//**

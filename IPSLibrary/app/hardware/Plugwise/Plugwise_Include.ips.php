@@ -700,7 +700,7 @@ function update_data1_data2()
 	$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
 	$html1 = $html1 . "</tr>";
 	$html1 = $html1 . "<tr>";
-	$html1 = $html1 . "<td class='verbrauchschrift'>$idleistung</td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
 	$html1 = $html1 . "<td class='verbrauchdaten'></td>";
 	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
 	$html1 = $html1 . "</tr>";
@@ -1417,7 +1417,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	IPS_LogMessage("SHOW:",$was."-".$id);
+	IPS_LogMessage("SHOW123:",$was."-".$id);
 
 	if ( $clear == true )
 	   {

@@ -45,23 +45,22 @@
 
 
 
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
-   $IdData1   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
-   $IdData2   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
-   $IdGraph   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
-   $IdMenu    = get_ObjectIDByPath($VisuPath);
-	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
-   $IdAllg    = get_ObjectIDByPath($AllgPath);
-	$GroupsPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
-   $IdGroups    = get_ObjectIDByPath($GroupsPath);
-
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.MENU";
+   $IdMenu    		= get_ObjectIDByPath($VisuPath);
+	$AllgPath  		= "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    		= get_ObjectIDByPath($AllgPath);
+	$GroupsPath  	= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
+   $IdGroups    	= get_ObjectIDByPath($GroupsPath);
 	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
    $IdSystemst    = get_ObjectIDByPath($SystemstPath);
-	$AuswPath     = "Visualization.WebFront.Hardware.Plugwise.MENU.Auswertungen";
-   $IdAusw       = get_ObjectIDByPath($AuswPath);
+	$AuswPath     	= "Visualization.WebFront.Hardware.Plugwise.MENU.Auswertungen";
+   $IdAusw       	= get_ObjectIDByPath($AuswPath);
 
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
@@ -93,7 +92,6 @@
 			IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen();
-			show_status_in_menu(0,true);
 			IPS_SetHidden($IdSystemst,false);
 			SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
 			IPS_SetHidden($IdAusw,true);
@@ -124,7 +122,6 @@
 			IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen();
-			show_status_in_menu(0,true);
 			IPS_SetHidden($IdAusw,false);
 			SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
 			IPS_SetHidden($IdSystemst,true);
@@ -276,8 +273,9 @@
 	// **************************************************************************
 	if ( GetValue(IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg)) > 0 )
 	   {
-	   $ok = true;
+	   show_status_in_menu(0,true);
 		update_webfront_123("SYSTEMSTEUERUNG",0,true);
+		return;
 		}
 		
 	//***************************************************************************
@@ -285,8 +283,9 @@
 	// **************************************************************************
 	if ( GetValue(IPS_GetObjectIDByIdent('Auswertungen',$IdAllg)) > 0 )
 	   {
-		$ok = true;
+      show_status_in_menu(0,true);
 		update_webfront_123("AUSWERTUNG",0,true);
+		return;
 		}
 		
 	//***************************************************************************
@@ -295,9 +294,9 @@
 	foreach ( IPS_GetChildrenIDs($StromzaehlerIdData) as $child )
 		if ( GetValue($child) > 0 )
 	   	{
-	   	$ok = true;
+	   	show_status_in_menu($child);
          update_webfront_123("ZAEHLER",$child,true);
-			break;
+			return;
 			}
 		
 	//***************************************************************************
@@ -306,17 +305,20 @@
 	foreach ( IPS_GetChildrenIDs(IPS_GetObjectIDByIdent('Gruppen',$IdMenu)) as $child )
 		if ( GetValue($child) > 0 )
 	   	{
-			$ok = true;
+         show_status_in_menu(0,true);
          update_webfront_123("GRUPPE",$child,true);
-			break;
+			return;
 			}
 				
 	//***************************************************************************
 	// immer noch $ok==false dann Gesamt anzeigen
 	// **************************************************************************
 	if ( !$ok )
+	   {
+	   show_status_in_menu(0,true);
 		update_webfront_123("GESAMT",0,true);
-
+		return;
+		}
 	
 /***************************************************************************//**
 *	Starten von Scripten
@@ -468,21 +470,26 @@ function show_status_in_menu($id,$hideall = false)
 	$name = $object['ObjectName'];
 	$info = $object['ObjectInfo'];
 
+	IPS_LogMessage("Start- SHOW",$id."-".$name."-".$info."-".$hideall);
+
 	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
 		{
 		$object = IPS_GetObject($child);
+
 		if ( $object['ObjectType'] == 6 )   // Link
 		   {
 			if ( $hideall == true )
+			   { IPS_LogMessage(".","NOLINK");
 				IPS_SetHidden($child,true);
+				}
 			else
 			   {
 				if ( $object['ObjectInfo'] == $info )
-		   		{
+		   		{IPS_LogMessage(".","FALSE");
 					IPS_SetHidden($child,false);
 					}
 				else
-					{
+					{IPS_LogMessage(".","TRUE");
 		   		IPS_SetHidden($child,true);
 					}
 				}
@@ -490,6 +497,8 @@ function show_status_in_menu($id,$hideall = false)
 
 
 		}
+
+	IPS_LogMessage("Ende- SHOW",$id."-".$name."-".$info);
 
 	}
 
