@@ -743,7 +743,7 @@ function statistikdaten($gesamtid)
 	$diff_wert = 0;
 	if ( $data )
 	   {
-   	echo "\n";
+   	
 		$ende_wert = floatval($data[0]['Value']);
 		$start_wert  = floatval($data[count($data)-1]['Value']);
 		$diff_wert  = $ende_wert - $start_wert ;
@@ -754,7 +754,7 @@ function statistikdaten($gesamtid)
 	
 	$start = mktime(0,0,0,date("m"),date("d"),date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d"),date("Y"));
-	$data = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
 	/*
 	foreach($data as $d)
 		{
@@ -764,11 +764,12 @@ function statistikdaten($gesamtid)
 
 		}
 	*/
+	
 	if ( $data )
 	   {
 		$ende_wert = floatval($data[0]['Value']);
 		$start_wert  = floatval($data[count($data)-1]['Value']);
-
+		//echo "[".$start_wert."-".$ende_wert;
 		$diff_wert  = $ende_wert - $start_wert ;
 		}
 	if ( $diff_wert < 0 ) $diff_wert = 0;
@@ -1221,6 +1222,49 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 	
 
 	}
+	
+//******************************************************************************
+// versteckt alle Data1 und Data2
+//******************************************************************************
+function hide_data1data2($hide = true)
+	{
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+		$hidden = $object['ObjectIsHidden'];
+
+		if ( $hide == true )
+      	if ( $hidden == false )
+      		{
+				IPS_SetHidden($child,true);
+				}
+		if ( $hide == false )
+      	if ( $hidden == true )
+      	   {
+				IPS_SetHidden($child,false);
+				}
+		}
+
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+		$hidden = $object['ObjectIsHidden'];
+
+		if ( $hide == true )
+      	if ( $hidden == false )
+      		{
+				IPS_SetHidden($child,true);
+				}
+		if ( $hide == false )
+      	if ( $hidden == true )
+      	   {
+				IPS_SetHidden($child,false);
+				}
+		}
+	}
 
 /***************************************************************************//**
 *	Welche IDs sollen im Graph,Data1,Data2 dargestellt werden
@@ -1360,6 +1404,133 @@ function find_id_toshow()
 	return $id_result;
 	}
 	
+/***************************************************************************//**
+*	Updated die Daten in Uebersicht,Data1,Data2 ab Version 1.3.xxxx
+*******************************************************************************/
+function update_webfront_123($was="",$id=0,$clear=false)
+	{
+	GLOBAL $IdGraph;
+	GLOBAL $IdData1;
+   GLOBAL $IdData2;
+
+	
+	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
+	$IdApp     = get_ObjectIDByPath($AppPath);
+
+	IPS_LogMessage("SHOW:",$was."-".$id);
+
+	if ( $clear == true )
+	   {
+	   $id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		SetValueString($id1,"1");
+		IPS_SetHidden($id1,false);
+		$id1 = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+		IPS_SetHidden($id1,true);
+	   }
+
+	if ( $was == "SYSTEMSTEUERUNG" )
+		{
+		hide_data1data2();
+		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+		}
+	if ( $was == "AUSWERTUNG" )
+		{
+		hide_data1data2();
+		}
+
+	if ( $was == "ZAEHLER" or $was == "GRUPPE" or $was == "GESAMT" )
+		{
+		hide_data1data2(false);
+		show_data1data2($id);
+      update_data1data2();
+		$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
+		IPS_RunScript($id);
+		}
+	if ( $was == "REFRESH" )
+		{
+      update_data1data2();
+		//$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
+		//IPS_RunScript($id);
+		}
+
+	}
+//******************************************************************************
+// zeigt die in $id uebergebenen Daten in Data1 und Data2 an
+//******************************************************************************
+function show_data1data2($id)
+	{
+	GLOBAL $IdGraph;
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+
+
+	$object = IPS_GetObject($id);
+	$name = $object['ObjectName'];
+	$info = $object['ObjectInfo'];
+
+	if ( $object['ObjectID'] == 0 )
+		{
+	   $name = "Gesamt";
+	   $info = "Gesamt";
+	   }
+
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA1" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         IPS_SetInfo($child,$info);
+         }
+
+		if ( $object['ObjectType'] == 6 )   // Link
+		   {
+		   if ( $object['ObjectInfo'] == $info )
+		   	{
+				IPS_SetHidden($child,false);
+				}
+			else
+				{
+		   	IPS_SetHidden($child,true);
+				}
+		   }
+
+		}
+
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA2" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         }
+		}
+
+   update_data1_data2();
+
+	}
+
+//******************************************************************************
+// leert die HTMLBox
+//******************************************************************************
+function hide_graph($status = true)
+	{
+	GLOBAL $IdGraph;
+	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	SetValueString($id,"");
+
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	IPS_SetHidden($id,true);
+
+
+	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
+	// IPS_SetHidden($id,$status);
+	}
+
 
 /***************************************************************************//**
 *	Logging

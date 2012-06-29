@@ -60,7 +60,7 @@
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
 												berechne_restverbrauch();
-												update_data1data2();
+												update_webfront_123("REFRESH");
 												request_circle_data();
 												break;
 			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
