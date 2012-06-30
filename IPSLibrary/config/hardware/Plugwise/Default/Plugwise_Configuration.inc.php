@@ -81,14 +81,14 @@
 *   Feld 05   -   Watt          - max Watt Anzeige im Graph ( rot ) ( 0 = disabled )
 *   Feld 06   -   kWh           - zur Zeit ohne Funktion
 *   Feld 07   -   Tarifgruppe   - Tarifgruppe des Circles (siehe Tarife )
-*   Feld 08   -   in Gesamt     - in Gesamtanzeige der Gruppe enthalten
-*   
+*   Feld 08   -   in Gesamt     - in Gesamtanzeige enthalten
+*   Feld 09   -   in Gruppe     - in Gesamtanzeige der Gruppe enthalten
 *******************************************************************************/      
   $CircleGroups = array(
-	   array("000D6F0000B81B6E","Verbraucher1","Raum1"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true ),
-	   array("000D6F0000C3B1DA","Verbraucher2","Raum1"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true ), 
-	   array("000D6F0000B81B7E","Verbraucher3","Raum2"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true ),
-	   array("000D6F0000C3B18A","Verbraucher4","Raum2"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true ), 
+	   array("000D6F0000B81B6E","Verbraucher1","Raum1"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true ),
+	   array("000D6F0000C3B1DA","Verbraucher2","Raum1"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true ), 
+	   array("000D6F0000B81B7E","Verbraucher3","Raum2"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true ),
+	   array("000D6F0000C3B18A","Verbraucher4","Raum2"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true ), 
 
 	// Standardtarifgruppe
 	   array(""						     ,""			      ,""				,"0",""		  ,""	  , "Tarifgruppe Tag/Nacht" , true ),
@@ -108,11 +108,11 @@
 *   Feld 06   -   kWh   wird nicht verwendet
 *   Feld 07   -   Tarifgruppe
 *   Feld 08   -   in Gesamt der Gruppe
-* 
+*   Feld 09   -   in Gesamtanzeige der Gruppe enthalten
 *******************************************************************************/
 	$ExterneStromzaehlerGroups = array(
-	   array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
-	   array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+	   array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
+	   array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
  
   			);
 

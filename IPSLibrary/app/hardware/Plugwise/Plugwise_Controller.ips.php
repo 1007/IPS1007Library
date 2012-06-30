@@ -1143,7 +1143,11 @@ function berechne_gruppenverbrauch()
 				$in_gesamt = $group[7];
 			else
 			   $in_gesamt = true;
-			
+
+			if ( isset($group[8]) )
+				$in_gesamt = $group[8];
+
+
 			$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
 		
 			$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
@@ -1175,13 +1179,13 @@ function berechne_gruppenverbrauch()
 
 			
 			if ( isset($group[7]) )
-			   {
 				$in_gesamt = $group[7];
-				}
 			else
-			   {
 			   $in_gesamt = true;
-			   }
+
+			if ( isset($group[8]) )
+				$in_gesamt = $group[8];
+
 
 			if ( $in_gesamt )
 			   {  // soll in Gruppe gezaehlt werden
