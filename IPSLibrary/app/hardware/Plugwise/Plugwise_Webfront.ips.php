@@ -116,7 +116,7 @@
 	// Auswertungen
 	//***************************************************************************
 	if ( $self['ObjectName'] == 'Auswertungen' )
-	   {	// Systemsteuerung
+	   {	
 	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
 			{
 			IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
@@ -125,6 +125,7 @@
 			IPS_SetHidden($IdAusw,false);
 			SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
 			IPS_SetHidden($IdSystemst,true);
+			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
 			SetValue($IPS_VARIABLE,1);
 			}
 		else // ist angewaehlt angewaehlt

@@ -1422,7 +1422,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	if ( $clear == true )
 	   {
 	   $id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
-		SetValueString($id1,"1");
+		SetValueString($id1,"");
 		IPS_SetHidden($id1,false);
 		$id1 = IPS_GetObjectIDByName('Auswahl',$IdGraph);
 		IPS_SetHidden($id1,true);
@@ -1436,6 +1436,8 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	if ( $was == "AUSWERTUNG" )
 		{
 		hide_data1data2();
+		$id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		SetValueString($id1,"In Vorbereitung");
 		}
 
 	if ( $was == "ZAEHLER" or $was == "GRUPPE" or $was == "GESAMT" )
