@@ -30,8 +30,6 @@
 
 	if ( $IPS_SENDER != 'WebFront' ) return;
 	
-	
-	
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
@@ -41,20 +39,28 @@
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 
 	$IdApp     = get_ObjectIDByPath($AppPath);
-	
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
-   $IdData1   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
-   $IdData2   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
-   $IdGraph   = get_ObjectIDByPath($VisuPath);
-	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
-   $IdMenu    = get_ObjectIDByPath($VisuPath);
-	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
-   $IdAllg    = get_ObjectIDByPath($AllgPath);
 
+	$StromzaehlerVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
+  	$StromzaehlerIdData   = get_ObjectIDByPath($StromzaehlerVisuPath);
+
+
+
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   		= get_ObjectIDByPath($VisuPath);
+	$VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.MENU";
+   $IdMenu    		= get_ObjectIDByPath($VisuPath);
+	$AllgPath  		= "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    		= get_ObjectIDByPath($AllgPath);
+	$GroupsPath  	= "Visualization.WebFront.Hardware.Plugwise.MENU.Gruppen";
+   $IdGroups    	= get_ObjectIDByPath($GroupsPath);
 	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
    $IdSystemst    = get_ObjectIDByPath($SystemstPath);
+	$AuswPath     	= "Visualization.WebFront.Hardware.Plugwise.MENU.Auswertungen";
+   $IdAusw       	= get_ObjectIDByPath($AuswPath);
 
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
@@ -65,12 +71,12 @@
 	
 
 	//***************************************************************************
-	// Menu Uebersicht
+	// UnterMenu Uebersicht
 	//***************************************************************************
 	if ( $self['ObjectIdent'] == 'Auswahl' )
 	   {
-		SetValue($IPS_VARIABLE, $IPS_VALUE);
 		update_uebersicht();
+		SetValue($IPS_VARIABLE, $IPS_VALUE);
 		return;
 		}
 	//***************************************************************************
@@ -79,82 +85,73 @@
 	// Systemsteuerung
 	// Systemsteuerung auswaehlen
 	//***************************************************************************
-	
 	if ( $self['ObjectName'] == 'Systemsteuerung' )
-	   {	// Systemsteuerung anwaehlen
-	   if ( GetValue($IPS_VARIABLE) == 0 )
+	   {	// Systemsteuerung
+	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
 			{
-			reset_groups(true);
-			hide_all_status_in_menu();
-			SetValue($IPS_VARIABLE, 1);
+			//IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist abgewaehlt soll angewaehlt werden");
+			reset_menu_stromzaehler();
+			reset_gruppen();
 			IPS_SetHidden($IdSystemst,false);
+			SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
+			IPS_SetHidden($IdAusw,true);
+			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),true);
+			SetValue($IPS_VARIABLE,1);
 			}
-		else
+		else // ist angewaehlt angewaehlt
 		   {
-			reset_groups(false);
-		   SetValue($IPS_VARIABLE,0);
+			//IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist angewaehlt soll abgewaehlt werden");
+			reset_menu_stromzaehler();
+			reset_gruppen(true);
 		   IPS_SetHidden($IdSystemst,true);
+         SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
+         IPS_SetHidden($IdAusw,true);
+			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+			SetValue($IPS_VARIABLE,0);
 		   }
 		}
 	//***************************************************************************
+	
+	//***************************************************************************
+	// Auswertungen
+	//***************************************************************************
+	if ( $self['ObjectName'] == 'Auswertungen' )
+	   {	
+	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
+			{
+			//IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
+			reset_menu_stromzaehler();
+			reset_gruppen();
+			IPS_SetHidden($IdAusw,false);
+			SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
+			IPS_SetHidden($IdSystemst,true);
+			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+			SetValue($IPS_VARIABLE,1);
+			}
+		else // ist angewaehlt angewaehlt
+		   {
+			//IPS_LogMessage($IPS_VALUE,"Auswertungen ist angewaehlt soll abgewaehlt werden");
+			reset_menu_stromzaehler();
+			reset_gruppen(true);
+		   IPS_SetHidden($IdAusw,true);
+         SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
+         IPS_SetHidden($IdSystemst,true);
+			SetValue($IPS_VARIABLE,0);
+		   }
+
+		}
 
 	//***************************************************************************
 	// Scripte starten
 	//***************************************************************************
-
 	if ( $self['ObjectInfo'] == 'Script' )
 	   {
-		$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
-
-		SetValue($IPS_VARIABLE, 1);
-
-		if ( $self['ObjectName'] == 'OnlineUpdate' )
-		   {
-		   SetValue($id,"Online Update wird gestartet");
-			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_IPSModulupdaten",$IdApp));
-		   }
-
-		if ( $self['ObjectName'] == 'Kalibrierung' )
-		   {
-		   SetValue($id,"Kalibrierung wird gestartet");
-			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Recalibrate",$IdApp));
-		   }
-
-		if ( $self['ObjectName'] == 'Circles suchen' )
-		   {
-		   SetValue($id,"Circlesuche wird gestartet");
-			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Circlesearch",$IdApp));
-		   }
-
-		if ( $self['ObjectName'] == 'Circlezeit lesen' )
-		   {
-		   SetValue($id,"Circlezeit wird gelesen");
-			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_ReadTime",$IdApp));
-		   }
-
-		if ( $self['ObjectName'] == 'Circlezeit setzen' )
-		   {
-		   SetValue($id,"Circlezeit wird gestellt");
-			IPS_RunScript(IPS_GetScriptIDByName("Plugwise_SetTime",$IdApp));
-		   }
-
-		if ( $self['ObjectName'] == 'Update vorhanden?' )
-		   {
-		   SetValue($id,"Update wird gesucht");
-			$string = IPS_RunScriptWait(IPS_GetScriptIDByName("Plugwise_CheckUpdate",$IdApp));
-		   SetValue($id,$string);
-		   }
-
-		if ( $self['ObjectName'] == 'Versionsinfo' )
-		   {
-		   SetValue($id,get_version());
-		   }
-
-		   
-      SetValue($IPS_VARIABLE, 0);
-		return;
+	   start_script($self,$IPS_VARIABLE);
+	   SetValue($IPS_VARIABLE, 0);
+	   return;
 		}
-		
+
+
 	//***************************************************************************
 	// Gruppenmenu
 	// Gruppe auswaehlen
@@ -164,13 +161,8 @@
 	   {
 	   if ( GetValue($IPS_VARIABLE) == 1 )
 	      {  // wenn bereits eine Gruppe gewaehlt dann alle Gruppen abwaehlen
-			$childs = IPS_GetChildrenIDs($parent);
-			foreach ( $childs as $child )
-	   			{
-	   			SetValue($child, 0);
-					IPS_SetHidden($child,false);
-					$hidecircles = true;
-	   			}
+				reset_gruppen(true);
+				$hidecircles = true;
 	      }
 	   else
 	      {  // andere Gruppe waehlen
@@ -188,16 +180,16 @@
 			   $sonstige = true;
 
 			$hidecircles = false;
-			$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg);  // Systemsteuerung aus
-			SetValue($id,0);
+			//$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg);  // Systemsteuerung aus
+			//SetValue($id,0);
 			}
 
 
 		// alle Cirles durchgehen
-		$childs = IPS_GetChildrenIDs($CircleIdCData);
+		$childs = IPS_GetChildrenIDs($StromzaehlerIdData);
 		if ( $hidecircles )  // wenn Circles versteckt werden sollen
 		   {
-			IPS_SetHidden($CircleIdCData,true); // Ueberschrift verstecken
+			IPS_SetHidden($StromzaehlerIdData,true); // Ueberschrift verstecken
 			
   			foreach ( $childs as $child )
   			   	{
@@ -208,62 +200,41 @@
 		else
 		   {
 			if ( $sonstige == false )
-			IPS_SetHidden($CircleIdCData,false);   // Ueberschrift anzeigen ausser bei Sonstige
+			IPS_SetHidden($StromzaehlerIdData,false);    // Ueberschrift anzeigen ausser bei Sonstige
 			}
 
 			
+		//************************************************************************
 		// Circles anzeigen die in der angewaehlten Gruppe sind
+		//************************************************************************
 		$gruppenname = IPS_GetObject($IPS_VARIABLE);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
 	
 		foreach ( $CircleGroups as $group ) array_push($array,$group[1]);
 		
-		$x = 0 ;
-  		foreach ( $CircleGroups as $cycle )
-      		{
-      		if ( $cycle[0] != "" )
-        			{
-         		$id = IPS_GetObjectIDByName($cycle[1],$CircleIdCData);
+   	foreach ( $CircleGroups as $cycle )
+      	if ( $cycle[0] != "" )
+				if ( $gruppenname == $cycle[2] and !$hidecircles)
+					IPS_SetHidden(IPS_GetObjectIDByName($cycle[1],$StromzaehlerIdData),false);
+				else
+					IPS_SetHidden(IPS_GetObjectIDByName($cycle[1],$StromzaehlerIdData),true);
 
-					if ( $gruppenname == $cycle[2] and !$hidecircles)
-						{
-						IPS_SetHidden($id,false);
-						}
-					else
-			   		{
-						IPS_SetHidden($id,true);
-						}
-
-        			}
-				
-      		}
+		//************************************************************************
 		// Externe anzeigen die in der angewaehlten Gruppe sind
+		//************************************************************************
 		$gruppenname = IPS_GetObject($IPS_VARIABLE);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
 
 		foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);
 
-		$x = 0 ;
   		foreach ( $ExterneStromzaehlerGroups as $extern )
-      		{
-      		if ( $extern[0] != "" )
-        			{
-         		$id = IPS_GetObjectIDByName($extern[0],$CircleIdCData);
-
-					if ( $gruppenname == $extern[1] and !$hidecircles)
-						{
-						IPS_SetHidden($id,false);
-						}
-					else
-			   		{
-						IPS_SetHidden($id,true);
-						}
-
-        			}
-
-      		}
+      	if ( $extern[0] != "" )
+				if ( $gruppenname == $extern[1] and !$hidecircles)
+					IPS_SetHidden($id = IPS_GetObjectIDByName($extern[0],$StromzaehlerIdData),false);
+				else
+			   	IPS_SetHidden($id = IPS_GetObjectIDByName($extern[0],$StromzaehlerIdData),true);
 
       		
       		
@@ -272,7 +243,7 @@
 
 
 	//***************************************************************************
-	// Circlemenu
+	// Stromzaehlermenu
 	// Button farblich darstellen. Alle anderen auf 0
 	//***************************************************************************
 	if ( $object['ObjectName'] == 'Stromzähler' )
@@ -281,18 +252,12 @@
 	   $value = GetValue($IPS_VARIABLE);
 		$childs = IPS_GetChildrenIDs($parent);
 		foreach ( $childs as $child )
-	   		{
 	   		SetValue($child, 0);
-	   		}
 
 	   if ( $value == 0 )
-		   {
       	SetValue($IPS_VARIABLE, 1);
-         }
 		else
-		   {
       	SetValue($IPS_VARIABLE, 0);
-         }
 
          
 		}
@@ -302,70 +267,115 @@
 	//***************************************************************************
 	// ab hier wird entschieden was angezeigt werden soll
 	// **************************************************************************
-	hide_graph(true);
-   hide_data1data2();
-	$showid = false;
-	
-	$id = IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg);  // Systemsteuerung
-
-	if ( GetValue($id) > 0 )
-	   { // Systemsteuerung soll angezeigt werden
-	   show_main($IdData1,$IdData2);
-	   return;
-	   }
-
 	$aktuelle_gruppenid = 0;
-	
-	$id = IPS_GetObjectIDByIdent('Gruppen',$IdMenu);  // Gruppen
-	$childs = IPS_GetChildrenIDs($id);
-	
 	$ok = false;
-	foreach ( $childs as $child )
-	   		{
-	   		if ( GetValue($child) > 0 )
-	   		   { // Gruppe angewaehlt
-					$ok = true;
-					$aktuelle_gruppenid = $child;
-					$showid = $IPS_VARIABLE ; 
-					break;
-					}
-				}
-
-	if ( !$ok )
-	   {  // Keine Gruppe angewaehlt - Gesamtverbrauch anzeigen
-
-		show_webfront(0);
+	//***************************************************************************
+	// Soll Systemsteuerung angezeigt werden ?
+	// **************************************************************************
+	if ( GetValue(IPS_GetObjectIDByIdent('Systemsteuerung',$IdAllg)) > 0 )
+	   {
+	   show_status_in_menu(0,true);
+		update_webfront_123("SYSTEMSTEUERUNG",0,true);
 		return;
-
+		}
 		
-		}
-
-
-	//$id = IPS_GetObjectIDByIdent('GruppenItem',$IdMenu);  // Circles
-	$id = $CircleIdCData;
-	$childs = IPS_GetChildrenIDs($id);
-	
-	$ok = false;
-	foreach ( $childs as $child )
-	   		{
-	   		if ( GetValue($child) > 0 )
-	   		   {
-					$ok = true;
-					$showid = $IPS_VARIABLE;
-					show_webfront($showid); 
-					return;
-					}
-				}
-
-
-
-	if ( !$ok )
-	   {  // Kein Circle angewaehlt - Gesamtverbrauch der Gruppe anzeigen
-					
-		show_webfront($aktuelle_gruppenid);
+	//***************************************************************************
+	// Soll Auswertung angezeigt werden ?
+	// **************************************************************************
+	if ( GetValue(IPS_GetObjectIDByIdent('Auswertungen',$IdAllg)) > 0 )
+	   {
+      show_status_in_menu(0,true);
+		update_webfront_123("AUSWERTUNG",0,true);
 		return;
-
 		}
+		
+	//***************************************************************************
+	// Soll ein Stromzaehler angezeigt werden ?
+	// **************************************************************************
+	foreach ( IPS_GetChildrenIDs($StromzaehlerIdData) as $child )
+		if ( GetValue($child) > 0 )
+	   	{
+	   	show_status_in_menu($child);
+         update_webfront_123("ZAEHLER",$child,true);
+			return;
+			}
+		
+	//***************************************************************************
+	// Soll eine Gruppe angezeigt werden ?
+	// **************************************************************************
+	foreach ( IPS_GetChildrenIDs(IPS_GetObjectIDByIdent('Gruppen',$IdMenu)) as $child )
+		if ( GetValue($child) > 0 )
+	   	{
+         show_status_in_menu(0,true);
+         update_webfront_123("GRUPPE",$child,true);
+			return;
+			}
+				
+	//***************************************************************************
+	// immer noch $ok==false dann Gesamt anzeigen
+	// **************************************************************************
+	if ( !$ok )
+	   {
+	   show_status_in_menu(0,true);
+		update_webfront_123("GESAMT",0,true);
+		return;
+		}
+	
+/***************************************************************************//**
+*	Starten von Scripten
+*******************************************************************************/
+function start_script($self)
+	{
+	GLOBAL $IdGraph;
+	GLOBAL $IdApp;
+
+	//IPS_LogMessage("Start Script",$self['ObjectName']);
+	
+	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+
+	if ( $self['ObjectName'] == 'OnlineUpdate' )
+		{
+		SetValue($id,"Online Update wird gestartet");
+		IPS_RunScript(IPS_GetScriptIDByName("Plugwise_IPSModulupdaten",$IdApp));
+		}
+
+	if ( $self['ObjectName'] == 'Kalibrierung' )
+		{
+		SetValue($id,"Kalibrierung wird gestartet");
+		IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Recalibrate",$IdApp));
+		}
+
+	if ( $self['ObjectName'] == 'Circles suchen' )
+		{
+		SetValue($id,"Circlesuche wird gestartet");
+		IPS_RunScript(IPS_GetScriptIDByName("Plugwise_Circlesearch",$IdApp));
+		}
+
+	if ( $self['ObjectName'] == 'Circlezeit lesen' )
+		{
+		SetValue($id,"Circlezeit wird gelesen");
+		IPS_RunScript(IPS_GetScriptIDByName("Plugwise_ReadTime",$IdApp));
+		}
+
+	if ( $self['ObjectName'] == 'Circlezeit setzen' )
+		{
+		SetValue($id,"Circlezeit wird gestellt");
+		IPS_RunScript(IPS_GetScriptIDByName("Plugwise_SetTime",$IdApp));
+		}
+
+	if ( $self['ObjectName'] == 'Update vorhanden?' )
+		{
+		SetValue($id,"Update wird gesucht");
+		$string = IPS_RunScriptWait(IPS_GetScriptIDByName("Plugwise_CheckUpdate",$IdApp));
+		SetValue($id,$string);
+		}
+
+	if ( $self['ObjectName'] == 'Versionsinfo' )
+		{
+		SetValue($id,get_version());
+		}
+
+	}
 
 /***************************************************************************//**
 *	VersionsInfo mit Changelog zurueckgeben
@@ -391,120 +401,68 @@ function get_version()
 	return $version;
 	}
 	
-//******************************************************************************
-// zeigt Data1 , Data2 , Graph
-//******************************************************************************
-function show_webfront($showid)
-	{
-	GLOBAL $IdApp;
-	show_status_in_menu($showid);
-   show_data1data2($showid);
 
-	$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
-	IPS_RunScript($id);
 
-	}
 
-//******************************************************************************
-// leert die HTMLBox
-//******************************************************************************
-function hide_graph($status = true)
-	{
-	GLOBAL $IdGraph;
-	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
-	SetValueString($id,"");
-	
-	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
-	IPS_SetHidden($id,true);
-
-	
-	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
-	// IPS_SetHidden($id,$status);
-	}
-
-//******************************************************************************
-// zeigt die Scripte - Sytemsteuerung an
-//******************************************************************************
-function show_main($IdData1,$IdData2)
-	{
-	GLOBAL $IdGraph;
-
-	hide_data1data2();
-	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
-		{
-		$object = IPS_GetObject($child);
-		if ( $object['ObjectInfo'] == 'Script' )
-			IPS_SetHidden($child,false);
-		}
-	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
-		{
-		$object = IPS_GetObject($child);
-		if ( $object['ObjectInfo'] == 'Script' )
-			IPS_SetHidden($child,false);
-		}
-
-	update_uebersicht();
-	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
-	IPS_SetHidden($id,false);
-
-	}
-
-//******************************************************************************
-// Reset Gruppen und Circlegruppe verstecken
-//******************************************************************************
-function reset_groups($hide = false)
+/***************************************************************************//**
+*  Die Gruppen reseten ( Auswahl auf 0 ) und Gruppen verstecken
+*******************************************************************************/
+function reset_gruppen($show_gruppen = false)
 	{
 	GLOBAL $IdMenu;
-	GLOBAL $CircleIdCData;
+	GLOBAL $IdGroups;
 	GLOBAL $IdGraph;
-	
+
 	$parent = IPS_GetObjectIDByName('Gruppen',$IdMenu);
 
 	$childs = IPS_GetChildrenIDs($parent);
+
 	foreach ( $childs as $child )
 			{
 	   	SetValue($child, 0);
          $object = IPS_GetObject($child);
-         if ( !$object['ObjectIsHidden'] )
+         if ( $object['ObjectIsHidden'] )
 				IPS_SetHidden($child,false);
 			}
-	   	
-	IPS_SetHidden($CircleIdCData,true);
-	
+
+	if ( $show_gruppen == false )
+		IPS_SetHidden($IdGroups,true);
+	else
+		IPS_SetHidden($IdGroups,false);
+
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
 	IPS_SetHidden($id,true);
 
-
-	if ( $hide == true )
-	   IPS_SetHidden($parent,true);
-	else
-	   IPS_SetHidden($parent,false);
-
 	}
+
 	
-//******************************************************************************
-// versteckt alle Data1 und Data2
-//******************************************************************************
-function hide_data1data2()
+/***************************************************************************//**
+*  Die Gruppe Stromzaehler reseten ( Auswahl auf 0 ) und Gruppe verstecken
+*******************************************************************************/
+function reset_menu_stromzaehler()
 	{
-	GLOBAL $IdData1;
-	GLOBAL $IdData2;
-	
-	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+	GLOBAL	$StromzaehlerIdData;
+
+	foreach ( IPS_GetChildrenIDs($StromzaehlerIdData) as $child )
 		{
 		$object = IPS_GetObject($child);
       if ( !$object['ObjectIsHidden'] )
 			IPS_SetHidden($child,true);
+		if ( GetValue($child) != 0 )
+		   SetValue($child,0);
 		}
-	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
-		{
-		$object = IPS_GetObject($child);
-      if ( !$object['ObjectIsHidden'] )
-			IPS_SetHidden($child,true);
-		}
+
+	$object = IPS_GetObject($StromzaehlerIdData);
+   if ( !$object['ObjectIsHidden'] )
+		IPS_SetHidden($StromzaehlerIdData,true);
+
+
 	}
-	
-	
+
+
+/***************************************************************************//**
+*  Den Status eine Circles ( AN/AUS ) im Menue anzeigen oder alle verbergen
+*******************************************************************************/
 function show_status_in_menu($id,$hideall = false)
 	{
 	GLOBAL $IdMenu;
@@ -513,21 +471,26 @@ function show_status_in_menu($id,$hideall = false)
 	$name = $object['ObjectName'];
 	$info = $object['ObjectInfo'];
 
+	//IPS_LogMessage("Start- SHOW",$id."-".$name."-".$info."-".$hideall);
+
 	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
 		{
 		$object = IPS_GetObject($child);
+
 		if ( $object['ObjectType'] == 6 )   // Link
 		   {
 			if ( $hideall == true )
+			   { //IPS_LogMessage(".","NOLINK");
 				IPS_SetHidden($child,true);
+				}
 			else
 			   {
 				if ( $object['ObjectInfo'] == $info )
-		   		{
+		   		{//IPS_LogMessage(".","FALSE");
 					IPS_SetHidden($child,false);
 					}
 				else
-					{
+					{//IPS_LogMessage(".","TRUE");
 		   		IPS_SetHidden($child,true);
 					}
 				}
@@ -536,116 +499,11 @@ function show_status_in_menu($id,$hideall = false)
 
 		}
 
-	}
-
-//******************************************************************************
-// verstecke alle Status
-//******************************************************************************
-function hide_all_status_in_menu()
-	{
-	GLOBAL $IdMenu;
-
-	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
-		{
-		$object = IPS_GetObject($child);
-		if ( $object['ObjectType'] == 6 )   // Link
-		   {
-			IPS_SetHidden($child,true);
-		   }
-		}
+	//IPS_LogMessage("Ende- SHOW",$id."-".$name."-".$info);
 
 	}
 
 	
-//******************************************************************************
-// zeigt die in $id uebergebenen Daten in Data1 und Data2 an
-//******************************************************************************
-function show_data1data2($id)
-	{
-	GLOBAL $IdGraph;
-	GLOBAL $IdData1;
-	GLOBAL $IdData2;
-
-	
-	$object = IPS_GetObject($id);
-	$name = $object['ObjectName'];
-	$info = $object['ObjectInfo'];
-
-	if ( $object['ObjectID'] == 0 )
-		{
-	   $name = "Gesamt";
-	   $info = "Gesamt";
-	   }
-
-	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
-		{
-		$object = IPS_GetObject($child);
-
-		if ( $object['ObjectIdent'] == "WEBDATA1" )
-		   {
-		   IPS_SetName($child,$name);
-         IPS_SetHidden($child,false);
-         IPS_SetInfo($child,$info);
-         }
-         
-		if ( $object['ObjectType'] == 6 )   // Link
-		   {
-		   if ( $object['ObjectInfo'] == $info )
-		   	{
-				IPS_SetHidden($child,false);
-				}
-			else
-				{
-		   	IPS_SetHidden($child,true);
-				}
-		   }
-		   
-		}
-		
-	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
-		{
-		$object = IPS_GetObject($child);
-		
-		if ( $object['ObjectIdent'] == "WEBDATA2" )
-		   {
-		   IPS_SetName($child,$name);
-         IPS_SetHidden($child,false);
-         }
-		}
-
-   update_data1_data2();
-	
-	return;
-	
-	if ( $id == 0 )
-		{
-		$id = @IPS_GetObjectIDByIdent('Gesamt',$IdData1);
-		IPS_SetHidden($id,false);
-		$id = @IPS_GetObjectIDByIdent('Gesamt',$IdData2);
-		IPS_SetHidden($id,false);
-		}
-
-   $object2 = IPS_GetObject($id);
-
-	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
-		{
-		$object1 = IPS_GetObject($child);
-		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
-			IPS_SetHidden($child,false);
-		else
-		   IPS_SetHidden($child,true);
-		}
-	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
-		{
-		$object1 = IPS_GetObject($child);
-		if ( $object1['ObjectInfo'] == $object2['ObjectInfo'] )
-			IPS_SetHidden($child,false);
-		else
-		   IPS_SetHidden($child,true);
-		}
-	
-	}
-
 /***************************************************************************//**
 * @}
 * @}

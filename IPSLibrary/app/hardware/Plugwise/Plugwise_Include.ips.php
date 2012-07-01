@@ -327,78 +327,19 @@ function createCircle($mac, $parentID){
 *	Update die 2 HTMLBoxen im Webfront 
 * 
 *******************************************************************************/
-function update_data1_data2()
+function update_data1_data2_old()
 	{
-	GLOBAL $SystemStromzaehlerGroups;
-  	GLOBAL $ExterneStromzaehlerGroups;
 
-	// rausfinden welche Variable oder Gruppe aktuell
-	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
-   $IdData1    = @get_ObjectIDByPath($Data1Path,true);
-	$object     = IPS_GetObject($IdData1);
-	
-	$extern_leistung= false;
-	$extern_gesamt = false;
-	
-	$info = "";
-	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
-		{
-		$object = IPS_GetObject($child);
+	$result      = find_id_toshow();
+	$type			 = $result['TYPE'];
+	$id 			 = intval($result['ID']);
+	$idleistung  = intval($result['IDLEISTUNG']);
+	$idgesamt 	 = intval($result['IDGESAMT']);
+	$parent   	 = intval($result['PARENT']);
 
-		if ( $object['ObjectIdent'] == "WEBDATA1" )
-		   {
-         $info = $object['ObjectInfo'];
-			}
-		}
 
-   $CirclesId = get_ObjectIDByPath('Program.IPSLibrary.data.hardware.Plugwise.Circles');
-	$circles  = IPS_GetChildrenIDs($CirclesId);
-   $GroupsId = get_ObjectIDByPath('Program.IPSLibrary.data.hardware.Plugwise.Others');
-	$groups   = IPS_GetChildrenIDs($GroupsId);
-
-	
-	$gefunden = 0;
-	
-	foreach ( $circles as $circle )
-	   { // Suche in Circles
-		$object = IPS_GetObject($circle);
-		
-		if ( $object['ObjectIdent'] == $info )
-		   {
-		   $gefunden = $circle; break;
-		   }
-	   }
-
-	if ( $gefunden == 0 )
-	   { // Suche in Gruppen
-		foreach ( $groups as $group )
-	   	{
-			$object = IPS_GetObject($group);
-
-			if ( $object['ObjectIdent'] == $info )
-		   	{
-		   	$gefunden = $group; break;
-		   	}
-	   	}
-	   
-	   
-	   }
-	   
-	if ( $gefunden == 0 )
-	   { // Gesamt muss es sein
-	   
-		$gefunden = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsId);
-
-		$id1 = $SystemStromzaehlerGroups[0][2];
-		if ( $id1 != 0 )
-		     { $extern_leistung = $id1; $gefunden = false; }
-		$id2 = $SystemStromzaehlerGroups[0][3];
-		if ( $id2 != 0 )
-		      $extern_gesamt = $id2;
-		
-	   }
-	
-	update_data1data2_sub($gefunden,false,$extern_leistung,$extern_gesamt);
+	//IPS_logMessage("....",$type."-".$parent."-".$idleistung."-".$idgesamt);
+	update_data1data2_sub($parent,$idleistung,$idgesamt);
 	
 	}
 
@@ -622,11 +563,92 @@ function update_uebersicht()
    SetValueString($id,$text);
 
 	}
+
+function get_count_ingruppe($id,$id1,$name)
+	{
+	GLOBAL $CircleGroups;
+   GLOBAL $ExterneStromzaehlerGroups;
+
 	
+	$ingruppe = false;
+
+	if ( $id != 0 )
+	   {
+		$object = IPS_GetObject($id);
+		$ident = $object['ObjectIdent'];
+
+		foreach ($CircleGroups as $circle)
+			if ( $circle[0] != "" )
+	   		if ( $circle[0] == $ident )
+	   	   	{
+					$ingruppe = true;
+					if ( isset($circle[8]) )
+						$ingruppe = $circle[8];
+			   	}
+		}
+	else
+	   {
+		foreach ($ExterneStromzaehlerGroups as $extern)
+			if ( $extern[0] != "" )
+	   		if ( $extern[0] == $name )
+	   	   	{
+					$ingruppe = false;
+					if ( isset($extern[8]) )
+						$ingruppe = $extern[8];
+			   	}
+
+	   }
+
+
+	return $ingruppe;
+
+	}
+
+function get_count_ingesamt($id,$id1,$name)
+	{
+	GLOBAL $CircleGroups;
+   GLOBAL $ExterneStromzaehlerGroups;
+
+   $ingesamt = false;
+
+	if ( $id != 0 )
+	   {
+		$object = IPS_GetObject($id);
+		$ident = $object['ObjectIdent'];
+
+		foreach ($CircleGroups as $circle)
+			if ( $circle[0] != "" )
+	   		if ( $circle[0] == $ident )
+	   	   	{
+					$ingesamt = true;
+					if ( isset($circle[7]) )
+						$ingesamt = $circle[7];
+			   	}
+		}
+	else
+	   {
+		foreach ($ExterneStromzaehlerGroups as $extern)
+			if ( $extern[0] != "" )
+	   		if ( $extern[0] == $name )
+	   	   	{
+					$ingesamt = true;
+					if ( isset($extern[7]) )
+						$ingesamt = $extern[7];
+			   	}
+
+	   }
+	   
+
+
+	return $ingesamt;
+
+
+	}
+
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront ( Sub )
 *******************************************************************************/
-function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$extern_gesamt=false)
+function update_data1_data2()
 	{
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
@@ -641,6 +663,17 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
    $IdData1    = @get_ObjectIDByPath($Data1Path,true);
 	$Data2Path  = "Visualization.WebFront.Hardware.Plugwise.DATA2";
    $IdData2    = @get_ObjectIDByPath($Data2Path,true);
+
+
+
+	$result      = find_id_toshow();
+	$type			 = $result['TYPE'];
+	$id 			 = intval($result['ID']);
+	$idleistung  = intval($result['IDLEISTUNG']);
+	$idgesamt 	 = intval($result['IDGESAMT']);
+	$parent   	 = intval($result['PARENT']);
+	$objectname  = $result['OBJECTNAME'];
+
 
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
@@ -663,123 +696,114 @@ function update_data1data2_sub($parent,$groups = false,$extern_leistung=false,$e
 	if ( $data1id == 0 or $data2id == 0)
 	   return;
 	   
-	if ( $parent == false )
-	   { // Externen Stromzaehler
-
-	   $leistungid = intval($extern_leistung);
-		$gesamtid = intval($extern_gesamt);
-	
-
-	   }
-	else
-	   {
-		$gesamtid   = IPS_GetVariableIDByName('Gesamtverbrauch',$parent);
-		if ($gesamtid === false) {echo "Variable Gesamtverbrauch nicht gefunden!"; return ; }
-		$leistungid = IPS_GetVariableIDByName('Leistung',$parent);
-		if ($leistungid === false) {echo "Variable Leistung nicht gefunden!"; return ; }
-		}
-
-	
 	
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 		
-		$dateleistung = IPS_GetVariable($leistungid);
-		$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
+	$dateleistung = IPS_GetVariable($idleistung);
+	$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
 		
-		$leistung = round(GetValue($leistungid),2);
+	$leistung = round(GetValue($idleistung),2);
+   $gesamt   = round(GetValue($idgesamt),2);
 
-      $gesamt   = round(GetValue($gesamtid),2);
+   $akt_tk   = aktuelle_kosten($type,$parent,$objectname,$leistung);  // aktuelle Kosten und Tarif
+   $kosten   = $akt_tk['KOSTEN'];
+   $akt_tarif= $akt_tk['TARIF'];
+   $kt_preis = $akt_tk['PREISKWH'];
 
-      $akt_tk   = aktuelle_kosten($parent,$leistung,$groups);  // aktuelle Kosten und Tarif
-      $kosten   = $akt_tk['KOSTEN'];
-      $akt_tarif= $akt_tk['TARIF'];
-      $kt_preis = $akt_tk['PREISKWH'];
+	$akt_tarif= $akt_tarif . " " . $kt_preis ." Cent/kWh";
 
-		$akt_tarif= $akt_tarif . " " . $kt_preis ." Cent/kWh";
-
-      $waehrung = "Cent/h";
-      $vergleich = 10 ;
+   $waehrung = "Cent/h";
+   $vergleich = 10 ;
       
-      if ( $kosten > $vergleich )
-         { 
-         $kosten = $kosten/100;
-         $waehrung = "Euro/h";
-         }
-      $kosten = round($kosten,2);
-      
-      $array = statistikdaten($gesamtid);
-      $verbrauch_heute   = $array['VERBRAUCH_HEUTE'];
-      $verbrauch_gestern = $array['VERBRAUCH_GESTERN'];
+   if ( $kosten > $vergleich )
+      {
+      $kosten = $kosten/100;
+      $waehrung = "Euro/h";
+      }
+   $kosten = round($kosten,2);
+	
+   $array = statistikdaten($idgesamt);
+  
+   $verbrauch_heute   = $array['VERBRAUCH_HEUTE'];
+   $verbrauch_gestern = $array['VERBRAUCH_GESTERN'];
 
-      
-		$hintergrundfarbe = "#003366";
-		$fontsize = "17px";
+
+	
+	if ( get_count_ingruppe($parent,$id,$objectname) )
+      $img_ingruppe = "<img src='./user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
+	else
+	   $img_ingruppe = "<img src='./user/Plugwise/leer.png' >";
+
+	if ( get_count_ingesamt($parent,$id,$objectname) )
+      $img_ingesamt = "<img src='./user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
+	else
+	   $img_ingesamt = "<img src='./user/Plugwise/leer.png' >";
+
+   
+	$hintergrundfarbe = "#003366";
+	$fontsize = "17px";
 		
-      
-		$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
-		$html1 = $html1 . "<table border='0' class='table'>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='zeitschrift'>Aktuell</td>";
-		$html1 = $html1 . "<td class='zeitdaten'>$dateleistung</td>";
-		$html1 = $html1 . "<td class='zeitschrift'>Uhr</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='leistungschrift'>Leistung</td>";
-		$html1 = $html1 . "<td class='leistungdaten'>$leistung</td>";
-		$html1 = $html1 . "<td class='leistungschrift'>Watt</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='kostenschrift'>Kosten</td>";
-		$html1 = $html1 . "<td class='kostendaten'>$kosten</td>";
-		$html1 = $html1 . "<td class='kostenschrift'>$waehrung</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='tarifschrift'>Tarif</td>";
-		$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
-		$html1 = $html1 . "<td class='tarifschrift'></td>";
-		$html1 = $html1 . "</tr>";
+	$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
+	$html1 = $html1 . "<table border='0' class='table'>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='zeitschrift'>Aktuell</td>";
+	$html1 = $html1 . "<td class='zeitdaten'>$dateleistung</td>";
+	$html1 = $html1 . "<td class='zeitschrift'>Uhr</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='leistungschrift'>Leistung</td>";
+	$html1 = $html1 . "<td class='leistungdaten'>$leistung</td>";
+	$html1 = $html1 . "<td class='leistungschrift'>Watt</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='kostenschrift'>Kosten</td>";
+	$html1 = $html1 . "<td class='kostendaten'>$kosten</td>";
+	$html1 = $html1 . "<td class='kostenschrift'>$waehrung</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='tarifschrift'>Tarif</td>";
+	$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
+	$html1 = $html1 . "<td class='tarifschrift'>$img_ingesamt$img_ingruppe</td>";
+	$html1 = $html1 . "</tr>";
 
-		$html1 = $html1 . "</table></body>";
+	$html1 = $html1 . "</table></body>";
 
-		if ( $error != 0 )
-		   $html1 = "Circle ausgefallen !".$error;
-      SetValueString($data1id,$html1);
-		$fontsize  = "16px";
-		$fontsize1 = "20px";
+	if ( $error != 0 )
+		$html1 = "Circle ausgefallen !".$error;
+   SetValueString($data1id,$html1);
+	$fontsize  = "16px";
+	$fontsize1 = "20px";
 
-		$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
-		$html1 = $html1 . "<table border='0' class='table'>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Gesamt</td>";
-		$html1 = $html1 . "<td class='verbrauchdaten'>$gesamt</td>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Heute</td>";
-		$html1 = $html1 . "<td class='verbrauchdaten'>$verbrauch_heute</td>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Gestern</td>";
-		$html1 = $html1 . "<td class='verbrauchdaten'>$verbrauch_gestern</td>";
-		$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-		$html1 = $html1 . "<td class='verbrauchdaten'></td>";
-		$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "<tr>";
-		$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-		$html1 = $html1 . "<td class='verbrauchdaten'></td>";
-		$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-		$html1 = $html1 . "</tr>";
-		$html1 = $html1 . "</table></body>";
+	$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
+	$html1 = $html1 . "<table border='0' class='table'>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Gesamt</td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'>$gesamt</td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Heute</td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'>$verbrauch_heute</td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>Verbrauch Gestern</td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'>$verbrauch_gestern</td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'></td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "<tr>";
+	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'></td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	$html1 = $html1 . "</tr>";
+	$html1 = $html1 . "</table></body>";
 
-      SetValueString($data2id,$html1);
-
-		
-
+   SetValueString($data2id,$html1);
 
 	}
 
@@ -793,13 +817,13 @@ function statistikdaten($gesamtid)
    $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$archive   = $instances[0];
 
-	$array['VERBRAUCH_HEUTE'] = 0;
-	$array['VERBRAUCH_GESTERN'] = 0;
-
+	$akt_kt['VERBRAUCH_HEUTE'] = "?";
+	$akt_kt['VERBRAUCH_GESTERN'] = "?";
+	$akt_kt['PREISKWH'] = "?";
 
 	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
-	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data  = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
    /*
 	foreach($data as $d)
 		{
@@ -811,7 +835,7 @@ function statistikdaten($gesamtid)
 	$diff_wert = 0;
 	if ( $data )
 	   {
-   	echo "\n";
+   	
 		$ende_wert = floatval($data[0]['Value']);
 		$start_wert  = floatval($data[count($data)-1]['Value']);
 		$diff_wert  = $ende_wert - $start_wert ;
@@ -822,7 +846,7 @@ function statistikdaten($gesamtid)
 	
 	$start = mktime(0,0,0,date("m"),date("d"),date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d"),date("Y"));
-	$data = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
+	$data = AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
 	/*
 	foreach($data as $d)
 		{
@@ -832,11 +856,12 @@ function statistikdaten($gesamtid)
 
 		}
 	*/
+	
 	if ( $data )
 	   {
 		$ende_wert = floatval($data[0]['Value']);
 		$start_wert  = floatval($data[count($data)-1]['Value']);
-
+		//echo "[".$start_wert."-".$ende_wert;
 		$diff_wert  = $ende_wert - $start_wert ;
 		}
 	if ( $diff_wert < 0 ) $diff_wert = 0;
@@ -851,38 +876,114 @@ function statistikdaten($gesamtid)
 /***************************************************************************//**
 *	Liefert die aktuellen Kosten nach Tarif
 *******************************************************************************/
-function aktuelle_kosten($parent,$leistung,$groups = false)
+function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	{
 	GLOBAL $Stromtarife;
 	GLOBAL $CircleGroups;
+	GLOBAL $ExterneStromzaehlerGroups;
+	GLOBAL $SystemStromzaehlerGroups;
 	
+	//$type = "-".$type."-";
+	
+	//IPS_logMessage("....",$type."-".$parent."-".$objectname."-".$leistung);
+
 	$debug = false;
 	
 	$akt_kt['KOSTEN'] = 0;
 	$akt_kt['TARIF'] = "";
 
-	
-	$object = IPS_GetObject($parent);
-	$ident = $object['ObjectIdent'];
-	
-	
 	$tarifgruppe = false;
+
 	foreach( $CircleGroups as $circle )
+			$standardtarifgruppe = $circle[6] ;   // letzter Eintrag nehmen als Standard
+
+
+
+	if ( $type == "ZAEHLER" )  // suche bei Circles
 	   {
-	      //Tarifgruppe fuer diesen Circle suchen
-	   if ( $circle[0] == $ident )
-	      { $tarifgruppe = $circle[6] ; break ; }
+	   $object = IPS_GetObject($parent);
+	   $ident = $object['ObjectIdent'];
+		foreach( $CircleGroups as $circle )
+	   	{//Tarifgruppe fuer diesen Circle suchen
+	   	if ( $circle[0] == $ident )
+	      	{
+				$tarifgruppe = $circle[6] ;
+				break ;
+				}
+	   	}
+		//if ( $tarifgruppe != false )
+	   	//IPS_LogMessage("tarif gefnden fuer Circle",$ident."-".$tarifgruppe);
+		}
+		
+	if ( $type == "EXTERN" )  // suche bei Extern
+	   {
+		foreach( $ExterneStromzaehlerGroups as $extern )
+	   	{//Tarifgruppe fuer diesen Circle suchen
+	   	if ( $extern[0] == $objectname )
+	      	{
+				$tarifgruppe = $extern[6] ;
+				break ;
+				}
+	   	}
+		//if ( $tarifgruppe != false )
+	   	//IPS_LogMessage("Tarif gefunden fuer Extern",$objectname."-".$tarifgruppe);
+		}
 
-		$tarifgruppe = $circle[6] ;   // Wenn keine Gruppe gefunden dann letzten Eintrag
-	   }
+	if ( $type == "GRUPPE" )  // suche Gruppe
+	   {
+		if ( $objectname == "Sonstiges" )
+			$tarifgruppe = $standardtarifgruppe;
+
+		foreach( $ExterneStromzaehlerGroups as $extern ) // suche in Extern
+	   	{//Tarifgruppe fuer diesen Circle suchen
+	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$extern[1]);
+	   	if ( $extern[1] == $objectname )
+	      	{
+				$tarifgruppe = $extern[6] ;
+				break ;
+				}
+	   	}
+		foreach( $CircleGroups as $circle ) // suche in Circles
+	   	{//Tarifgruppe fuer diesen Circle suchen
+	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$circle[2]);
+	   	if ( $circle[2] == $objectname )
+	      	{
+				$tarifgruppe = $circle[6] ;
+				break ;
+				}
+	   	}
+
+		//if ( $tarifgruppe != false )
+	   	//IPS_LogMessage("Tarif gefunden Gruppe",$objectname."-".$tarifgruppe);
+
+		}
+
+
+
+
+	if ( $type == "GESAMT" )  // Gesamtzaehler
+		{
+		foreach( $SystemStromzaehlerGroups as $system )
+	   	{//Tarifgruppe fuer Gesamt suchen
+	   	if ( $system[1] == "SYSTEM_MAIN" )
+				{
+				$tarifgruppe = $system[6];
+				break ;
+				}
+		   }
+		//if ( $tarifgruppe != false )
+	   	//IPS_LogMessage("Tarif gefunden fuer Gesamt",$tarifgruppe);
+
+		}
+		
+
 	
-
 	if ( !$tarifgruppe )
+		{
+	   IPS_logMessage("Keine Tarifgruppe gefunden fuer:",$type."-".$objectname."-".$leistung);
 	   return(0);           // Keine Tarifgruppe gefunden
+		}
 
-
-
-	   
 	if ( $debug ) echo "\n" . $tarifgruppe;
 	
 	$now = time();
@@ -941,9 +1042,6 @@ function aktuelle_kosten($parent,$leistung,$groups = false)
 			}
 
 		}
-
-
-
 
 
 	if ( $debug ) echo "\nDer aktuelle Tarifname = $akttarifname - $aktpreiskwh ";
@@ -1007,8 +1105,6 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 function find_group($ident="")
 	{
 	GLOBAL $CircleGroups;
-	
-	
 	
 	$group = "";
 	
@@ -1218,21 +1314,69 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 	
 
 	}
+	
+//******************************************************************************
+// versteckt alle Data1 und Data2
+//******************************************************************************
+function hide_data1data2($hide = true)
+	{
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+		$hidden = $object['ObjectIsHidden'];
+
+		if ( $hide == true )
+      	if ( $hidden == false )
+      		{
+				IPS_SetHidden($child,true);
+				}
+		if ( $hide == false )
+      	if ( $hidden == true )
+      	   {
+				IPS_SetHidden($child,false);
+				}
+		}
+
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+		$hidden = $object['ObjectIsHidden'];
+
+		if ( $hide == true )
+      	if ( $hidden == false )
+      		{
+				IPS_SetHidden($child,true);
+				}
+		if ( $hide == false )
+      	if ( $hidden == true )
+      	   {
+				IPS_SetHidden($child,false);
+				}
+		}
+	}
 
 /***************************************************************************//**
-*	Welche ID soll im Graph dargestellt werden
+*	Welche IDs sollen im Graph,Data1,Data2 dargestellt werden
 *******************************************************************************/
 function find_id_toshow()
 	{
 	GLOBAL $CircleGroups;
 	GLOBAL $ExterneStromzaehlerGroups;
 
-	$id_result = array();
+	$id_result   = array();
 
-	$id = 0;
+	$id          = false;
 	$maxleistung = 0;
-	$info = "";
-	$objectname = "";
+	$info        = "";
+	$objectname  = "";
+	$idleistung  = 0;
+	$idgesamt    = 0;
+	$type        = "";
+	$parent      = 0;
+
 	
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
@@ -1249,120 +1393,250 @@ function find_id_toshow()
 	//***************************************************************************
 	// Welcher Stromzaehler soll dargestellt werden
 	//***************************************************************************
-	$childs = IPS_GetChildrenIDs($CircleIdCData);
-	foreach ( $childs as $child )
-	   {  // suche in allen Stromzaehler
-	   $object = IPS_GetObject($child);
-
-	   if ( GetValueInteger($child) == 1 )
-	      {  // gefunden
-	      $info = $object['ObjectInfo'];
-	      $objectname = $object['ObjectName'];
-	      //echo $objectname."-".$info;
-	      
-	      // suche in Circles
-	      $parent = @IPS_GetObjectIDByIdent($info,$CircleIdData);
-	      if ( $parent )
-	         {
-				$id = IPS_GetObjectIDByName('Leistung',$parent);
-				foreach ($CircleGroups as $circle )
-	   			{	// Maxwert fuer Circle aus Config
-	    			if ( $info == $circle[0] )
-						{
-						$maxleistung = $circle[4];
-	      			break;
-	      			}
+	if ( $id == false )   // noch nichts gefunden
+		foreach ( IPS_GetChildrenIDs($CircleIdCData) as $child )
+			if ( GetValueInteger($child) == 1 )
+	      	{  // gefunden
+				$id = true;
+				$type       = "ZAEHLER";
+	   		$object     = IPS_GetObject($child);
+	      	$info       = $object['ObjectInfo'];
+	      	$objectname = $object['ObjectName'];
+				
+	      	// suche in Circles
+	      	$parent = @IPS_GetObjectIDByIdent($info,$CircleIdData);
+	      	if ( $parent )
+	         	{
+					$idleistung = IPS_GetObjectIDByName('Leistung',$parent);
+					$idgesamt   = IPS_GetObjectIDByName('Gesamtverbrauch',$parent);
+					foreach ($CircleGroups as $circle )
+	   				{	// Maxwert fuer Circle aus Config
+	    				if ( $info == $circle[0] )
+							{
+							$maxleistung = $circle[4];
+	      				break;
+	      				}
+						}
 					}
+				else
+				   $id = false ; //Doch kein Circle
+		}
+		
+	//***************************************************************************
+	// Welcher externe Stromzaehler soll dargestellt werden
+	//***************************************************************************
+	if ( $id == false )   // noch nichts gefunden
+		foreach($ExterneStromzaehlerGroups as $extern)
+			if ( $extern[0] == $info ) // $info wird bei Circlesuche gefunden
+				{
+				$type        = "EXTERN";
+				$id          = true;
+				$objectname  = $extern[0];
+				$idleistung  = $extern[2];
+				$idgesamt    = $extern[3];
+				$maxleistung = $extern[4];
+				
+				break;
 				}
-			else
-			   { // suche in Externen
-			   //echo"\nkeine Circle".$info;
-				foreach($ExterneStromzaehlerGroups as $extern)
-				   {
-				   if ( $extern[0] == $info )
-				      {
-				      //echo"\ngefunden".$info;
-				      $id = $extern[2];
-				      $maxleistung = $extern[4];
-				      break;
-				      }
-				   }
-			   }
-				
-				
-	      break;
-	      }
-
-	   }
 
 	//***************************************************************************
 	// kein Stromzaehler oder Extern , dann Gruppe suchen
 	//***************************************************************************
-	if ( $id == 0 )   // Kein Circle oder Extern dann nach Gruppe suchen
-		{
-		$childs = IPS_GetChildrenIDs($GroupsIdData);
-		foreach ( $childs as $child )
-	   	{
-	   	$object = IPS_GetObject($child);
-
-	   	if ( GetValueInteger($child) == 1 )
+	if ( $id == false )   // noch nichts gefunden
+		foreach ( IPS_GetChildrenIDs($GroupsIdData) as $child )
+			if ( GetValueInteger($child) == 1 )
 	      	{
-	      	$ident = $object['ObjectIdent'];
-
-	      	$objectname = $object['ObjectIdent'];
-
-	      	$parent1 = IPS_GetObjectIDByIdent($ident,$GroupsIdOData);
-
-				$id = IPS_GetObjectIDByIdent('Leistung',$parent1);
+				$id = true;
+				$type        = "GRUPPE";
+				
+				$object      = IPS_GetObject($child);
+	      	$ident       = $object['ObjectIdent'];
+	      	$idleistung  = IPS_GetObjectIDByIdent('Leistung',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
+	      	$idgesamt     = IPS_GetObjectIDByIdent('Gesamtverbrauch',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
+				$objectname  = $object['ObjectIdent'];
 				$maxleistung = 0;
-
+				break;
 				}
-
-
-	      }
-	   }
 
 	//***************************************************************************
 	// kein Stromzaehler oder Extern oder Gruppe  dann Gesamt
 	//***************************************************************************
-	if ( $id == 0 )   // Kein Circle keine Gruppe dann Gesamt
-		{
-		// Erst mal diese Daten nehmen
-		$idgesamt = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
-		$id = IPS_GetObjectIDByName('Leistung',$idgesamt);
+	if ( $id == false )   // noch nichts gefunden dann Gesamt
+		{ // Erst mal diese Daten nehmen
+		$id = true;
+		$type        = "GESAMT";
+		$idgesamt   = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
+		$idleistung = IPS_GetObjectIDByName('Leistung',$idgesamt);
+		$idgesamt   = IPS_GetObjectIDByName('Gesamtverbrauch',$idgesamt);
 		$objectname = "Gesamt";
-
-		if ( isset($SystemStromzaehlerGroups) )
-		   {
-		   //print_r($SystemStromzaehlerGroups);
-		   $idd = $SystemStromzaehlerGroups[0][2];
-		   if ( $idd != 0 )
-		      $id = $idd;
-		   }
+//		if ( isset($SystemStromzaehlerGroups) )
+//		   {
+//			$idleistung  = intval($SystemStromzaehlerGroups[0][2]);
+//			$idgesamt    = intval($SystemStromzaehlerGroups[0][3]);
+//			}
 		}
+
+
 
 	if ( $objectname == "SYSTEM_REST" )
       $objectname = "Sonstiges";
 
-
+	//***************************************************************************
+	// 
+	//***************************************************************************
+	$id_result['TYPE']        = $type;
 	$id_result['ID']          = $id;
+	$id_result['IDLEISTUNG']  = $idleistung;
+	$id_result['IDGESAMT']    = $idgesamt;
 	$id_result['MAXLEISTUNG'] = $maxleistung;
 	$id_result['INFO']        = $info;
 	$id_result['OBJECTNAME']  = $objectname;
-
+	$id_result['PARENT']      = $parent;
+	
 	return $id_result;
 	}
 	
+/***************************************************************************//**
+*	Updated die Daten in Uebersicht,Data1,Data2 ab Version 1.3.xxxx
+*******************************************************************************/
+function update_webfront_123($was="",$id=0,$clear=false)
+	{
+	GLOBAL $IdGraph;
+	GLOBAL $IdData1;
+   GLOBAL $IdData2;
+
+	
+	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
+	$IdApp     = get_ObjectIDByPath($AppPath);
+
+	//IPS_LogMessage("SHOW123:",$was."-".$id);
+
+	if ( $clear == true )
+	   {
+	   $id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		SetValueString($id1,"");
+		IPS_SetHidden($id1,false);
+		$id1 = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+		IPS_SetHidden($id1,true);
+	   }
+
+	if ( $was == "SYSTEMSTEUERUNG" )
+		{
+		hide_data1data2();
+		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+		}
+	if ( $was == "AUSWERTUNG" )
+		{
+		hide_data1data2();
+		$id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		SetValueString($id1,"In Vorbereitung");
+		}
+
+	if ( $was == "ZAEHLER" or $was == "GRUPPE" or $was == "GESAMT" )
+		{
+		hide_data1data2(false);
+		show_data1data2($id);
+      update_data1data2();
+		$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
+		IPS_RunScript($id);
+		}
+	if ( $was == "REFRESH" )
+		{
+      update_data1data2();
+		//$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
+		//IPS_RunScript($id);
+		}
+
+	}
+//******************************************************************************
+// zeigt die in $id uebergebenen Daten in Data1 und Data2 an
+//******************************************************************************
+function show_data1data2($id)
+	{
+	GLOBAL $IdGraph;
+	GLOBAL $IdData1;
+	GLOBAL $IdData2;
+
+
+	$object = IPS_GetObject($id);
+	$name = $object['ObjectName'];
+	$info = $object['ObjectInfo'];
+
+	if ( $object['ObjectID'] == 0 )
+		{
+	   $name = "Gesamt";
+	   $info = "Gesamt";
+	   }
+
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA1" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         IPS_SetInfo($child,$info);
+         }
+
+		if ( $object['ObjectType'] == 6 )   // Link
+		   {
+		   if ( $object['ObjectInfo'] == $info )
+		   	{
+				IPS_SetHidden($child,false);
+				}
+			else
+				{
+		   	IPS_SetHidden($child,true);
+				}
+		   }
+
+		}
+
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+		$object = IPS_GetObject($child);
+
+		if ( $object['ObjectIdent'] == "WEBDATA2" )
+		   {
+		   IPS_SetName($child,$name);
+         IPS_SetHidden($child,false);
+         }
+		}
+
+   update_data1_data2();
+
+	}
+
+//******************************************************************************
+// leert die HTMLBox
+//******************************************************************************
+function hide_graph($status = true)
+	{
+	GLOBAL $IdGraph;
+	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	SetValueString($id,"");
+
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	IPS_SetHidden($id,true);
+
+
+	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
+	// IPS_SetHidden($id,$status);
+	}
+
 
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/
-function logging($text,$file = 'plugwise.log' )
+function logging($text,$file = 'plugwise.log' ,$force = false)
 	{
 	
 	if ( $file != 'plugwiseerror.log' )
-	if ( !LOG_MODE )
-	   return;
+	if ( !$force )
+		if ( !LOG_MODE )
+	   	return;
+
 	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);

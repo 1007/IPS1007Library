@@ -14,7 +14,7 @@
 	Global $CfgDaten; 
 
 	$result = find_id_toshow();
-	$id 			 = $result['ID'];
+	$id 			 = $result['IDLEISTUNG'];
 	$maxleistung = $result['MAXLEISTUNG'];
 	$objectname  = $result['OBJECTNAME'];
 	$info        = $result['INFO'];

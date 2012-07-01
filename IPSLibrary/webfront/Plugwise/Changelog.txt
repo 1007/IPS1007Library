@@ -1,3 +1,9 @@
+Version=1.2.1021
+ - andere Stromzaehler jetzt OK
+ - Zusatzanzeige ob Zaehler in Gesamt und Gruppe
+ - Menusystem komplett ueberarbeitet
+ - Option in Config fuer zaehlen in Gesamt und Gruppe
+ - diverse Fehler behoben
 Version=1.2.1018
  - Kalibrierdaten werden in einer Variablen gespeichert
  - andere Stromzaehler werden unterstuetzt
