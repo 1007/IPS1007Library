@@ -89,7 +89,7 @@
 	   {	// Systemsteuerung
 	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
 			{
-			IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist abgewaehlt soll angewaehlt werden");
+			//IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen();
 			IPS_SetHidden($IdSystemst,false);
@@ -100,7 +100,7 @@
 			}
 		else // ist angewaehlt angewaehlt
 		   {
-			IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist angewaehlt soll abgewaehlt werden");
+			//IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist angewaehlt soll abgewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen(true);
 		   IPS_SetHidden($IdSystemst,true);
@@ -119,7 +119,7 @@
 	   {	
 	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
 			{
-			IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
+			//IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen();
 			IPS_SetHidden($IdAusw,false);
@@ -130,7 +130,7 @@
 			}
 		else // ist angewaehlt angewaehlt
 		   {
-			IPS_LogMessage($IPS_VALUE,"Auswertungen ist angewaehlt soll abgewaehlt werden");
+			//IPS_LogMessage($IPS_VALUE,"Auswertungen ist angewaehlt soll abgewaehlt werden");
 			reset_menu_stromzaehler();
 			reset_gruppen(true);
 		   IPS_SetHidden($IdAusw,true);
@@ -471,7 +471,7 @@ function show_status_in_menu($id,$hideall = false)
 	$name = $object['ObjectName'];
 	$info = $object['ObjectInfo'];
 
-	IPS_LogMessage("Start- SHOW",$id."-".$name."-".$info."-".$hideall);
+	//IPS_LogMessage("Start- SHOW",$id."-".$name."-".$info."-".$hideall);
 
 	foreach ( IPS_GetChildrenIDs($IdMenu) as $child )
 		{
@@ -480,17 +480,17 @@ function show_status_in_menu($id,$hideall = false)
 		if ( $object['ObjectType'] == 6 )   // Link
 		   {
 			if ( $hideall == true )
-			   { IPS_LogMessage(".","NOLINK");
+			   { //IPS_LogMessage(".","NOLINK");
 				IPS_SetHidden($child,true);
 				}
 			else
 			   {
 				if ( $object['ObjectInfo'] == $info )
-		   		{IPS_LogMessage(".","FALSE");
+		   		{//IPS_LogMessage(".","FALSE");
 					IPS_SetHidden($child,false);
 					}
 				else
-					{IPS_LogMessage(".","TRUE");
+					{//IPS_LogMessage(".","TRUE");
 		   		IPS_SetHidden($child,true);
 					}
 				}
@@ -499,7 +499,7 @@ function show_status_in_menu($id,$hideall = false)
 
 		}
 
-	IPS_LogMessage("Ende- SHOW",$id."-".$name."-".$info);
+	//IPS_LogMessage("Ende- SHOW",$id."-".$name."-".$info);
 
 	}
 

@@ -338,7 +338,7 @@ function update_data1_data2_old()
 	$parent   	 = intval($result['PARENT']);
 
 
-	IPS_logMessage("....",$type."-".$parent."-".$idleistung."-".$idgesamt);
+	//IPS_logMessage("....",$type."-".$parent."-".$idleistung."-".$idgesamt);
 	update_data1data2_sub($parent,$idleistung,$idgesamt);
 	
 	}
@@ -563,7 +563,88 @@ function update_uebersicht()
    SetValueString($id,$text);
 
 	}
+
+function get_count_ingruppe($id,$id1,$name)
+	{
+	GLOBAL $CircleGroups;
+   GLOBAL $ExterneStromzaehlerGroups;
+
 	
+	$ingruppe = false;
+
+	if ( $id != 0 )
+	   {
+		$object = IPS_GetObject($id);
+		$ident = $object['ObjectIdent'];
+
+		foreach ($CircleGroups as $circle)
+			if ( $circle[0] != "" )
+	   		if ( $circle[0] == $ident )
+	   	   	{
+					$ingruppe = true;
+					if ( isset($circle[8]) )
+						$ingruppe = $circle[8];
+			   	}
+		}
+	else
+	   {
+		foreach ($ExterneStromzaehlerGroups as $extern)
+			if ( $extern[0] != "" )
+	   		if ( $extern[0] == $name )
+	   	   	{
+					$ingruppe = false;
+					if ( isset($extern[8]) )
+						$ingruppe = $extern[8];
+			   	}
+
+	   }
+
+
+	return $ingruppe;
+
+	}
+
+function get_count_ingesamt($id,$id1,$name)
+	{
+	GLOBAL $CircleGroups;
+   GLOBAL $ExterneStromzaehlerGroups;
+
+   $ingesamt = false;
+
+	if ( $id != 0 )
+	   {
+		$object = IPS_GetObject($id);
+		$ident = $object['ObjectIdent'];
+
+		foreach ($CircleGroups as $circle)
+			if ( $circle[0] != "" )
+	   		if ( $circle[0] == $ident )
+	   	   	{
+					$ingesamt = true;
+					if ( isset($circle[7]) )
+						$ingesamt = $circle[7];
+			   	}
+		}
+	else
+	   {
+		foreach ($ExterneStromzaehlerGroups as $extern)
+			if ( $extern[0] != "" )
+	   		if ( $extern[0] == $name )
+	   	   	{
+					$ingesamt = true;
+					if ( isset($extern[7]) )
+						$ingesamt = $extern[7];
+			   	}
+
+	   }
+	   
+
+
+	return $ingesamt;
+
+
+	}
+
 /***************************************************************************//**
 *	Update die 2 HTMLBoxen im Webfront ( Sub )
 *******************************************************************************/
@@ -646,11 +727,22 @@ function update_data1_data2()
    $verbrauch_heute   = $array['VERBRAUCH_HEUTE'];
    $verbrauch_gestern = $array['VERBRAUCH_GESTERN'];
 
-      
+
+	
+	if ( get_count_ingruppe($parent,$id,$objectname) )
+      $img_ingruppe = "<img src='./user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
+	else
+	   $img_ingruppe = "<img src='./user/Plugwise/leer.png' >";
+
+	if ( get_count_ingesamt($parent,$id,$objectname) )
+      $img_ingesamt = "<img src='./user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
+	else
+	   $img_ingesamt = "<img src='./user/Plugwise/leer.png' >";
+
+   
 	$hintergrundfarbe = "#003366";
 	$fontsize = "17px";
 		
-      
 	$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
 	$html1 = $html1 . "<table border='0' class='table'>";
 	$html1 = $html1 . "<tr>";
@@ -671,7 +763,7 @@ function update_data1_data2()
 	$html1 = $html1 . "<tr>";
 	$html1 = $html1 . "<td class='tarifschrift'>Tarif</td>";
 	$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
-	$html1 = $html1 . "<td class='tarifschrift'></td>";
+	$html1 = $html1 . "<td class='tarifschrift'>$img_ingesamt$img_ingruppe</td>";
 	$html1 = $html1 . "</tr>";
 
 	$html1 = $html1 . "</table></body>";
@@ -1417,7 +1509,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	IPS_LogMessage("SHOW123:",$was."-".$id);
+	//IPS_LogMessage("SHOW123:",$was."-".$id);
 
 	if ( $clear == true )
 	   {
