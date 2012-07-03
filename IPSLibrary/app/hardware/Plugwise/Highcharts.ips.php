@@ -169,7 +169,8 @@
 		$cfgString = ReadAdditionalConfigData($cfg) . "\n|||\n" .  $cfgString;
 
 		// Language Options aus IPS_Template.php hierher verschoben
-		$cfgString .=  "\n|||\n". GetHighChartsLangOptions($cfg);;
+		$cfgString .=  "\n|||\n". GetHighChartsLangOptions($cfg);
+        $cfgString .=  "\n|||\n".$cfg["lastTimeStamp"];
 
 		return $cfgString;
 	}
@@ -456,7 +457,7 @@
 
 			// data
 			if (isset($Serie['Data']) && isset($Serie['data']))
-				die ("Abbruch - Definition von 'Data' und 'data' in ein und derselben Serie nicht mölglich.");
+				die ("Abbruch - Definition von 'Data' und 'data' in ein und derselben Serie nicht möglich.");
 			if (!isset($Serie['data']) && isset($Serie['Data']))
          {
 			   $Serie['data'] = $Serie['Data'];
@@ -614,7 +615,7 @@
 	//    Falls nicht konfiguriert, wird dies als Default String genommen
 	//    OUT: natürlich den String ....
 	// ------------------------------------------------------------------------
-	function GetHighChartsCfgFile($cfg)
+	function GetHighChartsCfgFile(&$cfg)
 	{
 		DebugModuleName($cfg,"GetHighChartsCfgFile");
 
@@ -712,7 +713,7 @@
 	//    IN: $cfg
 	//    OUT: der String welcher dann in das IPS_Template geschrieben wird.
 	// ------------------------------------------------------------------------
-	function CreateArrayForSeries($cfg)
+	function CreateArrayForSeries(&$cfg)
 	{
 		DebugModuleName($cfg,"CreateArrayForSeries");
 
@@ -742,7 +743,9 @@
 
 			// ... aus Serie umkopieren
 			$serieArr = $Serie;
-
+            if(!isset($cfg["lastTimeStamp"]) || $cfg["lastTimeStamp"] < $Serie["EndTime"]) {
+                $cfg["lastTimeStamp"] = $Serie["EndTime"];
+            }
 			// nicht für JSON benötigte Parameter löschen
 			unset($serieArr['Param']);
 			unset($serieArr['AggregatedValues']);
@@ -1373,6 +1376,7 @@
 		//Default
 		IfNotIssetSetValue($cfg['chart']['renderTo'], "container");
 		IfNotIssetSetValue($cfg['chart']['zoomType'], "xy");
+        IfNotIssetSetValue($cfg['chart']['events']['load'], "requestData");
 
 		return $cfg['chart'];
 	}
@@ -1495,10 +1499,12 @@
 		IfNotIssetSetValue($cfg['xAxis']['dateTimeLabelFormats']['week'], "%e. %b");
 		IfNotIssetSetValue($cfg['xAxis']['dateTimeLabelFormats']['month'], "%b %y");
 		IfNotIssetSetValue($cfg['xAxis']['dateTimeLabelFormats']['year'], "%Y");
+        
+        IfNotIssetSetValue($cfg['xAxis']['dateTimeLabelFormats']['year'], "%Y");
 
 		IfNotIssetSetValue($cfg['xAxis']['allowDecimals'], false);
 		
-		if (isset($cfg['xAxis']['min']) && $cfg['xAxis']['min'] == false)
+		/*if (isset($cfg['xAxis']['min']) && $cfg['xAxis']['min'] == false)
 			unset($cfg['xAxis']['min']);
 		else
 			IfNotIssetSetValue($cfg['xAxis']['min'], "@" . CreateDateUTC($cfg['Ips']['ChartStartTime']) ."@");
@@ -1507,8 +1513,8 @@
 			unset($cfg['xAxis']['max']);
 		else
 			IfNotIssetSetValue($cfg['xAxis']['max'], "@" . CreateDateUTC($cfg['Ips']['ChartEndTime'])."@");
-
-
+*/
+        
 		
 		return $cfg['xAxis'];
 	}
@@ -1552,7 +1558,7 @@
 	function CreateDateUTC($timeStamp)
 	{
 		$monthForJS = ((int)date("m", $timeStamp))-1 ;	// Monat -1 (PHP->JS)
-		return "Date.UTC(" . date("Y,", $timeStamp) .$monthForJS. date(",j,H,i,s", $timeStamp) .")";
+		return "Date.UTC(" . date("Y,", $timeStamp) .$monthForJS. date(",j,G,", $timeStamp).(int) date("i", $timeStamp).",".(int) date("s", $timeStamp) .")";
 	}
 
 	// ------------------------------------------------------------------------
@@ -1623,7 +1629,8 @@
 	//    OUT:
 	// ------------------------------------------------------------------------
 	function CheckArrayItems(&$item)
-	{
+	{   
+        if($item == "requestData") return;
 		if (is_string($item))
 		{
 			if ($item == "@" || $item == "@@" )

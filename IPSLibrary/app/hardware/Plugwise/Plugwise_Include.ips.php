@@ -1513,7 +1513,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 
 	if ( $clear == true )
 	   {
-	   $id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	   $id1 = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 		SetValueString($id1,"");
 		IPS_SetHidden($id1,false);
 		$id1 = IPS_GetObjectIDByName('Auswahl',$IdGraph);
@@ -1528,7 +1528,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	if ( $was == "AUSWERTUNG" )
 		{
 		hide_data1data2();
-		$id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		$id1 = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 		SetValueString($id1,"In Vorbereitung");
 		}
 
@@ -1614,7 +1614,7 @@ function show_data1data2($id)
 function hide_graph($status = true)
 	{
 	GLOBAL $IdGraph;
-	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	$id = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 	SetValueString($id,"");
 
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);

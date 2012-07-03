@@ -65,12 +65,13 @@
 	// Dieser Bereich wurde (soweit möglich) identisch der Originalstruktur gehalten.
 	// Informationen über die Parametrierung findet man unter http://www.highcharts.com/ref/
 	
-   //$CfgDaten['chart']['backgroundColor'] = "#003366";
+   $CfgDaten['chart']['animation'] = false;
 	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
 	$CfgDaten['title']['style']['color'] = "#FFFFFF";
 
-	$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%"; 	
-	$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i"; 			
+	$CfgDaten['SubTitle'] = false;
+	//$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%";
+	//$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i";
    
 
 	$CfgDaten['yAxis'][0]['title']['text'] = "Watt";
