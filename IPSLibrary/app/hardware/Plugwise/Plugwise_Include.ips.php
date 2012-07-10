@@ -657,7 +657,7 @@ function update_data1_data2()
 	$data1id = 0;
 	$data2id = 0;
 
-	$csspath    = "./user/Plugwise/";
+	$csspath    = "/user/Plugwise/";
 
 	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1    = @get_ObjectIDByPath($Data1Path,true);
