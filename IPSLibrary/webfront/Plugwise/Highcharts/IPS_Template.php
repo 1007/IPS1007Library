@@ -54,7 +54,7 @@
 			$s .= fgets($handle);
 		}
 		fclose($handle);
-		$s = utf8_encode($s);	
+		$s = utf8_encode($s);
 	}
 	else
 	{
@@ -68,11 +68,17 @@
 	if (count($s) >= 2)
 	{
 		$TempString = trim($s[0],"\n ");
-		$JavaScriptConfigForHighchart = $s[1];	
-		
+		$JavaScriptConfigForHighchart = $s[1];
+
 		$LangOptions="lang: {}";
 		if (count($s) > 2)
 			$LangOptions = trim($s[2],"\n ");
+		
+        if (count($s) > 3) {
+            $lastTimeStamp = trim($s[3],"\n ");
+        } else {
+            $lastTimeStamp = 0;
+        }
 		
 		// aus den Daten ein schönes Array machen
 		$TempStringArr = explode("\n", $TempString);
@@ -118,8 +124,45 @@
 		<!-- 2. Add the JavaScript to initialize the chart on document ready -->
 		
 		<script type="text/javascript">
-
-		var chart;
+            function renderData(points) {
+                var series = chart.series[0];
+                
+                var renderLater = false;
+                if(points.length > 10) {
+                    renderLater = true;
+                }
+                $.map(points, function(point, idx) {
+                    point[0] = eval(point[0]);
+                    if(point[0] > lastTimeStamp) {
+                        lastTimeStamp = point[0];
+                        series.addPoint(point, !renderLater, true);
+                    }
+                });
+                if(renderLater) {
+                    chart.redraw();
+                }
+            }
+            
+            function requestData() {
+                // online request data when the chart is already instantiated
+                if(typeof chart !== "undefined") {
+                    $.ajax({
+                        url: 'IPS_UpdateData.php',
+                        data: {"scriptId": scriptId,
+                               "lastTimeStamp": lastTimeStamp
+                              },
+                        success: function(points) {
+                            renderData(points);
+                        },
+                        cache: false
+                    });
+                    setTimeout(requestData, 10000);
+                } else {
+                    setTimeout(requestData, 1000);
+                }
+            }
+            var chart, lastTimeStamp = <?php echo $lastTimeStamp; ?>;
+            var scriptId = <?php echo $iScriptId; ?>;
 			Highcharts.setOptions({<?php echo $LangOptions; ?>});
 				
 			$(document).ready(function() {

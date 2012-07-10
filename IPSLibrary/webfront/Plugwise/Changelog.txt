@@ -1,3 +1,5 @@
+Version=1.2.1022
+ - automatisch Aktualisierung Highchart
 Version=1.2.1021
  - andere Stromzaehler jetzt OK
  - Zusatzanzeige ob Zaehler in Gesamt und Gruppe

@@ -331,7 +331,7 @@ function start_script($self)
 
 	//IPS_LogMessage("Start Script",$self['ObjectName']);
 	
-	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	$id = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 
 	if ( $self['ObjectName'] == 'OnlineUpdate' )
 		{

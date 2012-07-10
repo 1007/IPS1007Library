@@ -931,13 +931,13 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 
 	if ( $type == "GRUPPE" )  // suche Gruppe
 	   {
-		if ( $objectname == "Sonstiges" )
+		if ( $objectname == "Sonstige" )
 			$tarifgruppe = $standardtarifgruppe;
 
 		foreach( $ExterneStromzaehlerGroups as $extern ) // suche in Extern
 	   	{//Tarifgruppe fuer diesen Circle suchen
 	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$extern[1]);
-	   	if ( $extern[1] == $objectname )
+	   	if ( ($extern[1]) == $objectname )
 	      	{
 				$tarifgruppe = $extern[6] ;
 				break ;
@@ -945,8 +945,8 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	   	}
 		foreach( $CircleGroups as $circle ) // suche in Circles
 	   	{//Tarifgruppe fuer diesen Circle suchen
-	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$circle[2]);
-	   	if ( $circle[2] == $objectname )
+	   	//IPS_LogMessage("SucheGruppe",$objectname."-".($circle[2]));
+	   	if ( ($circle[2]) == $objectname )
 	      	{
 				$tarifgruppe = $circle[6] ;
 				break ;
@@ -1060,16 +1060,6 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	}
 
 
-/***************************************************************************//**
-*	Umlaute ersetzen 
-*******************************************************************************/
-function umlaute_ersetzen($text)
-  {
-  $such_array  = array ('ä', 'ö', 'ü', 'ß');
-  $ersetzen_array = array ('ae', 'oe', 'ue', 'ss');
-  $neuer_text  = str_replace($such_array, $ersetzen_array, $text);
-  return $neuer_text;
-	}
 
 /***************************************************************************//**
 *	Liste der nicht konfigurierten Circles
@@ -1376,6 +1366,7 @@ function find_id_toshow()
 	$idgesamt    = 0;
 	$type        = "";
 	$parent      = 0;
+	$objectident = "";
 
 	
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
@@ -1453,7 +1444,8 @@ function find_id_toshow()
 	      	$ident       = $object['ObjectIdent'];
 	      	$idleistung  = IPS_GetObjectIDByIdent('Leistung',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
 	      	$idgesamt     = IPS_GetObjectIDByIdent('Gesamtverbrauch',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
-				$objectname  = $object['ObjectIdent'];
+				$objectname  = $object['ObjectName'];
+				$objectident = $object['ObjectIdent'];
 				$maxleistung = 0;
 				break;
 				}
@@ -1492,6 +1484,7 @@ function find_id_toshow()
 	$id_result['INFO']        = $info;
 	$id_result['OBJECTNAME']  = $objectname;
 	$id_result['PARENT']      = $parent;
+	$id_result['OBJECTIDENT'] = $objectident;
 	
 	return $id_result;
 	}
@@ -1513,7 +1506,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 
 	if ( $clear == true )
 	   {
-	   $id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	   $id1 = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 		SetValueString($id1,"");
 		IPS_SetHidden($id1,false);
 		$id1 = IPS_GetObjectIDByName('Auswahl',$IdGraph);
@@ -1528,7 +1521,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	if ( $was == "AUSWERTUNG" )
 		{
 		hide_data1data2();
-		$id1 = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+		$id1 = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 		SetValueString($id1,"In Vorbereitung");
 		}
 
@@ -1614,7 +1607,7 @@ function show_data1data2($id)
 function hide_graph($status = true)
 	{
 	GLOBAL $IdGraph;
-	$id = IPS_GetObjectIDByName("Uebersicht",$IdGraph);
+	$id = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);
 	SetValueString($id,"");
 
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);

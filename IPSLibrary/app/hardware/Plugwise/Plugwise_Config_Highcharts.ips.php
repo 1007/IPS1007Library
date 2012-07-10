@@ -20,12 +20,11 @@
 	$info        = $result['INFO'];
 
 	
-
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];
 	
-	$wird_geloggt = @AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
+	$wird_geloggt = AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
 	if ( !$wird_geloggt )
 	   {
 	   $text = "Variable ". $id . " wird nicht geloggt";
@@ -65,12 +64,13 @@
 	// Dieser Bereich wurde (soweit möglich) identisch der Originalstruktur gehalten.
 	// Informationen über die Parametrierung findet man unter http://www.highcharts.com/ref/
 	
-   //$CfgDaten['chart']['backgroundColor'] = "#003366";
+   $CfgDaten['chart']['animation'] = false;
 	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
 	$CfgDaten['title']['style']['color'] = "#FFFFFF";
 
-	$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%"; 	
-	$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i"; 			
+	$CfgDaten['SubTitle'] = false;
+	//$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%";
+	//$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i";
    
 
 	$CfgDaten['yAxis'][0]['title']['text'] = "Watt";

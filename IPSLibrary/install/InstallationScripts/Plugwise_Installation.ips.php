@@ -57,7 +57,6 @@
 	$CategoryIdHw     = CreateCategoryPath($HardwarePath);
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
   $CategoryIdOData  = CreateCategoryPath($OtherDataPath);
-  //$CategoryIdEData  = CreateCategoryPath($ExternDataPath);
   
   EmptyCategory($CategoryIdVisu);
   EmptyCategory($CategoryIdMobile);
@@ -401,7 +400,7 @@
 	//***************************************************************************
   $id = CreateVariable("Systemsteuerung", 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
   $id = CreateVariable("Auswertungen"   , 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
-
+  IPS_SetHidden($id,true);
 	//***************************************************************************
 	// Gruppenmenu erstellen fuer Circles und Externe
 	//***************************************************************************

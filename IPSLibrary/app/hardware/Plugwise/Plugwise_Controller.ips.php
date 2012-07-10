@@ -1058,10 +1058,17 @@ function berechne_restverbrauch()
 
 		   if ( $id )
 		      {
-				$data = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$id));
-				$l = $l + $data;
-				$data = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$id));
-				$g = $g + $data;
+				$datal = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$id));
+				$l = $l + $datal;
+
+
+				$datag = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$id));
+				$g = $g + $datag;
+				
+				$text = $id.":".$datal."-".$datag;
+   			logging($text,"Gesamtleistung.log",true);
+
+				
 				}
 			}
 
@@ -1079,6 +1086,11 @@ function berechne_restverbrauch()
 				$l = $l + $data1;
 				$data2 = @GetValue($id_gesamt);
 				$g = $g + $data2;
+				
+				
+				$text = $id_leistung."EX:".$data1."-".$data2;
+   			logging($text,"Gesamtleistung.log",true);
+
 				}
 
 		   }
@@ -1148,9 +1160,9 @@ function berechne_gruppenverbrauch()
 				$in_gesamt = $group[8];
 
 
-			$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
+			$gruppenid = IPS_GetObjectIDByIdent(Get_IdentByName($gruppe),$idCatOthers);
 		
-			$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
+			$id = IPS_GetObjectIDByIdent($mac,$idCatCircles);
 			if ( $id )
 		   	{
 		   	$leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
@@ -1209,8 +1221,10 @@ function berechne_gruppenverbrauch()
 	
 	foreach ( $keys as $gruppe )
 	   {
-		$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
+		$gruppenid = IPS_GetObjectIDByIdent(Get_IdentByName($gruppe),$idCatOthers);
 
+		if ( $gruppenid > 0 )
+		   {
 		$wert = $array_leistung[$gruppe];
 		$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);
 		if (GetValue($id) <> $wert)
@@ -1220,6 +1234,8 @@ function berechne_gruppenverbrauch()
 		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
       if (GetValue($id) <> $wert)
 			SetValue($id,$wert);
+			}
+			
 
 	   }
 
