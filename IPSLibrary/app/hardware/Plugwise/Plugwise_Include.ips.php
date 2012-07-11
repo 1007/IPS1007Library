@@ -403,7 +403,7 @@ function update_uebersicht()
 	if ( $menupunkt < 5 )
 	   {
 	$counter = 0;
-	for ( $y = 0;$y<8;$y++)
+	for ( $y = 0;$y<24;$y++)
 	   {
 		$text = $text . "<tr>";
 		$text1 = "";
