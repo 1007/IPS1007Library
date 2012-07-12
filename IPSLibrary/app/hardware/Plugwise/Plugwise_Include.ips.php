@@ -350,13 +350,111 @@ function update_data1_data2_old()
 function update_data1data2()
 	{
    update_data1_data2();
-	update_uebersicht();
+	update_uebersicht_circles();
 	}
+
+
+
+/***************************************************************************//**
+*	Update Uebersicht Circles Systemsteuerung
+*******************************************************************************/
+function update_uebersicht_circles()
+	{
+	GLOBAL $CircleGroups;
+	GLOBAL $IdGraph;
+
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
+   $IdMenu    = @get_ObjectIDByPath($VisuPath,true);
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    = get_ObjectIDByPath($AllgPath);
+
+	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
+   $IdSystemst    = get_ObjectIDByPath($SystemstPath);
+
+	$id = IPS_GetObjectIDByName('Systemsteuerung',$IdAllg);  // Systemsteuerung
+  	if ( !$id ) return;
+	if ( @GetValue($id) != 1 ) return;
+
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles = get_ObjectIDByPath($CircleDataPath);
+
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+
+   $hintergrundfarbe = "#9B9B9B";
+
+	$text = "";
+	$text = $text . "<table border='0' cellspacing='2' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+
+	$anzahl = 0;
+
+	$anzahl  = count(IPS_GetChildrenIDs($idCatCircles));
+   $circles = IPS_GetChildrenIDs($idCatCircles);
+
+	$counter = 0;
+	for ( $y = 0;$y<24;$y++)
+		{
+		$text = $text . "<tr>";
+
+		for ( $x = 0;$x<4;$x++)
+	   	{
+	   	$circle = 0;
+	   	$name = "FFFFFFFFFFFFFFFF";
+	   	$name = "";
+			$hintergrundfarbe = '#000000';
+			$statustext = "";
+
+	   	if ( $counter < $anzahl )
+	   	   {
+	   	   $id     = $circles[$counter];
+	   		$circle = IPS_GetObject($id);
+	   		$info   = $circle['ObjectInfo'];
+	   		$name   = $circle['ObjectIdent'];
+            $error  = @GetValue(IPS_GetVariableIDByName('Error',$id));
+            $status = @GetValue(IPS_GetVariableIDByName('Status',$id));
+            $lastm  = @GetValue(IPS_GetVariableIDByName('LastMessage',$id));
+				$mac    = "?";
+				//suche richtigen Namen in der Config
+				foreach ( $CircleGroups as $configCircle )
+				   {
+
+				   if ( $name == $configCircle[0] )
+				      {
+						$name  =  $configCircle[1] ;
+						$mac   = substr($configCircle[0],-4);
+
+						$namemac = $mac . " - " . $name;
+						break ;
+						}
+
+				   }
+
+				}
+
+			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:12px;'>---</span>";
+			$text = $text . "</td>";
+			$counter++;
+
+	   	}
+		$text = $text . "</tr>";
+
+	 }
+
+	$text = $text . "</table>";
+
+	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
+
+   SetValueString($id,$text);
+
+	}
+
 
 /***************************************************************************//**
 *	Update Uebersicht nur bei Systemsteuerung
 *******************************************************************************/
-function update_uebersicht()
+function update_uebersicht1()
 	{
 	GLOBAL $CircleGroups;
 	GLOBAL $IdGraph;
@@ -387,14 +485,14 @@ function update_uebersicht()
    	return;
 	   }
 	   
-   $hintergrundfarbe = "#003366";
+   $hintergrundfarbe = "#FF0000";
    
 	$text = "";
 
-	$text = $text . "<table border='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$text = $text . "<table border='0' cellspacing='3' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
 	$anzahl = 0;
 
-	$anzahl = count(IPS_GetChildrenIDs($idCatCircles));
+	$anzahl  = count(IPS_GetChildrenIDs($idCatCircles));
    $circles = IPS_GetChildrenIDs($idCatCircles);
 
 	//***************************************************************************
@@ -558,12 +656,17 @@ function update_uebersicht()
 		
 	$text = $text . "</table>";
 		
-	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
+	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
 
    SetValueString($id,$text);
 
 	}
 
+
+
+/***************************************************************************//**
+*  
+*******************************************************************************/
 function get_count_ingruppe($id,$id1,$name)
 	{
 	GLOBAL $CircleGroups;
@@ -872,6 +975,7 @@ function statistikdaten($gesamtid)
 	return $array;
 	
 	}
+
 	
 /***************************************************************************//**
 *	Liefert die aktuellen Kosten nach Tarif
@@ -1502,7 +1606,6 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	//IPS_LogMessage("SHOW123:",$was."-".$id);
 
 	if ( $clear == true )
 	   {

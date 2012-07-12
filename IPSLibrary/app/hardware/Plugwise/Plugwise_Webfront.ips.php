@@ -75,7 +75,7 @@
 	//***************************************************************************
 	if ( $self['ObjectIdent'] == 'Auswahl' )
 	   {
-		update_uebersicht();
+		update_uebersicht_circles();
 		SetValue($IPS_VARIABLE, $IPS_VALUE);
 		return;
 		}
