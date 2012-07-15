@@ -178,6 +178,28 @@
 
 				);
 
+/***************************************************************************//**
+* Zaehleractions
+* mache etwas bei unterschreiten oder ueberschreiten eines Wertes
+* fuer eine bestimmte Zeit
+*
+*   Feld 01   -   CircleID oder Externer Name
+*   Feld 02   -   < Wert kleiner , > Wert groesser
+*   Feld 03   -   Leistungswert1 in Watt
+*   Feld 04   -   Leistungswert2 in Watt
+*   Feld 05   -   Zeitraum
+*   Feld 06   -   VariablenID oder ScriptID
+*   Feld 07   -   Reserve
+*   Feld 08   -   Reserve
+*
+*  Beispiel
+* 	array("000D6F0000D3412E"	,"<"	,4	,false,5   ,xxxxx 	,false	,false),
+*  fuehre Script 12345 aus / bzw setze Variable 12345 auf true
+*  wenn Circle 5 Minuten lang unter 4 Watt hat.
+*******************************************************************************/
+  $zaehleractions = array(
+	    //array("000D6F0000D3412E"	,"<"	,4	,false ,5   ,12345 	,false	,false),
+			);
 
 /***************************************************************************//**
 * Archivehandling 
