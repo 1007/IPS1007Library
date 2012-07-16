@@ -16,7 +16,8 @@
 	GLOBAL $Stromtarife;
   GLOBAL $SystemStromzaehlerGroups;
   GLOBAL $ExterneStromzaehlerGroups;
-
+  GLOBAL $Zaehleractions;
+  
 /***************************************************************************//**
 * Debug und Logging
 *   DEBUG_MODE -  TRUE/FALSE ( Standard FALSE )
@@ -197,7 +198,7 @@
 *  fuehre Script 12345 aus / bzw setze Variable 12345 auf true
 *  wenn Circle 5 Minuten lang unter 4 Watt hat.
 *******************************************************************************/
-  $zaehleractions = array(
+  $Zaehleractions = array(
 	    //array("000D6F0000D3412E"	,"<"	,4	,false ,5   ,12345 	,false	,false),
 			);
 

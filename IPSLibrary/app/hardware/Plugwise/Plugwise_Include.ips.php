@@ -253,8 +253,10 @@ function createCircle($mac, $parentID){
       
 	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
- 
-  $id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
+
+	$id1 = @IPS_GetVariableIDByName("Status",$item) ;
+	if ( $id1 == false )
+		$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
   $einaus = intval($einaus);
   
   if ( $einaus > 0 )
@@ -270,13 +272,14 @@ function createCircle($mac, $parentID){
 		}
     
     }
-   
-	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
-	//$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-	//$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+	$id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
+	if ( $id2 == false )
+		$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
 
+	$id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+	if ( $id3 == false )
+		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
@@ -1720,6 +1723,146 @@ function hide_graph($status = true)
 	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
 	// IPS_SetHidden($id,$status);
 	}
+
+
+/***************************************************************************//**
+*	checked ob eine Zaehleraktion ausgefuehrt werden soll
+*******************************************************************************/
+function check_zaehleractions()
+	{
+	GLOBAL $Zaehleractions;
+	
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
+
+   $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
+	$archive   = $instances[0];
+
+
+	if ( !isset($Zaehleractions) )
+	   return;
+	
+
+	foreach ( $Zaehleractions as $action )
+	   {
+	   $zaehler   = $action[0];
+	   $bedingung = $action[1];
+	   $wert1 	  = $action[2];
+	   $wert2 	  = $action[3];
+	   $zeitraum  = $action[4];
+		$actionid  = $action[5];
+	   $reserve1  = $action[6];
+	   $zaehler2  = $action[7];
+
+
+	   //echo "\n".$zaehler;
+		$object = false;
+		$leistung_id = false;
+		
+		// suche Zaehler bei den Circles
+		//echo "\nSuche Zaehler bei den Circles";
+		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
+		if ( $object )
+		   {
+		   $leistung_id = IPS_GetVariableIDByName("Leistung",$object);
+		   }
+
+		if ( !$object )
+		   {
+			echo "\nSuche Zaehler bei den Externen";
+
+		   }
+	   
+		if ( !$object )
+		   {
+			echo "\nSuche Zaehler bei den Gruppen";
+
+		   }
+
+		// ab hier Auswertung wenn gefunden
+		if ( $leistung_id )
+		   {
+		   //echo "\ngefunden:".$leistung_id;
+			$akt_leistung = GetValue($leistung_id);
+		   //echo "\nakt:".$akt_leistung;
+
+			$ende  = time();
+			$start = time() - ( $zeitraum * 60 );
+			
+			//echo "\nStart:".date("H:i:s",$start);
+			//echo "\nEnde:".date("H:i:s",$ende);
+
+			
+			$datas  = AC_GetLoggedValues($archive,$leistung_id,$start,$ende,0);
+		
+   		
+   		if ( count($datas) == 0 )
+				{
+				echo "\nKeine Werte vorhanden";
+   		   return;
+   		   }
+   		   
+			if ( $bedingung == "<" )      // kleiner
+		      {
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            {
+		            if ( $data['Value'] >= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   return;
+		      }
+			if ( $bedingung == ">" )      // groesser
+		      {
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            {
+		            if ( $data['Value'] <= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   return;
+		      }
+			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
+		      {
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            {
+		            if ( $data['Value'] <= $wert1 )
+		               $ok = false;
+		            if ( $data['Value'] >= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   return;
+		      }
+
+
+				$object = @IPS_GetObject($actionid);
+				
+				if ( $object )
+				   {
+				   if ( $object['ObjectType'] == 2 ) // Variable
+				   	{
+				   	if ( GetValue($actionid) == 0 )
+				      	SetValue($actionid,1);
+				      }
+				   if ( $object['ObjectType'] == 3 ) // Script
+				   	{
+				      
+				      }
+
+				   }
+		      
+		   }
+	   
+
+
+	   }
+	   
+	}
+
 
 
 /***************************************************************************//**

@@ -52,7 +52,7 @@
 	$offset = 0;
 	$CfgDaten['StartTime'] = time() - (60*60*$zeitrum_stunden )-$offset;   // letzten 2 Tage
    $CfgDaten['EndTime']   = time()-$offset;
-
+	
 	// damit wird die Art des Aufrufes festgelegt
 	$CfgDaten['RunMode'] = "script"; 	// file, script oder popup
 	//$CfgDaten['RunMode'] = "file"; 	// file, script oder popup
