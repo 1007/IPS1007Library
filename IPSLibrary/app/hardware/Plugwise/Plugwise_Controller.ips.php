@@ -424,7 +424,8 @@ function plugwise_0013_received($buf)
 
 		$time = date('Y-m-d H:i:s');
 		$group_name = find_group($mcID);
-      mysql_add(MYSQL_TABELLE_LEISTUNG,$time, IPS_GetName($myCat),$Leistung,$myCat,$group_name);
+		if ( defined('MYSQL_ANBINDUNG') )
+      	mysql_add(MYSQL_TABELLE_LEISTUNG,$time, IPS_GetName($myCat),$Leistung,$myCat,$group_name);
 		$text = IPS_GetName($myCat) . " Aktueller Stromverbrauch. " . $Leistung ." [".$buf."] Pulse: $pulse";
 
 		}
@@ -756,8 +757,8 @@ function plugwise_0049_received($buf)
 			$lad = $lad + ( $bufferstelle * 8 );
 			$lad = dechex($lad);
 
-      	//mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch);
-      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
+			if ( defined('MYSQL_ANBINDUNG') )
+      		mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
      		
 
 			//IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
@@ -773,7 +774,8 @@ function plugwise_0049_received($buf)
 			$lad = hexdec($LogAddressRaw);
 			$lad = $lad + ( $bufferstelle * 8 );
 			$lad = dechex($lad);
-      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
+			if ( defined('MYSQL_ANBINDUNG') )
+      		mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
 
 
 			$neuerverbrauch = $verbrauch + $oldVerbrauch;

@@ -190,7 +190,7 @@
 *   Feld 04   -   Leistungswert2 in Watt
 *   Feld 05   -   Zeitraum
 *   Feld 06   -   VariablenID oder ScriptID
-*   Feld 07   -   Reserve
+*   Feld 07   -   Wert auf welchen die Variable gesetzt wird
 *   Feld 08   -   Reserve
 *
 *  Beispiel
@@ -199,7 +199,8 @@
 *  wenn Circle 5 Minuten lang unter 4 Watt hat.
 *******************************************************************************/
   $Zaehleractions = array(
-	    //array("000D6F0000D3412E"	,"<"	,4	,false ,5   ,12345 	,false	,false),
+	    //array("000D6F0000D3412E"	,"<"	,4	,false ,5   ,12345 	,0	,false),
+	    //array("000D6F0000D3412E"	,">"	,400,false ,5   ,12345 	,1	,false),
 			);
 
 /***************************************************************************//**
