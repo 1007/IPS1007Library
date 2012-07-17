@@ -1751,7 +1751,7 @@ function check_zaehleractions()
 	   $wert2 	  = $action[3];
 	   $zeitraum  = $action[4];
 		$actionid  = $action[5];
-	   $reserve1  = $action[6];
+	   $sollwert  = $action[6];
 	   $zaehler2  = $action[7];
 
 
@@ -1794,7 +1794,7 @@ function check_zaehleractions()
 
 			
 			$datas  = AC_GetLoggedValues($archive,$leistung_id,$start,$ende,0);
-		
+		   print_r($datas);
    		
    		if ( count($datas) == 0 )
 				{
@@ -1838,15 +1838,15 @@ function check_zaehleractions()
 				   return;
 		      }
 
-
+				echo "\nMach was ";
 				$object = @IPS_GetObject($actionid);
 				
 				if ( $object )
 				   {
 				   if ( $object['ObjectType'] == 2 ) // Variable
 				   	{
-				   	if ( GetValue($actionid) == 0 )
-				      	SetValue($actionid,1);
+				   	if ( GetValue($actionid) == $sollwert )
+				      	SetValue($actionid,$sollwert);
 				      }
 				   if ( $object['ObjectType'] == 3 ) // Script
 				   	{
