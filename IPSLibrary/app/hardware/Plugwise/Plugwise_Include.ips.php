@@ -922,14 +922,14 @@ function update_data1_data2()
 
 	
 	if ( get_count_ingruppe($parent,$id,$objectname) )
-      $img_ingruppe = "<img src='./user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
+      $img_ingruppe = "<img src='/user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
 	else
-	   $img_ingruppe = "<img src='./user/Plugwise/leer.png' >";
+	   $img_ingruppe = "<img src='/user/Plugwise/leer.png' >";
 
 	if ( get_count_ingesamt($parent,$id,$objectname) )
-      $img_ingesamt = "<img src='./user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
+      $img_ingesamt = "<img src='/user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
 	else
-	   $img_ingesamt = "<img src='./user/Plugwise/leer.png' >";
+	   $img_ingesamt = "<img src='/user/Plugwise/leer.png' >";
 
    
 	$hintergrundfarbe = "#003366";
