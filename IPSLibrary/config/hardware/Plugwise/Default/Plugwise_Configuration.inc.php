@@ -112,8 +112,8 @@
 *   Feld 09   -   in Gesamtanzeige der Gruppe enthalten
 *******************************************************************************/
 	$ExterneStromzaehlerGroups = array(
-	   array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
-	   array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
+	   //array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
+	   //array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
  
   			);
 

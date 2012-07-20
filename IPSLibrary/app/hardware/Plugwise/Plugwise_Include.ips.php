@@ -291,10 +291,12 @@ function createCircle($mac, $parentID){
 
    if ($archivlogging == true)
       {
-  		AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-  		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
-  		AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-  		AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
+  		AC_SetLoggingStatus($archive_id  , $id2, True);   	// Logging einschalten
+  		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf Type setzen
+      IPS_ApplyChanges($archive_id);
+  		AC_SetLoggingStatus($archive_id  , $id3, True); 	// Logging einschalten
+  		AC_SetAggregationType($archive_id, $id3, $aggtype);// Logging auf Type setzen
+      IPS_ApplyChanges($archive_id);
 		}
 
 	//$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
@@ -384,11 +386,81 @@ function update_uebersicht_circles()
    $idCatCircles = get_ObjectIDByPath($CircleDataPath);
 
 	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
-
+	$menupunkt = GetValue($id);
+	
    $hintergrundfarbe = "#9B9B9B";
 
+   $imggroesse = "width='100' height='50'";
+
+
+	$header = "<head>";
+	$header = "";
+	$header = $header . "<script src='js/jquery-1.7.1.js'></script>";
+	$header = $header . "<script type='text/javascript'>";
+	$header = $header . "function GenericAction() {";
+   $header = $header . "$.get('ControlInstance.php', { action: \$IpsCommand, instance: '23616' }, ";
+	$header = $header . "function(data) {";
+   $header = $header . "$('.result').html(data);";
+   $header = $header . "});}";
+	$header = $header . "</script>";
+//	$header = $header . "</head>";
+
+
+
+		$am = "onClick=GenericAction(1234)";
+
+	$menu = "";
+	$menu = $menu . "<table border='0' cellspacing='0' cellpadding='0' bgcolor=$hintergrundfarbe width='100%' height='20'>";
+	$menu = $menu . "<tr>";
+
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 0 )
+		$menu = $menu ."<img $am src='./user/Plugwise/images/menu_uebersicht.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_uebersicht_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+	
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 1 )
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_letztedaten.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_letztedaten_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 2 )
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_softwareversion.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_softwareversion_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 3 )
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_hardwareversion.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_hardwareversion_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 4 )
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_leer.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_leer_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+
+	$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+	if ( $menupunkt == 5 )
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_leer.png' $imggroesse alt='Uebersicht'>";
+	else
+		$menu = $menu . "<img src='./user/Plugwise/images/menu_leer_grau.png' $imggroesse alt='Uebersicht'>";
+	$menu = $menu . "</td>";
+
+	$menu = $menu . "</tr>";
+	$menu = $menu . "</table>";
+
+
 	$text = "";
-	$text = $text . "<table border='0' cellspacing='2' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$text = $text . "<table border='0' cellspacing='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
 
 	$anzahl = 0;
 
@@ -427,7 +499,7 @@ function update_uebersicht_circles()
 						$name  =  $configCircle[1] ;
 						$mac   = substr($configCircle[0],-4);
 
-						$namemac = $mac . " - " . $name;
+						$namemac = $mac . "." . $name;
 						break ;
 						}
 
@@ -449,8 +521,22 @@ function update_uebersicht_circles()
 
 	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
 
-   SetValueString($id,$text);
+	$html = $header . $menu . "<br>" . $text;
 
+
+
+	$test = "test";
+	$html = "<a href=\"RemoveMember " . $test ."\"
+	onclick=\"new Image().src = '/user/Plugwise/ControlInstance.php?Name= . $test '; return false;\">".$test .
+                            "<img src='/user/Plugwise/images/menu_hardwareversion.png'> </a> ";
+                            
+
+	$html = $html . "<img src='/user/Plugwise/images/menu_hardwareversion.png'
+       onclick=\"new Image().src = '/user/Plugwise/ControlInstance.php?Button= . $test '; return false;\">";
+	//$html = $html . ">";
+
+  SetValueString($id,$html);
+	
 	}
 
 
@@ -1742,7 +1828,6 @@ function check_zaehleractions()
 	if ( !isset($Zaehleractions) )
 	   return;
 	
-
 	foreach ( $Zaehleractions as $action )
 	   {
 	   $zaehler   = $action[0];
@@ -1753,11 +1838,10 @@ function check_zaehleractions()
 		$actionid  = $action[5];
 	   $sollwert  = $action[6];
 	   $zaehler2  = $action[7];
-
-
-	   //echo "\n".$zaehler;
+	
 		$object = false;
 		$leistung_id = false;
+		
 		
 		// suche Zaehler bei den Circles
 		//echo "\nSuche Zaehler bei den Circles";
@@ -1794,35 +1878,35 @@ function check_zaehleractions()
 
 			
 			$datas  = AC_GetLoggedValues($archive,$leistung_id,$start,$ende,0);
-		   print_r($datas);
+		   //print_r($datas);
    		
    		if ( count($datas) == 0 )
 				{
 				echo "\nKeine Werte vorhanden";
-   		   return;
+   		   continue;
    		   }
    		   
 			if ( $bedingung == "<" )      // kleiner
-		      {
+		      { //echo "kleiner:";
 		      $ok = true ;
 		      foreach ( $datas as $data )
-		            {
+		            { //echo "-".$data['Value'];
 		            if ( $data['Value'] >= $wert1 )
 		               $ok = false;
 		            }
 				if ( $ok == false )
-				   return;
+				   continue;
 		      }
 			if ( $bedingung == ">" )      // groesser
-		      {
+		      { //echo "groesse:";
 		      $ok = true ;
 		      foreach ( $datas as $data )
-		            {
-		            if ( $data['Value'] <= $wert1 )
+		            {  //echo "-".$data['Value'];
+						if ( $data['Value'] <= $wert1 )
 		               $ok = false;
 		            }
 				if ( $ok == false )
-				   return;
+				   continue;
 		      }
 			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
 		      {
@@ -1835,22 +1919,31 @@ function check_zaehleractions()
 		               $ok = false;
 		            }
 				if ( $ok == false )
-				   return;
+				   continue;
 		      }
 
-				echo "\nMach was ";
+				//echo "\nMach was ";
 				$object = @IPS_GetObject($actionid);
 				
 				if ( $object )
 				   {
 				   if ( $object['ObjectType'] == 2 ) // Variable
 				   	{
-				   	if ( GetValue($actionid) == $sollwert )
+				   	if ( GetValue($actionid) != $sollwert )
 				      	SetValue($actionid,$sollwert);
 				      }
 				   if ( $object['ObjectType'] == 3 ) // Script
 				   	{
-				      
+				   	$actionarray = array("PWACTION_ZAEHLER" 	=> $zaehler ,
+													"PWACTION_BEDINGUNG" => $bedingung,
+													"PWACTION_WERT1" 		=> $wert1,
+													"PWACTION_WERT2" 		=> $wert2,
+													"PWACTION_ZEITRAUM" 	=> $zeitraum,
+													"PWACTION_ACTIONID" 	=> $actionid,
+													"PWACTION_SOLLWERT" 	=> $sollwert,
+													"PWACTION_ZAEHLER2" 	=> $zaehler2
+													);
+				      IPS_RunScriptEx($actionid,$actionarray);
 				      }
 
 				   }
