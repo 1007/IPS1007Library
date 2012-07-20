@@ -195,8 +195,10 @@
         {        
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
         }
 
       }
@@ -271,8 +273,10 @@
             {        
             AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+            IPS_ApplyChanges($archive_id);
             AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+            IPS_ApplyChanges($archive_id);
             }
           }
 
@@ -503,7 +507,7 @@
 			   if ( $id )
 			      {                                                      
       			//$id = CreateLink($circle[1]." Status",$id,$VisuID_data1,$x+200);
-      			$id = CreateLink($circle[1]." Status",$id,$VisuID_menu,$x+200);
+      			$id = CreateLink($circle[1],$id,$VisuID_menu,$x+200);
 					  IPS_SetHidden($id , true );
 					  IPS_SetInfo($id,$circle[0]);
 			      }
