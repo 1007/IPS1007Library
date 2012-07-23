@@ -1817,6 +1817,8 @@ function hide_graph($status = true)
 function check_zaehleractions()
 	{
 	GLOBAL $Zaehleractions;
+
+	$debug  = false;
 	
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
    $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
@@ -1827,9 +1829,10 @@ function check_zaehleractions()
 
 	if ( !isset($Zaehleractions) )
 	   return;
-	
+
 	foreach ( $Zaehleractions as $action )
 	   {
+	   
 	   $zaehler   = $action[0];
 	   $bedingung = $action[1];
 	   $wert1 	  = $action[2];
@@ -1844,7 +1847,7 @@ function check_zaehleractions()
 		
 		
 		// suche Zaehler bei den Circles
-		//echo "\nSuche Zaehler bei den Circles";
+		if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles","");
 		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
 		if ( $object )
 		   {
@@ -1890,7 +1893,7 @@ function check_zaehleractions()
 		      { //echo "kleiner:";
 		      $ok = true ;
 		      foreach ( $datas as $data )
-		            { //echo "-".$data['Value'];
+		            { if ( $debug )  IPS_Logmessage("...",$data['Value']);
 		            if ( $data['Value'] >= $wert1 )
 		               $ok = false;
 		            }

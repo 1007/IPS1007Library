@@ -55,7 +55,7 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	update_webfront_123("REFRESH"); break;
+			Case "Execute"				:	berechne_gruppenverbrauch(); break;
 			Case "TimerEvent"			:	
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
