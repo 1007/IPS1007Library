@@ -73,13 +73,13 @@
 	//***************************************************************************
 	// UnterMenu Uebersicht
 	//***************************************************************************
-	if ( $self['ObjectIdent'] == 'Auswahl' )
-	   {
-		
-		SetValue($IPS_VARIABLE, $IPS_VALUE);
-		update_uebersicht_circles();
-		return;
-		}
+//	if ( $self['ObjectIdent'] == 'Auswahl' )
+//	   {
+//
+//		SetValue($IPS_VARIABLE, $IPS_VALUE);
+//		update_uebersicht_circles();
+//		return;
+//		}
 	//***************************************************************************
 
 	//***************************************************************************
@@ -96,8 +96,9 @@
 			IPS_SetHidden($IdSystemst,false);
 			SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
 			IPS_SetHidden($IdAusw,true);
-			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),true);
+			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
 			SetValue($IPS_VARIABLE,1);
+			
 			}
 		else // ist angewaehlt angewaehlt
 		   {
@@ -277,6 +278,7 @@
 	   {
 	   show_status_in_menu(0,true);
 		update_webfront_123("SYSTEMSTEUERUNG",0,true);
+		update_uebersicht_circles();
 		return;
 		}
 		

@@ -366,7 +366,8 @@
    
   $graphid  = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
-
+  IPS_SetHidden($graphid1,true);
+  
   $IDAllgemein = CreateDummyInstance("Allgemeines",$VisuID_menu,10);
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Stromzähler",$VisuID_menu,20);
@@ -467,18 +468,18 @@
 	// Scriptlinks erstellen
 	//***************************************************************************
 
-    $id = CreateVariable("Kalibrierung", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Kalibrierung"     , 1, $IDSystemst, 50, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circles suchen", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circles suchen"   , 1, $IDSystemst, 60, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit lesen", 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
-    IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit setzen", 1, $IDSystemst, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
+//    $id = CreateVariable("Circlezeit lesen" , 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
+//    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Circlezeit setzen", 1, $IDSystemst, 70, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
 
-    $id = CreateVariable("OnlineUpdate", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("OnlineUpdate"     , 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Versionsinfo", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Versionsinfo"     , 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     $id = CreateVariable("Update vorhanden?", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");

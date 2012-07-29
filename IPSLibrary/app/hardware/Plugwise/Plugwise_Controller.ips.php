@@ -506,8 +506,8 @@ function plugwise_0024_received($buf)
 		return;
 	   }
 
-   $t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
-	$t = microtime(true) - $t ;
+   //$t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
+	$t = time()  ;
 	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
 
@@ -880,7 +880,7 @@ function request_circle_data()
 
 		PW_SendCommand("0012".$id_info['ObjectIdent']);
 		
-		SetValue(IPS_GetVariableIDByName ("LastMessage", $item),microtime(true));
+		//SetValue(IPS_GetVariableIDByName ("LastMessage", $item),microtime(true));
 
 		PW_SendCommand("0023".$id_info['ObjectIdent']);
 		
