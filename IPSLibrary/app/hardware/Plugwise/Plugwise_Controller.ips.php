@@ -55,7 +55,7 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	berechne_gruppenverbrauch(); break;
+			Case "Execute"				:	hole_gesamtverbrauch(); break;
 			Case "TimerEvent"			:	
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
@@ -921,10 +921,16 @@ function hole_gesamtverbrauch()
 		if ( ID_LEISTUNG != 0 )
 			$id_leistung = ID_LEISTUNG;
 
-
+	$id_math = "*";
+	$id_faktor = 1;
    // IDs aus der Konfig lesen - neue Version
 	if ( isset( $SystemStromzaehlerGroups[0][2] ) )
-      $id_leistung = intval($SystemStromzaehlerGroups[0][2]);
+	   {
+		$id_leistung_str = str_replace(" ", "", $SystemStromzaehlerGroups[0][2]); ;
+      $id_leistung = intval($SystemStromzaehlerGroups[0][2]);  // erster Teil
+		$id_math = substr($id_leistung_str,5,1);
+		$id_faktor = substr($id_leistung_str,6);
+		}
 
 	if ( isset( $SystemStromzaehlerGroups[0][3] ) )
       $id_gesamt = intval($SystemStromzaehlerGroups[0][3]);
@@ -948,6 +954,10 @@ function hole_gesamtverbrauch()
 		if ( IPS_ObjectExists($id_leistung) )
 	   	{
       	$d = GetValue($id_leistung);
+
+			if ( $id_math == '*' )
+			   $d = $d * $id_faktor;
+			   
 			$id = IPS_GetObjectIDByIdent('Leistung',$id1);
 			if (GetValue($id) <> $d)
 				SetValue($id,$d);

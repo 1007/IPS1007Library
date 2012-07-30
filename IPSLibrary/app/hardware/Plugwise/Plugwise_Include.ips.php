@@ -403,8 +403,8 @@ function update_uebersicht_circles()
 	   array(true ,"menu_letztedaten.png"		,"menu_letztedaten_grau.png"		,1),
 	   array(true ,"menu_softwareversion.png"	,"menu_softwareversion_grau.png"	,2),
 	   array(true ,"menu_hardwareversion.png"	,"menu_hardwareversion_grau.png"	,3),
-	   array(true ,"menu_leer.png"				,"menu_leer_grau.png"				,4),
-	   array(false,"menu_leer.png"				,"menu_leer_grau.png"				,5),
+	   array(true ,"menu_leistung.png"			,"menu_leistung_grau.png"			,4),
+	   array(true ,"menu_verbrauch.png"			,"menu_verbrauch_grau.png"			,5),
 	   );
 
 
@@ -486,6 +486,7 @@ function update_uebersicht_circles()
 		$data_array[$x]['CIRCLEHWVERSION'] = "HW?" ;
 		$data_array[$x]['CIRCLELASTSEEN'] = "?" ;
 		$data_array[$x]['CIRCLEWATT'] = 0 ;
+		$data_array[$x]['CIRCLEKWH'] = 0 ;
 
 		}
 
@@ -503,14 +504,18 @@ function update_uebersicht_circles()
 		$last_seen = @GetValue(IPS_GetVariableIDByName('LastMessage',$circle));
 		$data_array[$counter]['CIRCLELASTSEEN'] = date('d.m.Y H:i:s',$last_seen);
 
-		$watt = @number_format(GetValue(IPS_GetVariableIDByName('Leistung',$circle)),1);
+		$watt = @number_format(GetValue(IPS_GetVariableIDByName('Leistung',$circle)),1,",","");
 		$y = strlen($watt);
 		for($x=$y;$x<6;$x++)
 		   $watt = "&ensp;".$watt;
-		//$watt = $watt ."-".$y;
 		$data_array[$counter]['CIRCLEWATT'] = $watt;
 
-			
+		$kwh = @number_format(GetValue(IPS_GetVariableIDByName('Gesamtverbrauch',$circle)),1,",","");
+		$y = strlen($kwh);
+		for($x=$y;$x<6;$x++)
+		   $kwh = "&ensp;".$kwh;
+		$data_array[$counter]['CIRCLEKWH'] = $kwh;
+
 
 		$array = explode(",",$object['ObjectInfo']);
 		if ( isset($array[0]) )
@@ -572,6 +577,7 @@ function update_uebersicht_circles()
 		   $c_hwv    = $data_array[$start_data]['CIRCLEHWVERSION'];
 		   $c_ls     = $data_array[$start_data]['CIRCLELASTSEEN'];
 		   $c_watt   = $data_array[$start_data]['CIRCLEWATT'];
+		   $c_kwh    = $data_array[$start_data]['CIRCLEKWH'];
 
 
 			$text = $text . "<td width='25%'  bgcolor=$hintergrundfarbe >";
@@ -687,6 +693,33 @@ function update_uebersicht_circles()
 						}
 
 					$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . $c_watt . " Watt</FONT>";
+
+					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+
+					}
+
+				if ( $menupunkt == 5 ) // Verbrauch kWh
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+			   		if ( $c_status == true  )
+			   			$circletext = $circletext . "<img  src='/user/Plugwise/images/status_an.png'  align='absmiddle'>";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_aus.png' align='absmiddle'>";
+						}
+
+			   	if ( $c_new == true )
+			      	{
+						$circletext = $circletext . "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' >";
+			   		$circletext = $circletext . "<img  src='/user/Plugwise/images/status_neu.png'  align='absmiddle'>";
+						}
+
+					$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . $c_kwh . " kWh</FONT>";
 
 					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
 

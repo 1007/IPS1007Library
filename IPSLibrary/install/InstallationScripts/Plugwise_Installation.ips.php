@@ -326,14 +326,14 @@
 	{
 	CreateProfile_Associations ("Plugwise_MenuItem", array(
 												0	=> "",
-												1 	=> "                "
+												1 	=> "      "
 												),
 												'', array(
 												0  =>	0xFFCC00,
 												1  =>	0x00FFCC
 												));
 	CreateProfile_Associations ("Plugwise_MenuScripte", array(
-												0	=> "                "											
+												0	=> "                "											
 												),
 												'', array(
 												0  =>	0xFFCC00
