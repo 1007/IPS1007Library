@@ -856,9 +856,16 @@ function request_circle_data()
 		$t = ($now - ($obj["VariableUpdated"]))/60; // Zeit in Minuten wann letzte Aktualisierung
       //SetValue(IPS_GetVariableIDByName ("LastMessage", $item),$t);
 		//IPS_LogMessage(".........",$t);
-		$id = IPS_GetObjectIDByIdent("LastMessage",$item);
-		$t = GetValue($id);
-      if ( $t > 5 )  // laenger als 5 Minuten keine Daten
+		//$id = IPS_GetObjectIDByIdent("LastMessage",$item);
+		//$t = GetValue($id);
+		
+		if ( defined('REFRESH_TIME') )
+			$refreshtime = REFRESH_TIME;
+		else
+			$refreshtime = 1 ;
+		
+		$timeoutcircle = $refreshtime * 3 ;
+      if ( $t > $timeoutcircle )  // laenger als x Minuten keine Daten
       	{
       	$id = IPS_GetVariableIDByName("Error", $item);
 			if ( GetValue($id ) != 1 )
@@ -896,7 +903,7 @@ function request_circle_data()
 *******************************************************************************/
 function hole_gesamtverbrauch()
 	{
-	
+		
 	GLOBAL $idCatOthers;
 	GLOBAL $idCatCircles;
 	GLOBAL $SystemStromzaehlerGroups;
