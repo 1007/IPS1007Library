@@ -55,8 +55,8 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	test(); break;
-			Case "TimerEvent"			:	test();
+			Case "Execute"				:	 break;
+			Case "TimerEvent"			:	
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
 												berechne_restverbrauch();
