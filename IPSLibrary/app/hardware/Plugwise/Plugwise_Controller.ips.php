@@ -55,8 +55,8 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	hole_gesamtverbrauch(); break;
-			Case "TimerEvent"			:	
+			Case "Execute"				:	test(); break;
+			Case "TimerEvent"			:	test();
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
 												berechne_restverbrauch();
@@ -101,9 +101,9 @@ function dummy()
 
 function test()
 	{
-	
-
-
+	                //000D6F0000998C8C
+   $buf = "00130058000D6F0000998C8C003F018500010AA7000000000004";
+	plugwise_0013_received($buf);
 
 	}
 	
@@ -312,8 +312,9 @@ function plugwise_0011_received($buf)
 *******************************************************************************/
 function plugwise_0013_received($buf)
 	{
+	
 	GLOBAL $idCatCircles;
-
+   
 	$mcID = substr($buf,8,16);
 	$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
 	$pulse = substr($buf,28,4);
@@ -325,6 +326,8 @@ function plugwise_0013_received($buf)
 		return;
 	   }
 
+	$t = time()  ;
+	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
 	If ($pulse == "FFFF")
 		{	// Circle ausgeschaltet, meldet FFFF ( nicht immer ?? )
@@ -349,6 +352,7 @@ function plugwise_0013_received($buf)
 		$offNoise = @GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
       
 		$kalib_str = @GetValueString(IPS_GetVariableIDByName("Kalibrierdaten", $myCat));
+		
 		if ( $kalib_str != false )
 		   {
 			$debug = false;
@@ -392,7 +396,7 @@ function plugwise_0013_received($buf)
 		
 		// keine Kalibrierung
 		if ( $gainA == 0 and $gainB == 0 and $offTotal == 0 and $offNoise == 0 )
-		   {
+		   {IPS_LogMessage("keine Kalibrierdaten vorhanden",$kalib_str);
 		   // Kalibrierungsdaten vom Circle abrufen
 		   $id_info = IPS_GetObject($myCat);
 			PW_SendCommand("0026".$id_info['ObjectIdent']);
@@ -507,8 +511,8 @@ function plugwise_0024_received($buf)
 	   }
 
    //$t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
-	$t = time()  ;
-	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
+	//$t = time()  ;
+	//SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
 
 	$einaus = substr($buf,41,1);
@@ -871,9 +875,10 @@ function request_circle_data()
 			if ( GetValue($id ) != 1 )
 				SetValue($id,1);
 			// wenn Circle nicht erreichbar Leistung auf 0
+			IPS_LogMessage("Plugwise Circle ausgefallen",$t);
       	$id = IPS_GetVariableIDByName("Leistung", $item);
 			if ( GetValue($id ) != 0 )
-				SetValue($id,0);
+				SetValue($id,1007);
 
 			}
 		else

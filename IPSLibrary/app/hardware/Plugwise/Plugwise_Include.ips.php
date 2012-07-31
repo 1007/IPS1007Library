@@ -492,6 +492,7 @@ function update_uebersicht_circles()
 
 	$circles = IPS_GetChildrenIDs($idCatCircles);
 	$counter = 0;
+
 	foreach ( $circles as $circle )
 	   {
 		$data_array[$counter]['EXIST'] = true ;
@@ -540,20 +541,38 @@ function update_uebersicht_circles()
 		if ( $gefunden == false )
 		   {
 			$data_array[$counter]['CIRCLENEW'] = true;
-
-		   
 		   }
 		   
-
-
-		
 	   $info   = $object['ObjectInfo'];
 
 		$counter = $counter + 1;
 
 	   }
 
+	// unbekannte neue Circles in Array einfuegen
+   $file = 'plugwise_unknowncircles.log';
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	if ( file_exists($logdatei) )
+		{
+		ini_set("auto_detect_line_endings", true);
+		$newarray = file($logdatei,FILE_SKIP_EMPTY_LINES);
+		$newarr = array_unique($newarray);
+		   //print_r($arr);
+		$newanzahl = count($newarr);
+		foreach( $newarr as $unknowncircle )
+		   {
+			$data_array[$counter]['EXIST'] = true ;
+			$data_array[$counter]['CIRCLEID'] = $unknowncircle;
+			$data_array[$counter]['CIRCLENAME'] = $unknowncircle;
+			$data_array[$counter]['CIRCLENEW'] = true;
+			$counter = $counter + 1;
+		   }
+		
+		}
+	// alle eingefuegt
 
+
+	
 	$anzahlzeilen  = 9 ;
 	$anzahlspalten = 3;
 	$start_data    = 27 * $ident;
@@ -724,9 +743,6 @@ function update_uebersicht_circles()
 					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
 
 					}
-
-
-
 
 				}
          
