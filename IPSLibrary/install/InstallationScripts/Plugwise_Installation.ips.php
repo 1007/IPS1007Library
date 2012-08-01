@@ -174,8 +174,20 @@
     $ident = $systemzaehler[1];
    
     $item = CreateDummyInstance ($name, $CategoryIdOData , 0);
-    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+    $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
+    if ( $id1 == false )
+      $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+
+    $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+    if ( $id2 == false )
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+
+//    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+//    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
@@ -216,8 +228,15 @@
     $ident = $externzaehler[0];
    
     $item = CreateDummyInstance ($name, $CategoryIdEData , 0);
-    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+    $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
+    if ( $id1 == false )
+      $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+
+    $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+    if ( $id2 == false )
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
@@ -260,8 +279,14 @@
       if ( $group != "" )
       	{
         $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
-        $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-        $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+        $id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
+        if ( $id2 == false )
+          $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+
+        $id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+        if ( $id3 == false )
+          $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
 
         if ( $archive_id )
           { 
@@ -326,14 +351,14 @@
 	{
 	CreateProfile_Associations ("Plugwise_MenuItem", array(
 												0	=> "",
-												1 	=> "   "
+												1 	=> "   "
 												),
 												'', array(
 												0  =>	0xFFCC00,
 												1  =>	0x00FFCC
 												));
 	CreateProfile_Associations ("Plugwise_MenuScripte", array(
-												0	=> "   "											
+												0	=> "   "											
 												),
 												'', array(
 												0  =>	0xFFCC00

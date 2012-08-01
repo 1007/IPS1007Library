@@ -1289,7 +1289,9 @@ function update_data1_data2()
 	$html1 = $html1 . "</table></body>";
 
 	if ( $error != 0 )
-		$html1 = "Circle ausgefallen !".$error;
+		$html1 = "<img  width=100% height=100% src='/user/Plugwise/images/circleausgefallen.png' align='absmiddle' >";
+		
+		
    SetValueString($data1id,$html1);
 	$fontsize  = "16px";
 	$fontsize1 = "20px";
