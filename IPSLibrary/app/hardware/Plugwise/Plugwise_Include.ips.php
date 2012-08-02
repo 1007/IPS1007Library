@@ -561,6 +561,7 @@ function update_uebersicht_circles()
 		$newanzahl = count($newarr);
 		foreach( $newarr as $unknowncircle )
 		   {
+		   $unknowncircle = strtok($unknowncircle,",");
 			$data_array[$counter]['EXIST'] = true ;
 			$data_array[$counter]['CIRCLEID'] = $unknowncircle;
 			$data_array[$counter]['CIRCLENAME'] = $unknowncircle;
