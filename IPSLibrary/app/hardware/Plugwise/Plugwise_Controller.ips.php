@@ -878,7 +878,7 @@ function request_circle_data()
 			IPS_LogMessage("Plugwise Circle ausgefallen",$t);
       	$id = IPS_GetVariableIDByName("Leistung", $item);
 			if ( GetValue($id ) != 0 )
-				SetValue($id,1007);
+				SetValue($id,0);
 
 			}
 		else
