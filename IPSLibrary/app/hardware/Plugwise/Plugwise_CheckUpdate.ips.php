@@ -85,6 +85,7 @@
 		{
 		// neue Version vorhanden
 		if ( defined('ALT_BUTTON_RED') )
+		if ( ALT_BUTTON_RED == true )
 		   {
       	$normal_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\".ALT_BUTTON_RED;
       	$dest_file    = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\tabPane.png";
