@@ -52,7 +52,7 @@
     $s2 = GetValue($childs[0]);
 
     $html = "";
-    $html = $html . "<table border='1' width='100%'>";
+    $html = $html . "<table  width='100%'>";
     $html = $html . "<tr>";
     $html = $html . "<td width='50%'>" . $s1;
     $html = $html . "</td>";

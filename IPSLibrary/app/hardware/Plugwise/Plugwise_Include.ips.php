@@ -279,7 +279,7 @@ function createCircle($mac, $parentID){
 
 	$id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
 	if ( $id3 == false )
-		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
+		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
 
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
@@ -484,7 +484,7 @@ function update_uebersicht_circles()
 		$data_array[$x]['CIRCLEERROR'] = getRandomBoolean() ;
 		$data_array[$x]['CIRCLESWVERSION'] = "SW?" ;
 		$data_array[$x]['CIRCLEHWVERSION'] = "HW?" ;
-		$data_array[$x]['CIRCLELASTSEEN'] = "?" ;
+		$data_array[$x]['CIRCLELASTSEEN'] = 0 ;
 		$data_array[$x]['CIRCLEWATT'] = 0 ;
 		$data_array[$x]['CIRCLEKWH'] = 0 ;
 
@@ -503,6 +503,7 @@ function update_uebersicht_circles()
 		$data_array[$counter]['CIRCLEERROR'] = @GetValue(IPS_GetVariableIDByName('Error',$circle));
 		$data_array[$counter]['CIRCLESTATUS'] = @GetValue(IPS_GetVariableIDByName('Status',$circle));
 		$last_seen = @GetValue(IPS_GetVariableIDByName('LastMessage',$circle));
+		$last_seen = intval($last_seen);
 		$data_array[$counter]['CIRCLELASTSEEN'] = date('d.m.Y H:i:s',$last_seen);
 
 		$watt = @number_format(GetValue(IPS_GetVariableIDByName('Leistung',$circle)),1,",","");
@@ -1698,6 +1699,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 			}
 		}
 
+
 	if ( MYSQL_TABELLE_GESAMT != "" )
 		{
 		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_GESAMT."'");
@@ -1728,7 +1730,8 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 		}
 
 
-	if ( $table == MYSQL_TABELLE_LEISTUNG )
+
+	if ( $table == MYSQL_TABELLE_LEISTUNG AND MYSQL_TABELLE_LEISTUNG != "")
 	   {
 	   $gefunden = false;
 	   
@@ -1774,7 +1777,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 
  	   }
 	
-	if ( $table == MYSQL_TABELLE_GESAMT )
+	if ( $table == MYSQL_TABELLE_GESAMT AND MYSQL_TABELLE_GESAMT != "")
 	   {
 	   $gefunden = false;
 
