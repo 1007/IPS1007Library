@@ -18,6 +18,7 @@
 
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
 
  
  
@@ -217,6 +218,9 @@ function unixtime2pwtime() {
 function createCircle($mac, $parentID){
 	
 	GLOBAL $CircleGroups;
+	GLOBAL $Profil_Plugwise_Leistung;
+  	GLOBAL $Profil_Plugwise_Verbrauch;
+  	GLOBAL $Profil_Plugwise_Switch;
 
       //  Archive ID ermitteln
   foreach ( IPS_GetInstanceListByModuleType(0) as $modul )
@@ -254,9 +258,9 @@ function createCircle($mac, $parentID){
 	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
 
-	$id1 = @IPS_GetVariableIDByName("Status",$item) ;
-	if ( $id1 == false )
-		$id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
+	//$id1 = @IPS_GetVariableIDByName("Status",$item) ;
+	//if ( $id1 == false )
+	$id1 = CreateVariable("Status", 0, $item, 0, $Profil_Plugwise_Switch[0], false, false);
   $einaus = intval($einaus);
   
   if ( $einaus > 0 )
@@ -273,13 +277,13 @@ function createCircle($mac, $parentID){
     
     }
 
-	$id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
-	if ( $id2 == false )
-		$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
+	//$id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
+	//if ( $id2 == false )
+		$id2 = CreateVariable("Leistung", 2, $item, 0, $Profil_Plugwise_Leistung[0], 0, 0);
 
-	$id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
-	if ( $id3 == false )
-		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+	//$id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+	//if ( $id3 == false )
+		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0);
 
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
