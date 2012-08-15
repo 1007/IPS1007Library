@@ -20,12 +20,11 @@
 	$info        = $result['INFO'];
 
 	
-
    // Id des ArchiveHandler auslesen
 	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$cfg['ArchiveHandlerId'] = $instances[0];
 	
-	$wird_geloggt = @AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
+	$wird_geloggt = AC_GetLoggingStatus(intval($cfg['ArchiveHandlerId']),intval($id));
 	if ( !$wird_geloggt )
 	   {
 	   $text = "Variable ". $id . " wird nicht geloggt";
@@ -53,7 +52,7 @@
 	$offset = 0;
 	$CfgDaten['StartTime'] = time() - (60*60*$zeitrum_stunden )-$offset;   // letzten 2 Tage
    $CfgDaten['EndTime']   = time()-$offset;
-
+	
 	// damit wird die Art des Aufrufes festgelegt
 	$CfgDaten['RunMode'] = "script"; 	// file, script oder popup
 	//$CfgDaten['RunMode'] = "file"; 	// file, script oder popup
@@ -126,7 +125,7 @@
 
 	// Abmessungen des erzeugten Charts
 	$CfgDaten['HighChart']['Width'] = 0; 			// in px,  0 = 100%
-	$CfgDaten['HighChart']['Height'] = 315; 		// in px
+	$CfgDaten['HighChart']['Height'] = 400; 		// in px
 
 	//***************************************************************************
 	// und jetzt los ......

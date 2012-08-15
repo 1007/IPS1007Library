@@ -18,6 +18,7 @@
 
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
 
  
  
@@ -217,6 +218,9 @@ function unixtime2pwtime() {
 function createCircle($mac, $parentID){
 	
 	GLOBAL $CircleGroups;
+	GLOBAL $Profil_Plugwise_Leistung;
+  	GLOBAL $Profil_Plugwise_Verbrauch;
+  	GLOBAL $Profil_Plugwise_Switch;
 
       //  Archive ID ermitteln
   foreach ( IPS_GetInstanceListByModuleType(0) as $modul )
@@ -253,8 +257,10 @@ function createCircle($mac, $parentID){
       
 	$CategoryIdApp = get_ObjectIDByPath('Program.IPSLibrary.app.hardware.Plugwise');
 	$ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
- 
-  $id1 = CreateVariable("Status", 0, $item, 0, "~Switch", false, false);
+
+	//$id1 = @IPS_GetVariableIDByName("Status",$item) ;
+	//if ( $id1 == false )
+	$id1 = CreateVariable("Status", 0, $item, 0, $Profil_Plugwise_Switch[0], false, false);
   $einaus = intval($einaus);
   
   if ( $einaus > 0 )
@@ -270,13 +276,14 @@ function createCircle($mac, $parentID){
 		}
     
     }
-   
-	$id2 = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-	$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); //~Electricity
 
-	//$id4 = CreateVariable("WebData1", 3, $item, 0, "~HTMLBox", 0, 0);
-	//$id5 = CreateVariable("WebData2", 3, $item, 0, "~HTMLBox", 0, 0);
+	//$id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
+	//if ( $id2 == false )
+		$id2 = CreateVariable("Leistung", 2, $item, 0, $Profil_Plugwise_Leistung[0], 0, 0);
 
+	//$id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+	//if ( $id3 == false )
+		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0);
 
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
@@ -288,10 +295,19 @@ function createCircle($mac, $parentID){
 
    if ($archivlogging == true)
       {
-  		AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-  		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf  setzen
-  		AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-  		AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf  setzen
+      if ( defined('AGGTYPELEISTUNG') )
+      	$aggtype = AGGTYPELEISTUNG;
+
+  		AC_SetLoggingStatus($archive_id  , $id2, True);   	// Logging einschalten
+  		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf Type setzen
+      IPS_ApplyChanges($archive_id);
+
+  		if ( defined('AGGTYPEVERBRAUCH') )
+      	$aggtype = AGGTYPEVERBRAUCH;
+
+  		AC_SetLoggingStatus($archive_id  , $id3, True); 	// Logging einschalten
+  		AC_SetAggregationType($archive_id, $id3, $aggtype);// Logging auf Type setzen
+      IPS_ApplyChanges($archive_id);
 		}
 
 	//$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
@@ -350,13 +366,525 @@ function update_data1_data2_old()
 function update_data1data2()
 	{
    update_data1_data2();
-	update_uebersicht();
+	update_uebersicht_circles();
 	}
 
+
+
+/***************************************************************************//**
+*	Update Uebersicht Circles Systemsteuerung
+*******************************************************************************/
+function update_uebersicht_circles()
+	{
+	GLOBAL $CircleGroups;
+	GLOBAL $IdGraph;
+
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.MENU";
+   $IdMenu    = @get_ObjectIDByPath($VisuPath,true);
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
+   $IdAllg    = get_ObjectIDByPath($AllgPath);
+
+	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
+   $IdSystemst    = get_ObjectIDByPath($SystemstPath);
+
+	$id = IPS_GetObjectIDByName('Systemsteuerung',$IdAllg);  // Systemsteuerung
+  	if ( !$id ) return;
+	if ( @GetValue($id) != 1 ) return;
+
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles = get_ObjectIDByPath($CircleDataPath);
+
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	$menupunkt = GetValue($id);
+	
+	$object = IPS_GetObject($id);
+  	$ident = intval($object['ObjectIdent']);
+
+	
+   $hintergrundfarbe = "#9B9B9B";
+
+   $imggroesse = "width='100' height='50'";
+
+
+	$menuarray = array
+	   (
+	   array(true ,"menu_uebersicht.png"		,"menu_uebersicht_grau.png"		,0),
+	   array(true ,"menu_letztedaten.png"		,"menu_letztedaten_grau.png"		,1),
+	   array(true ,"menu_softwareversion.png"	,"menu_softwareversion_grau.png"	,2),
+	   array(true ,"menu_hardwareversion.png"	,"menu_hardwareversion_grau.png"	,3),
+	   array(true ,"menu_leistung.png"			,"menu_leistung_grau.png"			,4),
+	   array(true ,"menu_verbrauch.png"			,"menu_verbrauch_grau.png"			,5),
+	   );
+
+
+	$menu = "";
+	$menu = $menu . "<table border='0' cellspacing='1' cellpadding='0' bgcolor=$hintergrundfarbe width='100%' height='20'>";
+	$menu = $menu . "<tr>";
+
+	$imgpath = "/user/Plugwise/images/";
+
+	
+
+	
+	
+	foreach ( $menuarray as $menuitem )
+	   {
+		$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+
+		if ( $menuitem[0] == false )
+		   {
+		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   if ( file_exists($altfile) )
+		      $file = $imgpath . "alt_" . $menuitem[2];
+			else
+			   $file = $imgpath . $menuitem[2];
+
+			$menu = $menu . "<img src='$file' ". $imggroesse ." >";
+			}
+
+		if ( $menuitem[0] == true and $menuitem[3] != $menupunkt)
+		   {
+		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   if ( file_exists($altfile) )
+		      $file = $imgpath . "alt_" . $menuitem[2];
+			else
+			   $file = $imgpath . $menuitem[2];
+
+		   
+			$menu = $menu . "<img src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+			$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+			$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+			}
+
+		if ( $menuitem[3] == $menupunkt )
+		   {
+		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   if ( file_exists($altfile) )
+		      $file = $imgpath . "alt_" . $menuitem[1];
+			else
+			   $file = $imgpath . $menuitem[1];
+
+
+			$menu = $menu ."<img src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+			$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+			$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+			}
+		   
+
+		$menu = $menu . "</td>";
+	   }
+
+
+	$menu = $menu . "</tr>";
+	$menu = $menu . "</table>";
+	//***************************************************************************
+
+	$menu = $menu . "Seite ". ($ident + 1);
+
+	// Erstelle Datenarray
+	$data_array = array();
+	for($x=0;$x<81;$x++)
+		{
+		$data_array[$x]['EXIST'] = false ;
+		$data_array[$x]['CIRCLEID'] = "" ;
+		$data_array[$x]['CIRCLENAME'] = "" ;
+		$data_array[$x]['CIRCLESTATUS'] = getRandomBoolean() ;
+		$data_array[$x]['CIRCLENEW'] = getRandomBoolean() ;
+		$data_array[$x]['CIRCLEERROR'] = getRandomBoolean() ;
+		$data_array[$x]['CIRCLESWVERSION'] = "SW?" ;
+		$data_array[$x]['CIRCLEHWVERSION'] = "HW?" ;
+		$data_array[$x]['CIRCLELASTSEEN'] = 0 ;
+		$data_array[$x]['CIRCLEWATT'] = 0 ;
+		$data_array[$x]['CIRCLEKWH'] = 0 ;
+
+		}
+
+	$circles = IPS_GetChildrenIDs($idCatCircles);
+	$counter = 0;
+
+	foreach ( $circles as $circle )
+	   {
+		$data_array[$counter]['EXIST'] = true ;
+
+		$object = IPS_GetObject($circle);
+	   $data_array[$counter]['CIRCLEID']  = $object['ObjectIdent'];
+		$data_array[$counter]['CIRCLENEW'] = false;
+		$data_array[$counter]['CIRCLEERROR'] = @GetValue(IPS_GetVariableIDByName('Error',$circle));
+		$data_array[$counter]['CIRCLESTATUS'] = @GetValue(IPS_GetVariableIDByName('Status',$circle));
+		$last_seen = @GetValue(IPS_GetVariableIDByName('LastMessage',$circle));
+		$last_seen = intval($last_seen);
+		$data_array[$counter]['CIRCLELASTSEEN'] = date('d.m.Y H:i:s',$last_seen);
+
+		$watt = @number_format(GetValue(IPS_GetVariableIDByName('Leistung',$circle)),1,",","");
+		$y = strlen($watt);
+		for($x=$y;$x<6;$x++)
+		   $watt = "&ensp;".$watt;
+		$data_array[$counter]['CIRCLEWATT'] = $watt;
+
+		$kwh = @number_format(GetValue(IPS_GetVariableIDByName('Gesamtverbrauch',$circle)),1,",","");
+		$y = strlen($kwh);
+		for($x=$y;$x<6;$x++)
+		   $kwh = "&ensp;".$kwh;
+		$data_array[$counter]['CIRCLEKWH'] = $kwh;
+
+
+		$array = explode(",",$object['ObjectInfo']);
+		if ( isset($array[0]) )
+			$data_array[$counter]['CIRCLEHWVERSION'] = $array[0];
+		if ( isset($array[1]) )
+			$data_array[$counter]['CIRCLESWVERSION'] = $array[1];
+
+
+
+		//suche richtigen Namen in der Config
+		$data_array[$counter]['CIRCLENAME'] = $object['ObjectIdent'];
+		$gefunden = false;
+		foreach ( $CircleGroups as $configCircle )
+			{
+			if ( $object['ObjectIdent'] == $configCircle[0] )
+				{
+				$data_array[$counter]['CIRCLENAME'] =  $configCircle[1] ;
+				$gefunden = true;
+				break ;
+				}
+			}
+		if ( $gefunden == false )
+		   {
+			$data_array[$counter]['CIRCLENEW'] = true;
+		   }
+		   
+	   $info   = $object['ObjectInfo'];
+
+		$counter = $counter + 1;
+
+	   }
+
+	// unbekannte neue Circles in Array einfuegen
+   $file = 'plugwise_unknowncircles.log';
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	if ( file_exists($logdatei) )
+		{
+		ini_set("auto_detect_line_endings", true);
+		$newarray = file($logdatei,FILE_SKIP_EMPTY_LINES);
+		$newarr = array_unique($newarray);
+		   //print_r($arr);
+		$newanzahl = count($newarr);
+		foreach( $newarr as $unknowncircle )
+		   {
+		   $unknowncircle = strtok($unknowncircle,",");
+			$data_array[$counter]['EXIST'] = true ;
+			$data_array[$counter]['CIRCLEID'] = $unknowncircle;
+			$data_array[$counter]['CIRCLENAME'] = $unknowncircle;
+			$data_array[$counter]['CIRCLENEW'] = true;
+			$counter = $counter + 1;
+		   }
+		
+		}
+	// alle eingefuegt
+
+
+	
+	$anzahlzeilen  = 9 ;
+	$anzahlspalten = 3;
+	$start_data    = 27 * $ident;
+	$hintergrundfarbe = '#FFFFFF';
+	$text = "";
+	$text = $text . "<table border='0' cellspacing='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$hintergrundfarbe = '#000000';
+
+	for($x=0;$x<$anzahlzeilen;$x++)
+	   {
+		$text = $text . "<tr>";
+		for($y=0;$y<$anzahlspalten;$y++)
+		   {
+		   
+		   $c_id     = $data_array[$start_data]['CIRCLEID'];
+		   $c_name   = $data_array[$start_data]['CIRCLENAME'];
+		   $c_error  = $data_array[$start_data]['CIRCLEERROR'];
+		   $c_status = $data_array[$start_data]['CIRCLESTATUS'];
+		   $c_new    = $data_array[$start_data]['CIRCLENEW'];
+		   $c_swv    = $data_array[$start_data]['CIRCLESWVERSION'];
+		   $c_hwv    = $data_array[$start_data]['CIRCLEHWVERSION'];
+		   $c_ls     = $data_array[$start_data]['CIRCLELASTSEEN'];
+		   $c_watt   = $data_array[$start_data]['CIRCLEWATT'];
+		   $c_kwh    = $data_array[$start_data]['CIRCLEKWH'];
+
+
+			$text = $text . "<td width='25%'  bgcolor=$hintergrundfarbe >";
+			$circletext = "";
+
+			if ( $data_array[$start_data]['EXIST'] == false )
+				{
+				$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
+				}
+			else
+			   {
+				if ( $menupunkt == 0 )
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+			   		if ( $c_status == true  )
+			   			$circletext = $circletext . "<img  src='/user/Plugwise/images/status_an.png'  align='absmiddle'>";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_aus.png' align='absmiddle'>";
+						}
+					
+			   	if ( $c_new == true )
+			      	{
+						$circletext = $circletext . "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' >";
+			   		$circletext = $circletext . "<img  src='/user/Plugwise/images/status_neu.png'  align='absmiddle'>";
+						}
+
+					$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . substr($c_id,-7) . "</FONT>";
+
+					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+
+					}
+
+				if ( $menupunkt == 1 ) // last seen
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;&nbsp;".$c_ls."</FONT>";
+
+						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+						}
+					else
+						$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
+
+					}
+
+			
+				if ( $menupunkt == 2 ) // Softwareversion
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;&nbsp;".$c_swv."</FONT>";
+
+						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+						}
+					else
+						$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
+
+					}
+
+				if ( $menupunkt == 3 ) // Hardwareversion
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;&nbsp;".$c_hwv."</FONT>";
+
+						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+						}
+					else
+						$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
+
+					}
+
+				if ( $menupunkt == 4 ) // Watt
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+			   		if ( $c_status == true  )
+			   			$circletext = $circletext . "<img  src='/user/Plugwise/images/status_an.png'  align='absmiddle'>";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_aus.png' align='absmiddle'>";
+						}
+
+			   	if ( $c_new == true )
+			      	{
+						$circletext = $circletext . "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' >";
+			   		$circletext = $circletext . "<img  src='/user/Plugwise/images/status_neu.png'  align='absmiddle'>";
+						}
+
+					$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . $c_watt . " Watt</FONT>";
+
+					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+
+					}
+
+				if ( $menupunkt == 5 ) // Verbrauch kWh
+					{
+			   	if ( $c_new == false )
+			      	{
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+
+			   		if ( $c_status == true  )
+			   			$circletext = $circletext . "<img  src='/user/Plugwise/images/status_an.png'  align='absmiddle'>";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_aus.png' align='absmiddle'>";
+						}
+
+			   	if ( $c_new == true )
+			      	{
+						$circletext = $circletext . "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' >";
+			   		$circletext = $circletext . "<img  src='/user/Plugwise/images/status_neu.png'  align='absmiddle'>";
+						}
+
+					$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . $c_kwh . " kWh</FONT>";
+
+					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+
+					}
+
+				}
+         
+			$start_data = $start_data + 1;
+         $text = $text . "<span style='font-family:arial;color:white;font-size:14px;'>$circletext</span>";
+			$text = $text . "</td>";
+		   }
+		$text = $text . "</tr>";
+	   }
+
+			
+
+	$text = $text . "</table>";
+
+/*
+	$text = "";
+	$text = $text . "<table border='0' cellspacing='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+
+	$anzahl = 0;
+
+   
+	$anzahl  = count(IPS_GetChildrenIDs($idCatCircles));
+   $circles = IPS_GetChildrenIDs($idCatCircles);
+
+	$counter = 0;
+	
+	for ( $y = 0;$y<9;$y++)
+		{
+		$gefunden = false;
+		$text = $text . "<tr>";
+
+		for ( $x = 0;$x<3;$x++)
+	   	{
+	   	$circle = 0;
+	   	$name = "FFFFFFFFFFFFFFFF";
+	   	$name = "";
+			$hintergrundfarbe = '#000000';
+			$statustext = "";
+			$circletext = ".";
+			
+			$circletext = "<img  src='/user/Plugwise/images/status_o.png'>";
+
+	   	if ( $counter < $anzahl )
+	   	   {
+	   	   $id     = $circles[$counter];
+	   		$circle = IPS_GetObject($id);
+	   		$info   = $circle['ObjectInfo'];
+	   		$ident  = $circle['ObjectIdent'];
+            $error  = GetValue(IPS_GetVariableIDByName('Error',$id));
+            $status = GetValue(IPS_GetVariableIDByName('Status',$id));
+            $lastm  = GetValue(IPS_GetVariableIDByName('LastMessage',$id));
+				$mac    = "?";
+				
+				
+				//suche richtigen Namen in der Config
+				$gefunden = false;
+				foreach ( $CircleGroups as $configCircle )
+				   {
+
+				   if ( $ident == $configCircle[0] )
+				      {
+						$name  =  $configCircle[1] ;
+						$mac   = substr($configCircle[0],-4);
+
+						
+						
+						$gefunden = true;
+						break ;
+						}
+
+				   }
+
+				}
+
+			if ( $gefunden )
+			   {
+			   $circletext = "";
+
+			   if ( $error == true )
+			   	$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+				else
+					$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+				
+			   if ( $status == true )
+			   	$circletext = $circletext . "<img  src='/user/Plugwise/images/status_an.png'  align='absmiddle'>";
+				else
+					$circletext = $circletext . "<img  src='/user/Plugwise/images/status_aus.png' align='absmiddle'>";
+				
+				$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;" . substr($ident,-7) . "</FONT><br><center>" .$name ."</center>";
+				
+				}
+			else
+			   {
+            $circletext = $circletext . "<img  src='/user/Plugwise/images/status_neu.png'>";
+
+				$circletext = $circletext . substr($ident,-7) . "<br>" . IPS_GetName($id) ;
+				}
+				
+				
+				
+			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe style='text-align:left;'>";
+			$text = $text . "<span style='font-family:arial;color:white;font-size:14px;'>$circletext</span>";
+			$text = $text . "</td>";
+			$counter++;
+
+	   	}
+		$text = $text . "</tr>";
+
+	 }
+
+	$text = $text . "</table>";
+
+	*/
+
+	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
+
+	$html = $menu . "<br>" . $text;
+
+	SetValueString($id,$html);
+	
+	}
+
+    function getRandomBoolean() {
+    return .01 * rand(0, 100) >= .5;
+    }
 /***************************************************************************//**
 *	Update Uebersicht nur bei Systemsteuerung
 *******************************************************************************/
-function update_uebersicht()
+function update_uebersicht1()
 	{
 	GLOBAL $CircleGroups;
 	GLOBAL $IdGraph;
@@ -387,14 +915,14 @@ function update_uebersicht()
    	return;
 	   }
 	   
-   $hintergrundfarbe = "#003366";
+   $hintergrundfarbe = "#FF0000";
    
 	$text = "";
 
-	$text = $text . "<table border='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$text = $text . "<table border='0' cellspacing='3' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
 	$anzahl = 0;
 
-	$anzahl = count(IPS_GetChildrenIDs($idCatCircles));
+	$anzahl  = count(IPS_GetChildrenIDs($idCatCircles));
    $circles = IPS_GetChildrenIDs($idCatCircles);
 
 	//***************************************************************************
@@ -403,7 +931,7 @@ function update_uebersicht()
 	if ( $menupunkt < 5 )
 	   {
 	$counter = 0;
-	for ( $y = 0;$y<8;$y++)
+	for ( $y = 0;$y<24;$y++)
 	   {
 		$text = $text . "<tr>";
 		$text1 = "";
@@ -558,12 +1086,17 @@ function update_uebersicht()
 		
 	$text = $text . "</table>";
 		
-	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht
+	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
 
    SetValueString($id,$text);
 
 	}
 
+
+
+/***************************************************************************//**
+*  
+*******************************************************************************/
 function get_count_ingruppe($id,$id1,$name)
 	{
 	GLOBAL $CircleGroups;
@@ -657,7 +1190,7 @@ function update_data1_data2()
 	$data1id = 0;
 	$data2id = 0;
 
-	$csspath    = "./user/Plugwise/";
+	$csspath    = "/user/Plugwise/";
 
 	$Data1Path  = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1    = @get_ObjectIDByPath($Data1Path,true);
@@ -730,14 +1263,14 @@ function update_data1_data2()
 
 	
 	if ( get_count_ingruppe($parent,$id,$objectname) )
-      $img_ingruppe = "<img src='./user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
+      $img_ingruppe = "<img src='/user/Plugwise/blitz2.png' title='Daten in Gruppe enthalten'>";
 	else
-	   $img_ingruppe = "<img src='./user/Plugwise/leer.png' >";
+	   $img_ingruppe = "<img src='/user/Plugwise/leer.png' >";
 
 	if ( get_count_ingesamt($parent,$id,$objectname) )
-      $img_ingesamt = "<img src='./user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
+      $img_ingesamt = "<img src='/user/Plugwise/blitz.png' title='Daten in Gesamt enthalten'>";
 	else
-	   $img_ingesamt = "<img src='./user/Plugwise/leer.png' >";
+	   $img_ingesamt = "<img src='/user/Plugwise/leer.png' >";
 
    
 	$hintergrundfarbe = "#003366";
@@ -769,7 +1302,9 @@ function update_data1_data2()
 	$html1 = $html1 . "</table></body>";
 
 	if ( $error != 0 )
-		$html1 = "Circle ausgefallen !".$error;
+		$html1 = "<img  width=100% height=100% src='/user/Plugwise/images/circleausgefallen.png' align='absmiddle' >";
+		
+		
    SetValueString($data1id,$html1);
 	$fontsize  = "16px";
 	$fontsize1 = "20px";
@@ -872,6 +1407,7 @@ function statistikdaten($gesamtid)
 	return $array;
 	
 	}
+
 	
 /***************************************************************************//**
 *	Liefert die aktuellen Kosten nach Tarif
@@ -931,13 +1467,13 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 
 	if ( $type == "GRUPPE" )  // suche Gruppe
 	   {
-		if ( $objectname == "Sonstiges" )
+		if ( $objectname == "Sonstige" )
 			$tarifgruppe = $standardtarifgruppe;
 
 		foreach( $ExterneStromzaehlerGroups as $extern ) // suche in Extern
 	   	{//Tarifgruppe fuer diesen Circle suchen
 	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$extern[1]);
-	   	if ( $extern[1] == $objectname )
+	   	if ( ($extern[1]) == $objectname )
 	      	{
 				$tarifgruppe = $extern[6] ;
 				break ;
@@ -945,8 +1481,8 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	   	}
 		foreach( $CircleGroups as $circle ) // suche in Circles
 	   	{//Tarifgruppe fuer diesen Circle suchen
-	   	//IPS_LogMessage("SucheGruppe",$objectname."-".$circle[2]);
-	   	if ( $circle[2] == $objectname )
+	   	//IPS_LogMessage("SucheGruppe",$objectname."-".($circle[2]));
+	   	if ( ($circle[2]) == $objectname )
 	      	{
 				$tarifgruppe = $circle[6] ;
 				break ;
@@ -1060,16 +1596,6 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	}
 
 
-/***************************************************************************//**
-*	Umlaute ersetzen 
-*******************************************************************************/
-function umlaute_ersetzen($text)
-  {
-  $such_array  = array ('ä', 'ö', 'ü', 'ß');
-  $ersetzen_array = array ('ae', 'oe', 'ue', 'ss');
-  $neuer_text  = str_replace($such_array, $ersetzen_array, $text);
-  return $neuer_text;
-	}
 
 /***************************************************************************//**
 *	Liste der nicht konfigurierten Circles
@@ -1184,6 +1710,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 			}
 		}
 
+
 	if ( MYSQL_TABELLE_GESAMT != "" )
 		{
 		$result = mysql_query("SHOW TABLES LIKE '".MYSQL_TABELLE_GESAMT."'");
@@ -1214,7 +1741,8 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 		}
 
 
-	if ( $table == MYSQL_TABELLE_LEISTUNG )
+
+	if ( $table == MYSQL_TABELLE_LEISTUNG AND MYSQL_TABELLE_LEISTUNG != "")
 	   {
 	   $gefunden = false;
 	   
@@ -1260,7 +1788,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 
  	   }
 	
-	if ( $table == MYSQL_TABELLE_GESAMT )
+	if ( $table == MYSQL_TABELLE_GESAMT AND MYSQL_TABELLE_GESAMT != "")
 	   {
 	   $gefunden = false;
 
@@ -1376,6 +1904,7 @@ function find_id_toshow()
 	$idgesamt    = 0;
 	$type        = "";
 	$parent      = 0;
+	$objectident = "";
 
 	
 	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
@@ -1453,7 +1982,8 @@ function find_id_toshow()
 	      	$ident       = $object['ObjectIdent'];
 	      	$idleistung  = IPS_GetObjectIDByIdent('Leistung',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
 	      	$idgesamt     = IPS_GetObjectIDByIdent('Gesamtverbrauch',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
-				$objectname  = $object['ObjectIdent'];
+				$objectname  = $object['ObjectName'];
+				$objectident = $object['ObjectIdent'];
 				$maxleistung = 0;
 				break;
 				}
@@ -1492,6 +2022,7 @@ function find_id_toshow()
 	$id_result['INFO']        = $info;
 	$id_result['OBJECTNAME']  = $objectname;
 	$id_result['PARENT']      = $parent;
+	$id_result['OBJECTIDENT'] = $objectident;
 	
 	return $id_result;
 	}
@@ -1509,7 +2040,6 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	$AppPath	  = "Program.IPSLibrary.app.hardware.Plugwise";
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	//IPS_LogMessage("SHOW123:",$was."-".$id);
 
 	if ( $clear == true )
 	   {
@@ -1523,7 +2053,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 	if ( $was == "SYSTEMSTEUERUNG" )
 		{
 		hide_data1data2();
-		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),true);
 		}
 	if ( $was == "AUSWERTUNG" )
 		{
@@ -1624,6 +2154,156 @@ function hide_graph($status = true)
 	// geht nicht ohne Reload WFC - wahrscheinlich wegen ~HTML
 	// IPS_SetHidden($id,$status);
 	}
+
+
+/***************************************************************************//**
+*	checked ob eine Zaehleraktion ausgefuehrt werden soll
+*******************************************************************************/
+function check_zaehleractions()
+	{
+	GLOBAL $Zaehleractions;
+
+	$debug  = false;
+	
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
+
+   $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
+	$archive   = $instances[0];
+
+
+	if ( !isset($Zaehleractions) )
+	   return;
+
+	foreach ( $Zaehleractions as $action )
+	   {
+	   
+	   $zaehler   = $action[0];
+	   $bedingung = $action[1];
+	   $wert1 	  = $action[2];
+	   $wert2 	  = $action[3];
+	   $zeitraum  = $action[4];
+		$actionid  = $action[5];
+	   $sollwert  = $action[6];
+	   $zaehler2  = $action[7];
+	
+		$object = false;
+		$leistung_id = false;
+		
+		
+		// suche Zaehler bei den Circles
+		if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles","");
+		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
+		if ( $object )
+		   {
+		   $leistung_id = IPS_GetVariableIDByName("Leistung",$object);
+		   }
+
+		if ( !$object )
+		   {
+			echo "\nSuche Zaehler bei den Externen";
+
+		   }
+	   
+		if ( !$object )
+		   {
+			echo "\nSuche Zaehler bei den Gruppen";
+
+		   }
+
+		// ab hier Auswertung wenn gefunden
+		if ( $leistung_id )
+		   {
+		   //echo "\ngefunden:".$leistung_id;
+			$akt_leistung = GetValue($leistung_id);
+		   //echo "\nakt:".$akt_leistung;
+
+			$ende  = time();
+			$start = time() - ( $zeitraum * 60 );
+			
+			//echo "\nStart:".date("H:i:s",$start);
+			//echo "\nEnde:".date("H:i:s",$ende);
+
+			
+			$datas  = AC_GetLoggedValues($archive,$leistung_id,$start,$ende,0);
+		   //print_r($datas);
+   		
+   		if ( count($datas) == 0 )
+				{
+				echo "\nKeine Werte vorhanden";
+   		   continue;
+   		   }
+   		   
+			if ( $bedingung == "<" )      // kleiner
+		      { //echo "kleiner:";
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            { if ( $debug )  IPS_Logmessage("...",$data['Value']);
+		            if ( $data['Value'] >= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   continue;
+		      }
+			if ( $bedingung == ">" )      // groesser
+		      { //echo "groesse:";
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            {  //echo "-".$data['Value'];
+						if ( $data['Value'] <= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   continue;
+		      }
+			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
+		      {
+		      $ok = true ;
+		      foreach ( $datas as $data )
+		            {
+		            if ( $data['Value'] <= $wert1 )
+		               $ok = false;
+		            if ( $data['Value'] >= $wert1 )
+		               $ok = false;
+		            }
+				if ( $ok == false )
+				   continue;
+		      }
+
+				//echo "\nMach was ";
+				$object = @IPS_GetObject($actionid);
+				
+				if ( $object )
+				   {
+				   if ( $object['ObjectType'] == 2 ) // Variable
+				   	{
+				   	if ( GetValue($actionid) != $sollwert )
+				      	SetValue($actionid,$sollwert);
+				      }
+				   if ( $object['ObjectType'] == 3 ) // Script
+				   	{
+				   	$actionarray = array("PWACTION_ZAEHLER" 	=> $zaehler ,
+													"PWACTION_BEDINGUNG" => $bedingung,
+													"PWACTION_WERT1" 		=> $wert1,
+													"PWACTION_WERT2" 		=> $wert2,
+													"PWACTION_ZEITRAUM" 	=> $zeitraum,
+													"PWACTION_ACTIONID" 	=> $actionid,
+													"PWACTION_SOLLWERT" 	=> $sollwert,
+													"PWACTION_ZAEHLER2" 	=> $zaehler2
+													);
+				      IPS_RunScriptEx($actionid,$actionarray);
+				      }
+
+				   }
+		      
+		   }
+	   
+
+
+	   }
+	   
+	}
+
 
 
 /***************************************************************************//**

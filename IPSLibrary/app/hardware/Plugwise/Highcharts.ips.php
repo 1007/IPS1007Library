@@ -44,7 +44,7 @@
 		DebugModuleName($cfg,"WriteContentWithFilename");
 		
 		// damit das Ding auch sauber dargestellt wird
-		$Height = $cfg['HighChart']['Height'] + 16;
+		$Height = $cfg['HighChart']['Height'] + 216;
 
 		$ChartType = $cfg['Ips']['ChartType'];
 		
@@ -79,7 +79,7 @@
 		else
 		{
 			// damit das Ding auch sauber dargestellt wird
-			$Height = $cfg['HighChart']['Height'] + 16;
+			$Height = $cfg['HighChart']['Height'] + 216;
 			SetValue($cfg['ContentVarableId'],
 					"<iframe src='./User/Plugwise/$ChartType/IPS_Template.php?ScriptId="	. $scriptId .
 					"' width='100%' height='". $Height .

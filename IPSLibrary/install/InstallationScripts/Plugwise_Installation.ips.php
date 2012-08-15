@@ -16,6 +16,14 @@
   GLOBAL $CircleGroups;
 	GLOBAL $SystemStromzaehlerGroups; 
   GLOBAL $ExterneStromzaehlerGroups;
+
+  GLOBAL $Profil_Plugwise_Leistung;
+  GLOBAL $Profil_Plugwise_Verbrauch;
+  GLOBAL $Profil_Plugwise_Switch;
+  GLOBAL $Profil_Plugwise_MenuItem;
+  GLOBAL $Profil_Plugwise_MenuScripte;
+  GLOBAL $Profil_Plugwise_MenuUebersicht;
+ 
          
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
@@ -32,7 +40,11 @@
 	IPSUtils_Include ("IPSMessageHandler.class.php",         "IPSLibrary::app::core::IPSMessageHandler");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php",      "IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
+	IPSUtils_Include ("Plugwise_Profile.inc.php",      "IPSLibrary::config::hardware::Plugwise");
 
+
+  
+  
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$DataPath       = "Program.IPSLibrary.data.hardware.Plugwise";
 	$ConfigPath     = "Program.IPSLibrary.config.hardware.Plugwise";
@@ -48,6 +60,8 @@
 	$cssFile       = IPS_GetKernelDir()."webfront\user\Plugwise\Plugwise.css";
 
   
+  echo "--- Create Plugwise -------------------------------------------------------------------\n";
+  echo "[". $Profil_Plugwise_Leistung[0] ."]";
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
   
   $CategoryIdData   = CreateCategoryPath($DataPath);
@@ -140,7 +154,49 @@
       }
 
 
+  //****************************************************************************
+  //  Profile erstellen aus ProfileConfigurationsfile
+  //****************************************************************************
+  if ( substr($Profil_Plugwise_Leistung[0],0,1) != "~" )
+    CreateProfile_Associations ($Profil_Plugwise_Leistung[0],
+                                $Profil_Plugwise_Leistung[1],
+                                $Profil_Plugwise_Leistung[2],
+                                $Profil_Plugwise_Leistung[3]);
+
+  if ( substr($Profil_Plugwise_Verbrauch[0],0,1) != "~" )
+    CreateProfile_Associations ($Profil_Plugwise_Verbrauch[0],
+                                $Profil_Plugwise_Verbrauch[1],
+                                $Profil_Plugwise_Verbrauch[2],
+                                $Profil_Plugwise_Verbrauch[3]);
+                                
+  if ( substr($Profil_Plugwise_Switch[0],0,1) != "~" )
+    CreateProfile_Switch ($Profil_Plugwise_Switch[0],
+                                $Profil_Plugwise_Switch[1],
+                                $Profil_Plugwise_Switch[2],
+                                $Profil_Plugwise_Switch[3],
+                                $Profil_Plugwise_Switch[4],
+                                $Profil_Plugwise_Switch[5]
+                                );
+
+  if ( substr($Profil_Plugwise_MenuItem[0],0,1) != "~" )
+    CreateProfile_Associations ($Profil_Plugwise_MenuItem[0],
+                                $Profil_Plugwise_MenuItem[1],
+                                $Profil_Plugwise_MenuItem[2],
+                                $Profil_Plugwise_MenuItem[3]);
+ 
+  if ( substr($Profil_Plugwise_MenuScripte[0],0,1) != "~" )
+    CreateProfile_Associations ($Profil_Plugwise_MenuScripte[0],
+                                $Profil_Plugwise_MenuScripte[1],
+                                $Profil_Plugwise_MenuScripte[2],
+                                $Profil_Plugwise_MenuScripte[3]);
   
+  if ( substr($Profil_Plugwise_MenuUebersicht[0],0,1) != "~" )
+    CreateProfile_Associations ($Profil_Plugwise_MenuUebersicht[0],
+                                $Profil_Plugwise_MenuUebersicht[1],
+                                $Profil_Plugwise_MenuUebersicht[2],
+                                $Profil_Plugwise_MenuUebersicht[3]);
+ 
+ 
   //****************************************************************************
   //  CircleGroups in Data erstellen anhand der Liste im Configurationsfile
   //****************************************************************************
@@ -174,8 +230,16 @@
     $ident = $systemzaehler[1];
    
     $item = CreateDummyInstance ($name, $CategoryIdOData , 0);
-    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+    $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
+    if ( $id1 == false )
+      $id1  = CreateVariable("Leistung", 2, $item, 0, $Profil_Plugwise_Leistung[0], 0, 0);
+
+    $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+    if ( $id2 == false )
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0); 
+
+
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
@@ -192,17 +256,26 @@
         $archivlogging = ARCHIVLOGGING;
     
       if ($archivlogging == true)
-        {        
+        {     
+        if ( defined('AGGTYPELEISTUNG') )
+      	   $aggtype = AGGTYPELEISTUNG;
+   
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
+        
+        if ( defined('AGGTYPEVERBRAUCH') )
+      	   $aggtype = AGGTYPEVERBRAUCH;
+
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
         }
 
       }
     }
 
-
+   
   //****************************************************************************
   //  Externe Zaehler anlegen
   //****************************************************************************
@@ -214,8 +287,15 @@
     $ident = $externzaehler[0];
    
     $item = CreateDummyInstance ($name, $CategoryIdEData , 0);
-    $id1  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-    $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+    $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
+    if ( $id1 == false )
+      $id1  = CreateVariable("Leistung", 2, $item, 0, $Profil_Plugwise_Leistung[0], 0, 0);
+
+    $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+    if ( $id2 == false )
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
+
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
@@ -232,11 +312,20 @@
         $archivlogging = ARCHIVLOGGING;
     
       if ($archivlogging == true)
-        {        
+        {  
+        if ( defined('AGGTYPELEISTUNG') )
+      	   $aggtype = AGGTYPELEISTUNG;
+      
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
+
+        if ( defined('AGGTYPEVERBRAUCH') )
+      	   $aggtype = AGGTYPEVERBRAUCH;
+
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
         }
 
       }
@@ -258,8 +347,14 @@
       if ( $group != "" )
       	{
         $item = CreateDummyInstance ($group, $CategoryIdOData , $x);
-        $id2  = CreateVariable("Leistung", 2, $item, 0, "~Watt.14490", 0, 0);
-        $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0, "~Electricity", 0, 0); 
+
+        $id2 = @IPS_GetVariableIDByName("Leistung",$item) ;
+        if ( $id2 == false )
+          $id2  = CreateVariable("Leistung", 2, $item, 0, $Profil_Plugwise_Leistung[0], 0, 0);
+
+        $id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
+        if ( $id3 == false )
+          $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
 
         if ( $archive_id )
           { 
@@ -269,10 +364,19 @@
 
           if ($archivlogging == true)
             {        
+            if ( defined('AGGTYPELEISTUNG') )
+      	       $aggtype = AGGTYPELEISTUNG;
+
             AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+            IPS_ApplyChanges($archive_id);
+
+            if ( defined('AGGTYPEVERBRAUCH') )
+      	       $aggtype = AGGTYPEVERBRAUCH;
+
             AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+            IPS_ApplyChanges($archive_id);
             }
           }
 
@@ -320,37 +424,6 @@
 
 	if ($WFC_Enabled)
 	{
-	CreateProfile_Associations ("Plugwise_MenuItem", array(
-												0	=> "",
-												1 	=> "———"
-												),
-												'', array(
-												0  =>	0xFFCC00,
-												1  =>	0x00FFCC
-												));
-	CreateProfile_Associations ("Plugwise_MenuScripte", array(
-												0	=> "Starten"											
-												),
-												'', array(
-												0  =>	0xFFCC00
-												));
-	CreateProfile_Associations ("Plugwise_MenuUebersicht", array(
-												0	=> "On/Offline",
-												1 => "Ein / Aus ",
-												2 => "HW-Version",
-												3 => "SW-Version",
-												4 => "- Timing -",
-												5 => " Not used "
-												
-												),
-												'', array(
-												0  =>	0xFFCC00,
-												1  =>	0xFFCC00,
-												2  =>	0xFFCC00,
-												3  =>	0xFFCC00,
-												4  =>	0xFFCC00,
-												5  =>	0xFFCC00
-												));
 
     
    $VisuID_menu  = CreateCategory("MENU",$CategoryIdVisu,10);
@@ -362,7 +435,8 @@
    
   $graphid  = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
-
+  IPS_SetHidden($graphid1,true);
+  
   $IDAllgemein = CreateDummyInstance("Allgemeines",$VisuID_menu,10);
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
 	$IDCircles   = CreateDummyInstance("Stromzähler",$VisuID_menu,20);
@@ -387,12 +461,13 @@
 	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , 20 , $WFC_TabPaneName   , ''  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA",  $WFC_TabPaneItem              , 20 , $WFC_TabPaneName   , ''  , 0 , 40 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
-	CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA1", $WFC_TabPaneItem."-SPLITDATA" , 20 , $WFC_TabPaneName   , ''  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
-	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA1",      $WFC_TabPaneItem."-SPLITDATA1", 30, "Titel", $Icon="", $VisuID_data1, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-	CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2",      $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+	//CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA",  $WFC_TabPaneItem              , 20 , $WFC_TabPaneName   , ''  , 0 , 40 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+	//CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITDATA1", $WFC_TabPaneItem."-SPLITDATA" , 20 , $WFC_TabPaneName   , ''  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
+	//CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA1",      $WFC_TabPaneItem."-SPLITDATA1", 30, "Titel", $Icon="", $VisuID_data1, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+	//CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-DATA2",      $WFC_TabPaneItem."-SPLITDATA1", 40, "Titel", $Icon="", $VisuID_data2, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-  CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+  //CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem."-SPLITDATA", 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+  CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem, 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
   
 	//***************************************************************************
@@ -462,18 +537,18 @@
 	// Scriptlinks erstellen
 	//***************************************************************************
 
-    $id = CreateVariable("Kalibrierung", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Kalibrierung"     , 1, $IDSystemst, 50, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circles suchen", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Circles suchen"   , 1, $IDSystemst, 60, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit lesen", 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
-    IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Circlezeit setzen", 1, $IDSystemst, 40, "Plugwise_MenuScripte", $ActionScriptId, false);
+//    $id = CreateVariable("Circlezeit lesen" , 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
+//    IPS_SetInfo($id,"Script");
+    $id = CreateVariable("Circlezeit setzen", 1, $IDSystemst, 70, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
 
-    $id = CreateVariable("OnlineUpdate", 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("OnlineUpdate"     , 1, $IDSystemst, 30, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    $id = CreateVariable("Versionsinfo", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
+    $id = CreateVariable("Versionsinfo"     , 1, $IDSystemst, 10, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
     $id = CreateVariable("Update vorhanden?", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
@@ -502,7 +577,7 @@
 			   if ( $id )
 			      {                                                      
       			//$id = CreateLink($circle[1]." Status",$id,$VisuID_data1,$x+200);
-      			$id = CreateLink($circle[1]." Status",$id,$VisuID_menu,$x+200);
+      			$id = CreateLink($circle[1],$id,$VisuID_menu,$x+200);
 					  IPS_SetHidden($id , true );
 					  IPS_SetInfo($id,$circle[0]);
 			      }

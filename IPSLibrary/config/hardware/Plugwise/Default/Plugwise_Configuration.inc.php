@@ -16,7 +16,8 @@
 	GLOBAL $Stromtarife;
   GLOBAL $SystemStromzaehlerGroups;
   GLOBAL $ExterneStromzaehlerGroups;
-
+  GLOBAL $Zaehleractions;
+  
 /***************************************************************************//**
 * Debug und Logging
 *   DEBUG_MODE -  TRUE/FALSE ( Standard FALSE )
@@ -111,8 +112,8 @@
 *   Feld 09   -   in Gesamtanzeige der Gruppe enthalten
 *******************************************************************************/
 	$ExterneStromzaehlerGroups = array(
-	   array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
-	   array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
+	   //array("Nebenzaehler1","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
+	   //array("Nebenzaehler2","ExKeller"		,"28466" ,"28466"		,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true,true),
  
   			);
 
@@ -178,14 +179,41 @@
 
 				);
 
+/***************************************************************************//**
+* Zaehleractions
+* mache etwas bei unterschreiten oder ueberschreiten eines Wertes
+* fuer eine bestimmte Zeit
+*
+*   Feld 01   -   CircleID oder Externer Name
+*   Feld 02   -   < Wert kleiner , > Wert groesser
+*   Feld 03   -   Leistungswert1 in Watt
+*   Feld 04   -   Leistungswert2 in Watt
+*   Feld 05   -   Zeitraum
+*   Feld 06   -   VariablenID oder ScriptID
+*   Feld 07   -   Wert auf welchen die Variable gesetzt wird
+*   Feld 08   -   Reserve
+*
+*  Beispiel
+* 	array("000D6F0000D3412E"	,"<"	,4	,false,5   ,xxxxx 	,false	,false),
+*  fuehre Script 12345 aus / bzw setze Variable 12345 auf true
+*  wenn Circle 5 Minuten lang unter 4 Watt hat.
+*******************************************************************************/
+  $Zaehleractions = array(
+	    //array("000D6F0000D3412E"	,"<"	,4	,false ,5   ,12345 	,0	,false),
+	    //array("000D6F0000D3412E"	,">"	,400,false ,5   ,12345 	,1	,false),
+			);
 
 /***************************************************************************//**
 * Archivehandling 
-*   AGGTYPE       - AggregationType 0/1 ( Standard 0 )( 0=Standard,1=Zaehler )
-*   ARCHIVLOGGING - Archivlogging TRUE/FALSE ( Standard TRUE )
+*   AGGTYPE          - AggregationType 0/1 ( Standard 0 )( 0=Standard,1=Zaehler )
+*   ARCHIVLOGGING    - Archivlogging TRUE/FALSE ( Standard TRUE )
+*   AGGTYPELEISTUNG  - AggregationType fuer Leistung  - wenn definiert 
+*   AGGTYPEVERBRAUCH - AggregationType fuer Verbrauch - wenn definiert
 *******************************************************************************/
 	define ( 'AGGTYPE'       , 1 ) ;
   define ( 'ARCHIVLOGGING' , true);
+	define ( 'AGGTYPELEISTUNG'  , 0 ) ;
+	define ( 'AGGTYPEVERBRAUCH' , 1 ) ;
 
 
 /***************************************************************************//**

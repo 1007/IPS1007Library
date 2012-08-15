@@ -1,3 +1,8 @@
+Version=1.2.1023
+ - Anzeigen in eine ~htmlBox
+ - Profile der Variablen werden nicht mehr ueberschrieben
+ - Profile haben eigene Konfigurationsdatei
+ - Aktionen bei bestimmten Werten sind moeglich
 Version=1.2.1022
  - automatisch Aktualisierung Highchart
 Version=1.2.1021

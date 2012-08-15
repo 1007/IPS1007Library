@@ -55,13 +55,14 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	berechne_gruppenverbrauch();break;
+			Case "Execute"				:	 break;
 			Case "TimerEvent"			:	
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
 												berechne_restverbrauch();
 												update_webfront_123("REFRESH");
 												request_circle_data();
+												check_zaehleractions();
 												break;
 			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;
@@ -100,9 +101,9 @@ function dummy()
 
 function test()
 	{
-	
-
-
+	                //000D6F0000998C8C
+   $buf = "00130058000D6F0000998C8C003F018500010AA7000000000004";
+	plugwise_0013_received($buf);
 
 	}
 	
@@ -311,8 +312,9 @@ function plugwise_0011_received($buf)
 *******************************************************************************/
 function plugwise_0013_received($buf)
 	{
+	
 	GLOBAL $idCatCircles;
-
+   
 	$mcID = substr($buf,8,16);
 	$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
 	$pulse = substr($buf,28,4);
@@ -324,6 +326,8 @@ function plugwise_0013_received($buf)
 		return;
 	   }
 
+	$t = time()  ;
+	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
 	If ($pulse == "FFFF")
 		{	// Circle ausgeschaltet, meldet FFFF ( nicht immer ?? )
@@ -348,6 +352,7 @@ function plugwise_0013_received($buf)
 		$offNoise = @GetValueFloat(IPS_GetVariableIDByName("offNoise", $myCat));
       
 		$kalib_str = @GetValueString(IPS_GetVariableIDByName("Kalibrierdaten", $myCat));
+		
 		if ( $kalib_str != false )
 		   {
 			$debug = false;
@@ -391,7 +396,7 @@ function plugwise_0013_received($buf)
 		
 		// keine Kalibrierung
 		if ( $gainA == 0 and $gainB == 0 and $offTotal == 0 and $offNoise == 0 )
-		   {
+		   {IPS_LogMessage("keine Kalibrierdaten vorhanden",$kalib_str);
 		   // Kalibrierungsdaten vom Circle abrufen
 		   $id_info = IPS_GetObject($myCat);
 			PW_SendCommand("0026".$id_info['ObjectIdent']);
@@ -423,7 +428,8 @@ function plugwise_0013_received($buf)
 
 		$time = date('Y-m-d H:i:s');
 		$group_name = find_group($mcID);
-      mysql_add(MYSQL_TABELLE_LEISTUNG,$time, IPS_GetName($myCat),$Leistung,$myCat,$group_name);
+		if ( defined('MYSQL_ANBINDUNG') )
+      	mysql_add(MYSQL_TABELLE_LEISTUNG,$time, IPS_GetName($myCat),$Leistung,$myCat,$group_name);
 		$text = IPS_GetName($myCat) . " Aktueller Stromverbrauch. " . $Leistung ." [".$buf."] Pulse: $pulse";
 
 		}
@@ -504,9 +510,9 @@ function plugwise_0024_received($buf)
 		return;
 	   }
 
-   $t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
-	$t = microtime(true) - $t ;
-	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
+   //$t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
+	//$t = time()  ;
+	//SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
 
 
 	$einaus = substr($buf,41,1);
@@ -755,8 +761,8 @@ function plugwise_0049_received($buf)
 			$lad = $lad + ( $bufferstelle * 8 );
 			$lad = dechex($lad);
 
-      	//mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch);
-      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
+			if ( defined('MYSQL_ANBINDUNG') )
+      		mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
      		
 
 			//IPS_LogMessage("Stunde bereits gezaehlt",$ti1."-".$ti2);
@@ -772,7 +778,8 @@ function plugwise_0049_received($buf)
 			$lad = hexdec($LogAddressRaw);
 			$lad = $lad + ( $bufferstelle * 8 );
 			$lad = dechex($lad);
-      	mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
+			if ( defined('MYSQL_ANBINDUNG') )
+      		mysql_add(MYSQL_TABELLE_GESAMT,$ti2, IPS_GetName($myCat),$verbrauch,$myCat,$group_name,$lad);
 
 
 			$neuerverbrauch = $verbrauch + $oldVerbrauch;
@@ -853,14 +860,22 @@ function request_circle_data()
 		$t = ($now - ($obj["VariableUpdated"]))/60; // Zeit in Minuten wann letzte Aktualisierung
       //SetValue(IPS_GetVariableIDByName ("LastMessage", $item),$t);
 		//IPS_LogMessage(".........",$t);
-		$id = IPS_GetObjectIDByIdent("LastMessage",$item);
-		$t = GetValue($id);
-      if ( $t > 5 )  // laenger als 5 Minuten keine Daten
+		//$id = IPS_GetObjectIDByIdent("LastMessage",$item);
+		//$t = GetValue($id);
+		
+		if ( defined('REFRESH_TIME') )
+			$refreshtime = REFRESH_TIME;
+		else
+			$refreshtime = 1 ;
+		
+		$timeoutcircle = $refreshtime * 3 ;
+      if ( $t > $timeoutcircle )  // laenger als x Minuten keine Daten
       	{
       	$id = IPS_GetVariableIDByName("Error", $item);
 			if ( GetValue($id ) != 1 )
 				SetValue($id,1);
 			// wenn Circle nicht erreichbar Leistung auf 0
+			IPS_LogMessage("Plugwise Circle ausgefallen",$t);
       	$id = IPS_GetVariableIDByName("Leistung", $item);
 			if ( GetValue($id ) != 0 )
 				SetValue($id,0);
@@ -877,7 +892,7 @@ function request_circle_data()
 
 		PW_SendCommand("0012".$id_info['ObjectIdent']);
 		
-		SetValue(IPS_GetVariableIDByName ("LastMessage", $item),microtime(true));
+		//SetValue(IPS_GetVariableIDByName ("LastMessage", $item),microtime(true));
 
 		PW_SendCommand("0023".$id_info['ObjectIdent']);
 		
@@ -893,7 +908,7 @@ function request_circle_data()
 *******************************************************************************/
 function hole_gesamtverbrauch()
 	{
-	
+		
 	GLOBAL $idCatOthers;
 	GLOBAL $idCatCircles;
 	GLOBAL $SystemStromzaehlerGroups;
@@ -918,10 +933,16 @@ function hole_gesamtverbrauch()
 		if ( ID_LEISTUNG != 0 )
 			$id_leistung = ID_LEISTUNG;
 
-
+	$id_math = "*";
+	$id_faktor = 1;
    // IDs aus der Konfig lesen - neue Version
 	if ( isset( $SystemStromzaehlerGroups[0][2] ) )
-      $id_leistung = intval($SystemStromzaehlerGroups[0][2]);
+	   {
+		$id_leistung_str = str_replace(" ", "", $SystemStromzaehlerGroups[0][2]); ;
+      $id_leistung = intval($SystemStromzaehlerGroups[0][2]);  // erster Teil
+		$id_math = substr($id_leistung_str,5,1);
+		$id_faktor = substr($id_leistung_str,6);
+		}
 
 	if ( isset( $SystemStromzaehlerGroups[0][3] ) )
       $id_gesamt = intval($SystemStromzaehlerGroups[0][3]);
@@ -945,6 +966,10 @@ function hole_gesamtverbrauch()
 		if ( IPS_ObjectExists($id_leistung) )
 	   	{
       	$d = GetValue($id_leistung);
+
+			if ( $id_math == '*' )
+			   $d = $d * $id_faktor;
+			   
 			$id = IPS_GetObjectIDByIdent('Leistung',$id1);
 			if (GetValue($id) <> $d)
 				SetValue($id,$d);
@@ -1058,10 +1083,17 @@ function berechne_restverbrauch()
 
 		   if ( $id )
 		      {
-				$data = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$id));
-				$l = $l + $data;
-				$data = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$id));
-				$g = $g + $data;
+				$datal = GetValueFloat(IPS_GetObjectIDByIdent("Leistung",$id));
+				$l = $l + $datal;
+
+
+				$datag = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$id));
+				$g = $g + $datag;
+				
+				$text = $id.":".$datal."-".$datag;
+   			logging($text,"Gesamtleistung.log",true);
+
+				
 				}
 			}
 
@@ -1079,6 +1111,11 @@ function berechne_restverbrauch()
 				$l = $l + $data1;
 				$data2 = @GetValue($id_gesamt);
 				$g = $g + $data2;
+				
+				
+				$text = $id_leistung."EX:".$data1."-".$data2;
+   			logging($text,"Gesamtleistung.log",true);
+
 				}
 
 		   }
@@ -1148,9 +1185,9 @@ function berechne_gruppenverbrauch()
 				$in_gesamt = $group[8];
 
 
-			$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
+			$gruppenid = IPS_GetObjectIDByIdent(Get_IdentByName($gruppe),$idCatOthers);
 		
-			$id = @IPS_GetObjectIDByIdent($mac,$idCatCircles);
+			$id = IPS_GetObjectIDByIdent($mac,$idCatCircles);
 			if ( $id )
 		   	{
 		   	$leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
@@ -1209,8 +1246,10 @@ function berechne_gruppenverbrauch()
 	
 	foreach ( $keys as $gruppe )
 	   {
-		$gruppenid = IPS_GetObjectIDByIdent(umlaute_ersetzen($gruppe),$idCatOthers);
+		$gruppenid = IPS_GetObjectIDByIdent(Get_IdentByName($gruppe),$idCatOthers);
 
+		if ( $gruppenid > 0 )
+		   {
 		$wert = $array_leistung[$gruppe];
 		$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);
 		if (GetValue($id) <> $wert)
@@ -1220,6 +1259,8 @@ function berechne_gruppenverbrauch()
 		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
       if (GetValue($id) <> $wert)
 			SetValue($id,$wert);
+			}
+			
 
 	   }
 

@@ -145,10 +145,19 @@
             
             function requestData() {
                 // online request data when the chart is already instantiated
+<<<<<<< HEAD
                 if(typeof chart !== "undefined") {
                     $.ajax({
                         url: 'IPS_UpdateData.php',
                         data: {"scriptId": scriptId,
+=======
+                if(typeof chart !== "undefined") 
+                    {
+                    $.ajax({
+                        url: 'IPS_UpdateData.php',
+                        data: {"scriptId": scriptId,
+                               "Request": "HC",
+>>>>>>> origin/PlugwiseTest
                                "lastTimeStamp": lastTimeStamp
                               },
                         success: function(points) {
@@ -156,10 +165,32 @@
                         },
                         cache: false
                     });
+<<<<<<< HEAD
                     setTimeout(requestData, 10000);
                 } else {
                     setTimeout(requestData, 1000);
                 }
+=======
+                    $.ajax({
+                        url: 'IPS_UpdateData.php',
+                        data: {"scriptId": scriptId,
+                               "Request": "DATA1DATA2",
+                               "lastTimeStamp": lastTimeStamp
+                              },
+                        success: function(data) { document.getElementById("data1data2").innerHTML = data;} ,
+                        cache: false
+                    });
+                    
+                    
+                    setTimeout(requestData, 10000);
+                    } 
+                else 
+                    {
+                    setTimeout(requestData, 1000);
+                    }
+                
+                
+>>>>>>> origin/PlugwiseTest
             }
             var chart, lastTimeStamp = <?php echo $lastTimeStamp; ?>;
             var scriptId = <?php echo $iScriptId; ?>;
@@ -174,6 +205,16 @@
 	<body>
 	
 		<!-- 3. Add the container -->
-		<div id="container" style="width: <?php echo $AdditionalConfigData['Width'] ?>; height: <?php echo $AdditionalConfigData['Height'] ?>; margin: 0 auto"></div>
+	<table border="0" width=100% height=600px>	
+	<tr height=210px><td> 
+  <div id="data1data2" style="width: 100% height:200"></div> 
+  </td>
+  </tr>
+	<tr height=416px><td> 		
+  <div id="container"  style="width: <?php echo $AdditionalConfigData['Width'] ?>; height: <?php echo $AdditionalConfigData['Height'] ?>; margin: 0 auto"></div>
+  
+  </td></tr>
+  </table>
+
 	</body>
 </html>
