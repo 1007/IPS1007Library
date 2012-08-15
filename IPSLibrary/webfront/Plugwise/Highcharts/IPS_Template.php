@@ -145,19 +145,12 @@
             
             function requestData() {
                 // online request data when the chart is already instantiated
-<<<<<<< HEAD
-                if(typeof chart !== "undefined") {
+                if(typeof chart !== "undefined")
+                   {
                     $.ajax({
                         url: 'IPS_UpdateData.php',
                         data: {"scriptId": scriptId,
-=======
-                if(typeof chart !== "undefined") 
-                    {
-                    $.ajax({
-                        url: 'IPS_UpdateData.php',
-                        data: {"scriptId": scriptId,
-                               "Request": "HC",
->>>>>>> origin/PlugwiseTest
+                                "Request": "HC",
                                "lastTimeStamp": lastTimeStamp
                               },
                         success: function(points) {
@@ -165,12 +158,6 @@
                         },
                         cache: false
                     });
-<<<<<<< HEAD
-                    setTimeout(requestData, 10000);
-                } else {
-                    setTimeout(requestData, 1000);
-                }
-=======
                     $.ajax({
                         url: 'IPS_UpdateData.php',
                         data: {"scriptId": scriptId,
@@ -190,7 +177,6 @@
                     }
                 
                 
->>>>>>> origin/PlugwiseTest
             }
             var chart, lastTimeStamp = <?php echo $lastTimeStamp; ?>;
             var scriptId = <?php echo $iScriptId; ?>;
