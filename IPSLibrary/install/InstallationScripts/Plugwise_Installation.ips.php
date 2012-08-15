@@ -256,10 +256,17 @@
         $archivlogging = ARCHIVLOGGING;
     
       if ($archivlogging == true)
-        {        
+        {     
+        if ( defined('AGGTYPELEISTUNG') )
+      	   $aggtype = AGGTYPELEISTUNG;
+   
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
+        
+        if ( defined('AGGTYPEVERBRAUCH') )
+      	   $aggtype = AGGTYPEVERBRAUCH;
+
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
@@ -305,11 +312,20 @@
         $archivlogging = ARCHIVLOGGING;
     
       if ($archivlogging == true)
-        {        
+        {  
+        if ( defined('AGGTYPELEISTUNG') )
+      	   $aggtype = AGGTYPELEISTUNG;
+      
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
+
+        if ( defined('AGGTYPEVERBRAUCH') )
+      	   $aggtype = AGGTYPEVERBRAUCH;
+
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
+        IPS_ApplyChanges($archive_id);
         }
 
       }
@@ -348,9 +364,16 @@
 
           if ($archivlogging == true)
             {        
+            if ( defined('AGGTYPELEISTUNG') )
+      	       $aggtype = AGGTYPELEISTUNG;
+
             AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
             IPS_ApplyChanges($archive_id);
+
+            if ( defined('AGGTYPEVERBRAUCH') )
+      	       $aggtype = AGGTYPEVERBRAUCH;
+
             AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
             IPS_ApplyChanges($archive_id);

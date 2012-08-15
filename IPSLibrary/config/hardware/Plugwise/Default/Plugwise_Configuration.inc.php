@@ -205,11 +205,15 @@
 
 /***************************************************************************//**
 * Archivehandling 
-*   AGGTYPE       - AggregationType 0/1 ( Standard 0 )( 0=Standard,1=Zaehler )
-*   ARCHIVLOGGING - Archivlogging TRUE/FALSE ( Standard TRUE )
+*   AGGTYPE          - AggregationType 0/1 ( Standard 0 )( 0=Standard,1=Zaehler )
+*   ARCHIVLOGGING    - Archivlogging TRUE/FALSE ( Standard TRUE )
+*   AGGTYPELEISTUNG  - AggregationType fuer Leistung  - wenn definiert 
+*   AGGTYPEVERBRAUCH - AggregationType fuer Verbrauch - wenn definiert
 *******************************************************************************/
 	define ( 'AGGTYPE'       , 1 ) ;
   define ( 'ARCHIVLOGGING' , true);
+	define ( 'AGGTYPELEISTUNG'  , 0 ) ;
+	define ( 'AGGTYPEVERBRAUCH' , 1 ) ;
 
 
 /***************************************************************************//**

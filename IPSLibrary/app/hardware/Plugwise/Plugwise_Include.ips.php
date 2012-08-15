@@ -295,9 +295,16 @@ function createCircle($mac, $parentID){
 
    if ($archivlogging == true)
       {
+      if ( defined('AGGTYPELEISTUNG') )
+      	$aggtype = AGGTYPELEISTUNG;
+
   		AC_SetLoggingStatus($archive_id  , $id2, True);   	// Logging einschalten
   		AC_SetAggregationType($archive_id, $id2,$aggtype); // Logging auf Type setzen
       IPS_ApplyChanges($archive_id);
+
+  		if ( defined('AGGTYPEVERBRAUCH') )
+      	$aggtype = AGGTYPEVERBRAUCH;
+
   		AC_SetLoggingStatus($archive_id  , $id3, True); 	// Logging einschalten
   		AC_SetAggregationType($archive_id, $id3, $aggtype);// Logging auf Type setzen
       IPS_ApplyChanges($archive_id);
