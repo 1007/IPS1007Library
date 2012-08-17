@@ -117,7 +117,6 @@ function schaltbefehl($var,$status)
 	
 	$text = $var ."-".$status;
 	
-	
 	foreach( $CircleGroups as $circle)
 	   {
 	   $mac = false;
@@ -130,8 +129,17 @@ function schaltbefehl($var,$status)
 	      
 	   }
 
+
 	if ( strlen($mac) > 0 )
 	   {
+
+		if ( $status == 0 )
+			$status = false;
+		if ( $status == 1 )
+		   $status = true;
+
+	   circle_on_off($mac,$status);
+/*
 		$parent = $idCatCircles;
 		$id = 0;
 		$id = @IPS_GetObjectIDByIdent($mac,$parent);
@@ -158,6 +166,7 @@ function schaltbefehl($var,$status)
 		   
 		   }
 
+*/
 	   }
 	   
 	   
@@ -510,21 +519,13 @@ function plugwise_0024_received($buf)
 		return;
 	   }
 
-   //$t = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
-	//$t = time()  ;
-	//SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
-
-
 	$einaus = substr($buf,41,1);
-	$id = IPS_GetVariableIDByName("Status",$myCat);
+	$id     = IPS_GetVariableIDByName("Status",$myCat);
 	$aktstatus1 = GetValue($id);
 	
 	if ( GetValue($id) != $einaus ){ 
 		SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);}
 
-	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),intval((hexdec(substr($buf,32,8)) - 278528) / 32));
-	
-	//SetValue(IPS_GetVariableIDByName("LogAddress",$myCat),substr($buf,32,8));
 	
 	$logadress = intval((hexdec(substr($buf,32,8))));
 	$id = IPS_GetVariableIDByName("LogAddress",$myCat);
@@ -534,7 +535,6 @@ function plugwise_0024_received($buf)
 	$text = IPS_GetName($myCat);
 	$text = $text." Logadresse[".intval((hexdec(substr($buf,32,8)) - 278528) / 32)."][".hexdec(substr($buf,32,8))."]";
 
-	//$text = $text."[".substr($buf,24,2)." ".substr($buf,26,2)." ".substr($buf,28,4)."] ";
 
 	$hw_version = substr($buf,44,4)."-".substr($buf,48,4)."-".substr($buf,52,4);
 	$sw_version = date('d.m.Y h:i:s',hexdec(substr($buf,56,8)));
@@ -834,14 +834,18 @@ function handle_webfront($variable)
 	$id_info = IPS_GetObject($id);
 	if ($_IPS['VALUE'] == 1)
 		{
-		$action = 1;
+		$action = true;
 		}
 	else
 		{
-		$action = 0;
+		$action = false;
 		}
-	$cmd = "0017".$id_info['ObjectIdent']."0".$action;
-	PW_SendCommand($cmd);
+		
+	$mac = $id_info['ObjectIdent'];
+	circle_on_off($mac,$action);
+	
+//	$cmd = "0017".$id_info['ObjectIdent']."0".$action;
+//	PW_SendCommand($cmd);
 
 	}
 	

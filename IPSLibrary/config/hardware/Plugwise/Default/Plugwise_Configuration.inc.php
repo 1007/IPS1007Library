@@ -58,6 +58,9 @@
 *                       zum aktivieren Filenamen eingeben.
 *                       Beispiel "meineButtonred.png"
 *                       Dieser Button wird angezeigt wenn Update verfuegbar 
+*  AUTORESTORESWITCH  - schaltet den Circle in letzten bekannten Status wenn
+*                       Status ungleich dem bekannten Status (Stromausfall).
+*                       ( Standard FALSE ) 
 *******************************************************************************/
 	define ( 'COMPORT'           , 'COM4' );       	
 	define ( 'REFRESH_TIME'      , 1      );         
@@ -68,6 +71,7 @@
 	define ( 'CHECK_VERSION_TIME', 4      ); 	
   define ( 'ALT_BUTTON_NORMAL' , false  ); 	
   define ( 'ALT_BUTTON_RED'    , false  ); 	
+  define ( 'AUTORESTORESWITCH' , false  ); 	
 
 
 /***************************************************************************//**

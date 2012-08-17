@@ -260,7 +260,7 @@ function createCircle($mac, $parentID){
 
 	//$id1 = @IPS_GetVariableIDByName("Status",$item) ;
 	//if ( $id1 == false )
-	$id1 = CreateVariable("Status", 0, $item, 0, $Profil_Plugwise_Switch[0], false, false);
+	$id1 = CreateVariable("Status", 0, $item, 0, $Profil_Plugwise_Switch[0], false, true);
   $einaus = intval($einaus);
   
   if ( $einaus > 0 )
@@ -2335,7 +2335,42 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	}
 
 
+/***************************************************************************//**
+*	Schaltet einen Circle ein/aus
+*  $mac    = ID des Circles
+*  $status = true/false
+*******************************************************************************/
+function circle_on_off($mac,$status)
+	{
+	GLOBAL $idCatCircles;
 
+	$text =  "---".$mac;
+	IPS_LogMessage("...", $text);
+
+
+	$parent = $idCatCircles;
+	$id = 0;
+	$id = @IPS_GetObjectIDByIdent($mac,$parent);
+
+	$id = @IPS_GetVariableIDByName("Status",$id);
+
+	if ( !IPS_VariableExists($id) )
+		return;
+
+	if ( $status == true )
+		$action = 1;
+	if ( $status == false )
+		$action = 0;
+
+   SetValue($id,$status);
+
+	$cmd = "0017".$mac."0".$action;
+	PW_SendCommand($cmd);
+
+
+	}
+	
+	
 /***************************************************************************//**
 * @}
 * @}
