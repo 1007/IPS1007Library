@@ -345,10 +345,11 @@ function plugwise_0013_received($buf)
 		if ( GetValueFloat($id) != 0 )
 			SetValueFloat($id,0);
 		
-		$id = IPS_GetVariableIDByName ("Status", $myCat);
+		// FFFF heisst nicht ausgeschaltet !!!
+		//$id = IPS_GetVariableIDByName ("Status", $myCat);
 		//IPS_LogMessage("....",$id);
-		if ( GetValue($id) <> false)
-			SetValue($id,false);
+		//if ( GetValue($id) <> false)
+		//	SetValue($id,false);
 
 		$text = $myCat . " Circle ausgeschaltet FFFF . " . $buf;
 		logging($text,'plugwiseerror.log' );
@@ -519,12 +520,48 @@ function plugwise_0024_received($buf)
 		return;
 	   }
 
-	$einaus = substr($buf,41,1);
-	$id     = IPS_GetVariableIDByName("Status",$myCat);
-	$aktstatus1 = GetValue($id);
+	$autorestore = false;
+   if ( defined('AUTORESTORESWITCH') )    // nach Stromausfall alten Zustand wiederherstellen
+   	if ( AUTORESTORESWITCH == true )
+         $autorestore = true;
+         
+   if ( $autorestore == false )
+      {
+	   IPS_LogMessage("Plugwise","Autorestore false");
+
+		$einaus    = substr($buf,41,1);
+		$id        = IPS_GetVariableIDByName("Status",$myCat);
+		$aktstatus = GetValue($id);
 	
-	if ( GetValue($id) != $einaus ){ 
-		SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);}
+		if ( GetValue($id) != $einaus ){
+			SetValue(IPS_GetVariableIDByName("Status",$myCat),$einaus);}
+		}
+	else
+	   {
+
+		$einaus     = substr($buf,41,1);
+		$id         = IPS_GetVariableIDByName("Status",$myCat);
+		$sollstatus = GetValue($id);
+
+		if ( $einaus == "0" OR $einaus == "1" )
+		   {
+			if ( $einaus == "0" )
+				$iststatus = false;
+			if ( $einaus == "1" )
+				$iststatus = true;
+
+	   	//IPS_LogMessage("Plugwise",$myCat."-".$iststatus."-".$sollstatus);
+
+		   if ( $iststatus != $sollstatus )
+		      {
+	   		IPS_LogMessage("Plugwise",$myCat."- Iststatus ungleich Sollstatus");
+            circle_on_off($mcID,$sollstatus);
+		      }
+		   
+		   }
+	   
+	   }
+
 
 	
 	$logadress = intval((hexdec(substr($buf,32,8))));

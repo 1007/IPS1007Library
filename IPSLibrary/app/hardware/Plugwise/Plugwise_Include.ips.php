@@ -2342,10 +2342,29 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 *******************************************************************************/
 function circle_on_off($mac,$status)
 	{
-	GLOBAL $idCatCircles;
+//	GLOBAL $idCatCircles;
+	GLOBAL $CircleGroups;
 
-	$text =  "---".$mac;
-	IPS_LogMessage("...", $text);
+	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
+   $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
+
+	// gehe alle Circle durch und teste ob schalten erlaubt.
+	foreach( $CircleGroups as $circle)
+	   {
+	   
+	   if ( $mac == $circle[0] )
+	   	if ( intval($circle[3]) == 0 )
+	      	{
+	      	IPS_LogMessage("Plugwise","Circle ".$mac ." schalten verboten");
+	      	return;
+	      	}
+			else
+				{
+				//IPS_LogMessage("Plugwise","Circle ".$mac ." schalten erlaubt");
+	      	break;
+	      	}
+	   }
+
 
 
 	$parent = $idCatCircles;
