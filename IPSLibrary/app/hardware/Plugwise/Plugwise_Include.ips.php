@@ -405,7 +405,7 @@ function update_uebersicht_circles()
 	
    $hintergrundfarbe = "#9B9B9B";
 
-   $imggroesse = "width='100' height='50'";
+   $imggroesse = "width='90' height='50'";
 
 
 	$menuarray = array
@@ -416,6 +416,7 @@ function update_uebersicht_circles()
 	   array(true ,"menu_hardwareversion.png"	,"menu_hardwareversion_grau.png"	,3),
 	   array(true ,"menu_leistung.png"			,"menu_leistung_grau.png"			,4),
 	   array(true ,"menu_verbrauch.png"			,"menu_verbrauch_grau.png"			,5),
+	   array(true ,"menu_leer.png"				,"menu_leer_grau.png"				,6),
 	   );
 
 
@@ -426,12 +427,9 @@ function update_uebersicht_circles()
 	$imgpath = "/user/Plugwise/images/";
 
 	
-
-	
-	
 	foreach ( $menuarray as $menuitem )
 	   {
-		$menu = $menu . "<td bgcolor=#000000 width='20%' cellspacing='0' cellpadding='0'>";
+		$menu = $menu . "<td bgcolor=#000000 width='16%' cellspacing='0' cellpadding='0'>";
 
 		if ( $menuitem[0] == false )
 		   {
@@ -498,6 +496,9 @@ function update_uebersicht_circles()
 		$data_array[$x]['CIRCLELASTSEEN'] = 0 ;
 		$data_array[$x]['CIRCLEWATT'] = 0 ;
 		$data_array[$x]['CIRCLEKWH'] = 0 ;
+		$data_array[$x]['CIRCLEPINGMS'] = 0;
+		$data_array[$x]['CIRCLEPINGRSSI1'] = 0;
+		$data_array[$x]['CIRCLEPINGRSSI2'] = 0;
 
 		}
 
@@ -574,15 +575,59 @@ function update_uebersicht_circles()
 		foreach( $newarr as $unknowncircle )
 		   {
 		   $unknowncircle = strtok($unknowncircle,",");
-			$data_array[$counter]['EXIST'] = true ;
-			$data_array[$counter]['CIRCLEID'] = $unknowncircle;
+			$data_array[$counter]['EXIST']      = true ;
+			$data_array[$counter]['CIRCLEID']   = $unknowncircle;
 			$data_array[$counter]['CIRCLENAME'] = $unknowncircle;
-			$data_array[$counter]['CIRCLENEW'] = true;
+			$data_array[$counter]['CIRCLENEW']  = true;
 			$counter = $counter + 1;
 		   }
 		
 		}
 	// alle eingefuegt
+
+
+	// Pingdaten einfuegen wenn Menupunkt angewaehlt
+	if ( $menupunkt == 6 )
+	   {
+   	$file = 'plugwiseping.log';
+		$pingdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+		if ( file_exists($pingdatei) )
+			{
+			ini_set("auto_detect_line_endings", true);
+			$pingarray = file($pingdatei,FILE_SKIP_EMPTY_LINES);
+			$pingarr = array_unique($pingarray);
+		
+			}
+		
+		foreach($pingarr as $pingcircle )
+	   	{
+	   	$teile = explode(",",$pingcircle);
+	   	$teil_id    = @$teile[2];
+	   	$teil_rssi1 = @$teile[3];
+	   	$teil_rssi2 = @$teile[4];
+	   	$teil_ms    = @$teile[5];
+
+			// suche in bereits erstellten array
+			$counter = 0;
+			foreach($data_array as $d_a )
+			   {
+				$testtext = $d_a['CIRCLEID']."-".$teil_id;
+				
+				//IPS_Logmessage("plugwise",$testtext);
+
+				if($d_a['CIRCLEID'] == $teil_id)    // gefunden
+				   {
+	   			//IPS_Logmessage("plugwise",$d_a['CIRCLEID']);
+					$data_array[$counter]['CIRCLEPINGMS'] = $teil_ms;
+					$data_array[$counter]['CIRCLEPINGRSSI1'] = $teil_rssi1;
+					$data_array[$counter]['CIRCLEPINGRSSI2'] = $teil_rssi2;
+					
+	            }
+				$counter = $counter + 1;
+	         }
+			}
+	   }
+	// Ende Pingdaten
 
 
 	
@@ -600,16 +645,19 @@ function update_uebersicht_circles()
 		for($y=0;$y<$anzahlspalten;$y++)
 		   {
 		   
-		   $c_id     = $data_array[$start_data]['CIRCLEID'];
-		   $c_name   = $data_array[$start_data]['CIRCLENAME'];
-		   $c_error  = $data_array[$start_data]['CIRCLEERROR'];
-		   $c_status = $data_array[$start_data]['CIRCLESTATUS'];
-		   $c_new    = $data_array[$start_data]['CIRCLENEW'];
-		   $c_swv    = $data_array[$start_data]['CIRCLESWVERSION'];
-		   $c_hwv    = $data_array[$start_data]['CIRCLEHWVERSION'];
-		   $c_ls     = $data_array[$start_data]['CIRCLELASTSEEN'];
-		   $c_watt   = $data_array[$start_data]['CIRCLEWATT'];
-		   $c_kwh    = $data_array[$start_data]['CIRCLEKWH'];
+		   $c_id     	 = $data_array[$start_data]['CIRCLEID'];
+		   $c_name   	 = $data_array[$start_data]['CIRCLENAME'];
+		   $c_error   	 = $data_array[$start_data]['CIRCLEERROR'];
+		   $c_status 	 = $data_array[$start_data]['CIRCLESTATUS'];
+		   $c_new    	 = $data_array[$start_data]['CIRCLENEW'];
+		   $c_swv    	 = $data_array[$start_data]['CIRCLESWVERSION'];
+		   $c_hwv     	 = $data_array[$start_data]['CIRCLEHWVERSION'];
+		   $c_ls     	 = $data_array[$start_data]['CIRCLELASTSEEN'];
+		   $c_watt   	 = $data_array[$start_data]['CIRCLEWATT'];
+		   $c_kwh    	 = $data_array[$start_data]['CIRCLEKWH'];
+		   $c_pingms    = $data_array[$start_data]['CIRCLEPINGMS'];
+		   $c_pingrssi1 = $data_array[$start_data]['CIRCLEPINGRSSI1'];
+		   $c_pingrssi2 = $data_array[$start_data]['CIRCLEPINGRSSI2'];
 
 
 			$text = $text . "<td width='25%'  bgcolor=$hintergrundfarbe >";
@@ -756,6 +804,40 @@ function update_uebersicht_circles()
 					$circletext = $circletext . "<br><center>" .$c_name ."</center>";
 
 					}
+
+				if ( $menupunkt == 6 ) // Pinganzeige
+					{
+					
+			   	if ( $c_new == false )
+			      	{
+			      	$circletext = "<table border='0' cellspacing='0'  bgcolor=$hintergrundfarbe width='100%' height='15'   >";
+			      	$circletext = $circletext . "<td width='25%'>";
+						if ( $c_error == true  )
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_offline.png' align='absmiddle' >";
+						else
+							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
+							
+						$circletext = $circletext . "</td>";
+						$circletext = $circletext . "<td title='incomingLastHopRssiTarget' align='absmiddle' width='25%'><FONT  SIZE='3'>".$c_pingrssi1;
+						$circletext = $circletext . "</td>";
+						$circletext = $circletext . "<td title='lastHopRssiSource' align='absmiddle' width='25%'><FONT  SIZE='3'>".$c_pingrssi2;
+						$circletext = $circletext . "</td>";
+
+						$circletext = $circletext . "<td align='absmiddle' width='25%'><FONT  SIZE='3'> ".$c_pingms."<FONT  SIZE='2'>  ms";
+						$circletext = $circletext . "</td>";
+                  $circletext = $circletext . "</table>";
+
+						//$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;".$c_pingms." ms</FONT>";
+						$circletext = $circletext . "<center>" .$c_name ."</center>";
+						
+						}
+					else
+						$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
+
+					}
+
+
+
 
 				}
          
@@ -1302,7 +1384,7 @@ function update_data1_data2()
 	$html1 = $html1 . "</table></body>";
 
 	if ( $error != 0 )
-		$html1 = "<img  width=100% height=100% src='/user/Plugwise/images/circleausgefallen.png' align='absmiddle' >";
+		$html1 = "<img  width=50% height=50% src='/user/Plugwise/images/circleausgefallen.png' align='absmiddle' >";
 		
 		
    SetValueString($data1id,$html1);

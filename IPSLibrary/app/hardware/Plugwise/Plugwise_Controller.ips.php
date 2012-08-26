@@ -55,8 +55,8 @@
 	switch ($_IPS['SENDER'])
 			{
 			Case "RunScript"			:	break;
-			Case "Execute"				:	 break;
-			Case "TimerEvent"			:	
+			Case "Execute"				:	break;
+			Case "TimerEvent"			:	ping_circles();
 												berechne_gruppenverbrauch();
 												hole_gesamtverbrauch();
 												berechne_restverbrauch();
@@ -72,6 +72,7 @@
 													case "0000":	plugwise_0000_received($buf);	break;
 													case "0003":	plugwise_0003_received($buf);	break;
 													case "0006":	plugwise_0006_received($buf); break;
+													case "000E":	plugwise_000E_received($buf); break;
 													case "0011":  	plugwise_0011_received($buf);	break;
 													case "0013":	plugwise_0013_received($buf); break;
 													case "0019":   plugwise_0019_received($buf);	break;
@@ -99,13 +100,39 @@ function dummy()
   
   }
 
-function test()
+
+
+
+/***************************************************************************//**
+*  Sende ein Ping "000D" an alle Circles
+*******************************************************************************/
+function ping_circles()
 	{
-	                //000D6F0000998C8C
-   $buf = "00130058000D6F0000998C8C003F018500010AA7000000000004";
-	plugwise_0013_received($buf);
+
+	GLOBAL $CircleGroups;
+
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	$menupunkt = GetValue($id);
+
+	if ( $menupunkt != 6 )
+	   return;
+
+   $file = 'plugwiseping.log';
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	if ( file_exists($logdatei) )
+		unlink($logdatei);
+		
+	foreach( $CircleGroups as $circle)
+	   {
+	   $mac = $circle[0];
+		$cmd = "000D".$mac;
+		PW_SendCommand($cmd);
+	   }
 
 	}
+
 	
 /***************************************************************************//**
 *  Variablenaenderung
@@ -291,6 +318,34 @@ function plugwise_0006_received($buf)
 
 	}
 
+
+/***************************************************************************//**
+*	"000E" empfangen	- Ping
+*  Antwort auf "000D"
+*******************************************************************************/
+function plugwise_000E_received($buf)
+	{
+   $mac = substr($buf,8,16);
+
+   $hrssi1 = (substr($buf,24,2));
+   $hrssi2 = (substr($buf,26,2));
+   $hmsec  = (substr($buf,28,4));
+
+	$rssi1 = hexdec($hrssi1);
+	$rssi2 = hexdec($hrssi2);
+
+	//$rssi1 = $rssi1 & 127;
+	//$rssi2 = $rssi2 & 127;
+
+	$msec = hexdec($hmsec);
+
+	$text = ",".$mac.",".$rssi1.",".$rssi2.",".$msec ;
+	logging($text,'plugwiseping.log',true );
+
+
+	}
+	
+
 /***************************************************************************//**
 *	"0011" empfangen	-  Init
 *  Antwort auf "000A" - stick initialization
@@ -327,6 +382,14 @@ function plugwise_0013_received($buf)
 	$mcID = substr($buf,8,16);
 	$myCat = IPS_GetObjectIDByIdent($mcID, $idCatCircles);
 	$pulse = substr($buf,28,4);
+
+	$totalpulse = substr($buf,32,8);
+	$unknown1   = substr($buf,40,4);
+	$unknown2   = substr($buf,44,4);
+	$unknown3   = substr($buf,48,4);
+
+	$text = $mcID ."-".$totalpulse." ".$unknown1." ".$unknown2." ".$unknown3;
+	logging($text,$mcID .'plugwiseunknowninformation.log' );
 
 	if ( !$myCat)
 	   {
@@ -575,8 +638,11 @@ function plugwise_0024_received($buf)
 
 	$hw_version = substr($buf,44,4)."-".substr($buf,48,4)."-".substr($buf,52,4);
 	$sw_version = date('d.m.Y h:i:s',hexdec(substr($buf,56,8)));
+	$nodetype = substr($buf,64,2);      // nicht in Doku
+	
 	$text = $text. " Hardwareversion: ".$hw_version;
 	$text = $text. " Softwareversion: ".$sw_version." ";
+	$text = $text. " Nodetype: ".$nodetype." ";
 
 	$info = $hw_version .",".$sw_version;
 
@@ -846,7 +912,7 @@ function plugwise_0049_received($buf)
 *	"0061" empfangen	- Circle hinzugefuegt
 *  Antwort auf ?
 *******************************************************************************/
-function plugwise_00061_received($buf)
+function plugwise_0061_received($buf)
 	{
 	GLOBAL $CircleGroups;
 

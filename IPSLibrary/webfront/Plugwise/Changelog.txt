@@ -1,3 +1,5 @@
+Version=1.2.1025
+ - Anzeige der Pingwerte , RSSISource , RSSITarget
 Version=1.2.1024
  - Schalten eines Circles durch externe Scripte
  - 'AUTORESTORESWITCH' in der Konfiguration schaltet Circle nach Stromausfall 
