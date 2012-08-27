@@ -416,7 +416,7 @@ function update_uebersicht_circles()
 	   array(true ,"menu_hardwareversion.png"	,"menu_hardwareversion_grau.png"	,3),
 	   array(true ,"menu_leistung.png"			,"menu_leistung_grau.png"			,4),
 	   array(true ,"menu_verbrauch.png"			,"menu_verbrauch_grau.png"			,5),
-	   array(true ,"menu_leer.png"				,"menu_leer_grau.png"				,6),
+	   array(true ,"menu_ping.png"				,"menu_ping_grau.png"				,6),
 	   );
 
 
@@ -591,6 +591,7 @@ function update_uebersicht_circles()
 	   {
    	$file = 'plugwiseping.log';
 		$pingdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+		$pingarr = array();
 		if ( file_exists($pingdatei) )
 			{
 			ini_set("auto_detect_line_endings", true);
@@ -598,7 +599,7 @@ function update_uebersicht_circles()
 			$pingarr = array_unique($pingarray);
 		
 			}
-		
+
 		foreach($pingarr as $pingcircle )
 	   	{
 	   	$teile = explode(",",$pingcircle);
