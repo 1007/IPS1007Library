@@ -20,7 +20,37 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
 
- 
+
+/***************************************************************************//**
+*  Plugwise Protocol
+*******************************************************************************/
+
+/***************************************************************************//**
+*  command number="000d"
+*           Ping senden
+*
+*  vnumber="1.0"     Plugwise.IO.Commands.V10.PWPingRequestV1_0
+*  	name="macId" 	length="16"
+*******************************************************************************/
+function PWPingRequest($macID,$vnumber=false)
+	{
+	PW_SendCommand("000D".$macID);
+	}
+
+/***************************************************************************//**
+*  command number="003e"         
+*           Uhrzeit lesen
+*
+*  vnumber="1.0"     Plugwise.IO.Commands.V10.PWGetClockRequestV1_0
+*  	name="macId" 	length="16"
+*	vnumber="1.1" 		Plugwise.IO.Commands.V20.PWGetClockRequestV1_1
+*     name="macId" 	length="16"
+*******************************************************************************/
+function PWGetClockRequest($macID,$vnumber=false)
+	{
+	PW_SendCommand("003E".$macID);
+	}
+
  
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise

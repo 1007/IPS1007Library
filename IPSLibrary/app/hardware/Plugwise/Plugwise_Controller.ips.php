@@ -706,6 +706,26 @@ function plugwise_0027_received($buf)
 /***************************************************************************//**
 *	"003F" empfangen	-  aktuelle Uhrzeit empfangen
 *  Antwort auf "003E" - Uhrzeit auslesen
+*
+*	command number="003f"
+*
+*	vnumber="1.0" Plugwise.IO.Commands.V10.PWGetClockReplyV1_0
+*  	name="macId" 					length="16"
+*     name="hour" 					length="2"
+*     name="minutes" 				length="2"
+*     name="seconds" 				length="2"
+*     name="dayOfWeek" 				length="2"
+*     name="hoursNotMinutes" 		length="2"
+*
+*	vnumber="1.1" Plugwise.IO.Commands.V20.PWGetClockReplyV1_1
+*		name="macId" 					length="16"
+*   	name="hour" 					length="2"
+*		name="minutes" 				length="2"
+*     name="seconds" 				length="2"
+*     name="dayOfWeek" 				length="2"
+*     name="hoursNotMinutes" 		length="2"
+*     name="scheduleCRC" 			length="4"
+*
 *******************************************************************************/
 function plugwise_003F_received($buf)
 	{
