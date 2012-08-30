@@ -61,6 +61,8 @@
 *  AUTORESTORESWITCH  - schaltet den Circle in letzten bekannten Status wenn
 *                       Status ungleich dem bekannten Status (Stromausfall).
 *                       ( Standard FALSE ) 
+* UEBERSICHTSPALTEN   - Anzahl der Spalten pro Uebersichtsseite ( default = 3 )
+* UEBERSICHTZEILEN    - Anzahl der Zeilen pro Uebersichtsseite ( default = 9 )
 *******************************************************************************/
 	define ( 'COMPORT'           , 'COM4' );       	
 	define ( 'REFRESH_TIME'      , 1      );         
@@ -72,7 +74,8 @@
   define ( 'ALT_BUTTON_NORMAL' , false  ); 	
   define ( 'ALT_BUTTON_RED'    , false  ); 	
   define ( 'AUTORESTORESWITCH' , false  ); 	
-
+  define ( 'UEBERSICHTSPALTEN' , 3      );
+  define ( 'UEBERSICHTZEILEN'  , 9      );
 
 /***************************************************************************//**
 * Circle Gruppen ( bei Aenderungen Update ausfuehren )

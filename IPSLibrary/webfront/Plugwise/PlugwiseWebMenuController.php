@@ -21,10 +21,21 @@
   $object = IPS_GetObject($id);
   $ident = intval($object['ObjectIdent']);
   
+  $anzahlzeilen  = 9 ;
+	$anzahlspalten = 3;
+	if (defined('UEBERSICHTSPALTEN'))
+	   $anzahlspalten = UEBERSICHTSPALTEN;
+	if (defined('UEBERSICHTZEILEN'))
+	   $anzahlzeilen = UEBERSICHTZEILEN;
+
+  $max_seiten = 64 / ( $anzahlzeilen * $anzahlspalten ) ;
+  $max_seiten = $max_seiten + 1;
+  $max_seiten = $max_seiten - 1 ;
+  
   if ( $oldValue == $newValue )
     {
     $ident = $ident + 1; 
-    if ( $ident > 2 )
+    if ( $ident > $max_seiten  )
       $ident = 0;
     }
   else

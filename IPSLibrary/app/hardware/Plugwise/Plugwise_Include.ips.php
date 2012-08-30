@@ -513,7 +513,7 @@ function update_uebersicht_circles()
 
 	// Erstelle Datenarray
 	$data_array = array();
-	for($x=0;$x<81;$x++)
+	for($x=0;$x<181;$x++)
 		{
 		$data_array[$x]['EXIST'] = false ;
 		$data_array[$x]['CIRCLEID'] = "" ;
@@ -664,7 +664,16 @@ function update_uebersicht_circles()
 	
 	$anzahlzeilen  = 9 ;
 	$anzahlspalten = 3;
+	if (defined('UEBERSICHTSPALTEN'))
+	   $anzahlspalten = UEBERSICHTSPALTEN;
+	if (defined('UEBERSICHTZEILEN'))
+	   $anzahlzeilen = UEBERSICHTZEILEN;
+
+	   
 	$start_data    = 27 * $ident;
+	
+	$start_data    = $anzahlspalten * $anzahlzeilen * $ident;
+
 	$hintergrundfarbe = '#FFFFFF';
 	$text = "";
 	$text = $text . "<table border='0' cellspacing='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
@@ -2439,7 +2448,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 
 	list($usec, $sec) = explode(" ", microtime());
     
-	$time = date("d.m.Y H:i:s",$sec) . "," . $usec;
+	$time = date("d.m.Y H:i:s",$sec);
 	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, $time ." ". $text . chr(13));
