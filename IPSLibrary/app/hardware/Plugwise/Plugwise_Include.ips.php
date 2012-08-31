@@ -20,6 +20,7 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
 
+create_css3menu();
 
 /***************************************************************************//**
 *  Plugwise Protocol
@@ -2511,7 +2512,91 @@ function circle_on_off($mac,$status)
 
 	}
 	
+/***************************************************************************//**
+*	CSS3 Menu bauen
+*******************************************************************************/
+function create_css3menu()
+	{
+	IPSUtils_Include ("Plugwise_CSS3Menu.inc.php","IPSLibrary::config::hardware::Plugwise");
+	return;
+	GLOBAL $CSS3_Plugwise_Menu;
+	GLOBAL $CSS3_Plugwise_CSSFile;
+
+	$VisuPath  	= "Visualization.WebFront.Hardware.Plugwise";
+   $IdWebfront	= get_ObjectIDByPath($VisuPath,true);
+
+	$webfrontid = IPS_GetObjectIDByName('Webfront',$IdWebfront);
 	
+	$cssfile = $CSS3_Plugwise_CSSFile;
+
+	$html = "";
+	$counter = 0;
+
+   $html = "";
+   $html = $html . '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd/">';
+   $html = $html . '<html dir="ltr">';
+	$html = $html . '<head>';
+	$html = $html . '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+//	$html = $html . '<!-- Start css3menu.com HEAD section -->';
+//	$html = $html . '<link rel="stylesheet" href="/User/Plugwise/style.css" type="text/css" />';
+	$html = $html . '<!-- End css3menu.com HEAD section -->';
+	$html = $html . '</head>';
+	$html = $html . '<body style="background-color:#EBEBEB">';
+//	$html = $html . '<!-- Start css3menu.com BODY section -->';
+	$html = $html . '<ul id="css3menu1" class="topmenu">';
+
+	$widthpx = "178px";
+
+
+	$aktlevel   = 1;
+	$newlevel   = 1;
+	$oldlevel   = 1;
+
+	foreach($CSS3_Plugwise_Menu as $menuitem )
+	   {
+		$counter = $counter + 1;
+
+	   if ( $counter == 1 ) // Kopf
+	      {
+			$html = $html . '<li class="topfirst"><a class="pressed"  style="'.$widthpx.';">'.$menuitem[2].'</a></li>';
+			continue;
+			}
+
+
+		$newlevel = substr_count($menuitem[1], '-');
+		$leveldiff = $newlevel - $aktlevel;
+		
+      if ( $newlevel > $aktlevel )     // neues Untermenu
+			$html = $html . '<ul><li class="topfirst"><a href="#">'.$menuitem[2].$newlevel.'-'.$leveldiff.'</a></li>';;
+
+      if ( $newlevel == $aktlevel )
+      	$html = $html . '<li class="topfirst"><a href="#">'.$menuitem[2].$newlevel.'-'.$leveldiff.'</a></li>';
+
+
+      if ( $newlevel < $aktlevel )     //  Untermenu schliessen
+      	for ( $x=$leveldiff;$x<0;$x++)
+			   {
+				$html = $html . '</ul></li>';
+				}
+
+
+		$aktlevel = $newlevel;
+
+	   
+	   }
+
+	// Menubottom
+	$html = $html . '<li class="toplast"><a class="pressed"  style="'.$widthpx.';"> </a></li>';
+	$html = $html . '</ul>';
+	
+	
+	
+	SetValueString($webfrontid,$html);
+	return $html;
+	}
+
+
+
 /***************************************************************************//**
 * @}
 * @}
