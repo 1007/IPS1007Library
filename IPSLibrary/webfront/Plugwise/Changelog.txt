@@ -1,3 +1,5 @@
+Version=1.2.1027
+ - Starten eines Scripts moeglich wenn Script ausgefallen
 Version=1.2.1026
  - Anzahl der Spalten und Zeilen in der Systemsteuerung variabel
   define ( 'UEBERSICHTSPALTEN' , 3      );

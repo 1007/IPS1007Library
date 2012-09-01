@@ -254,6 +254,7 @@
 *   MYSQL_DATENBANK         - MySQL-Datenbankname (Standard = Plugwise)
 *   MYSQL_TABELLE_LEISTUNG  - MySQL-Tab Leistung  (Standard = Leistung)
 *   MYSQL_TABELLE_GESAMT    - MySQL-Tab Verbrauch (Standard = Gesamtverbrauch)
+*   MYSQL_TABELLE_RSSI      - MySQL-Tab RSSI      (Standard = RSSI)
 * wird eine Variable angegeben zB aus der ____autoload.php muss diese als
 * GLOBAL definiert werden. ( GLOBAL $MYSQL_SERVER; )
 *******************************************************************************/
@@ -264,16 +265,25 @@
 	define ( 'MYSQL_DATENBANK'         , 'Plugwise' );
 	define ( 'MYSQL_TABELLE_LEISTUNG'  , 'Leistung' );
 	define ( 'MYSQL_TABELLE_GESAMT'    , 'Gesamtverbrauch' );
+	define ( 'MYSQL_TABELLE_RSSI'      , 'RSSI' );
 
 
 /***************************************************************************//**
 * CSS3 Menu
-* 
 *******************************************************************************/
   define ( 'CSS3MENU'         , false); 
   define ( 'CSS3MENU_NAME'    , "css3_default");        
 
-  
+/***************************************************************************//**
+* Scripte starten bei bestimmten Zustaenden
+* RUNSCRIPT_CIRCLEFAILED    = Circle ausgefallen  ( Standard=false )
+*                             zum aktivieren ScriptID eintragen
+*                             Beispiel fuer externes Script :
+*                               $name = $_IPS['CIRCLE'];
+* 	                            IPS_Logmessage("Plugwise","Circle $name ausgefallen");
+*
+*******************************************************************************/
+  define ( 'RUNSCRIPT_CIRCLEFAILED'   , false );
   
 
 ?>

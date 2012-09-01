@@ -195,15 +195,19 @@ function bintofloat($in)
 /***************************************************************************//**
 *	Pulse zu kWh Umwandlung
 *******************************************************************************/
-function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB) {
-        if ($value == hexdec("FFFFFFFF")) {
-            return 0;
-        } else {
-           $value = $value / 3600;
-            $pulses = (pow(($value + $offRuis), 2) * $gainB) + (($value + $offRuis) * $gainA) + $offTot;
-            $result = (($pulses / 3600) / 468.9385193)*3600;
-            return $result;
-        }
+function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB)
+	{
+   if ($value == hexdec("FFFFFFFF") or $value == 0)
+		{
+      return 0;
+      }
+	else
+		{
+      $value = $value / 3600;
+      $pulses = (pow(($value + $offRuis), 2) * $gainB) + (($value + $offRuis) * $gainA) + $offTot;
+      $result = (($pulses / 3600) / 468.9385193)*3600;
+      return $result;
+      }
     }
 
 
@@ -634,10 +638,10 @@ function update_uebersicht_circles()
 		foreach($pingarr as $pingcircle )
 	   	{
 	   	$teile = explode(",",$pingcircle);
-	   	$teil_id    = @$teile[2];
-	   	$teil_rssi1 = @$teile[3];
-	   	$teil_rssi2 = @$teile[4];
-	   	$teil_ms    = @$teile[5];
+	   	$teil_id    = @$teile[1];
+	   	$teil_rssi1 = @$teile[2];
+	   	$teil_rssi2 = @$teile[3];
+	   	$teil_ms    = @$teile[4];
 
 			// suche in bereits erstellten array
 			$counter = 0;
@@ -650,7 +654,7 @@ function update_uebersicht_circles()
 				if($d_a['CIRCLEID'] == $teil_id)    // gefunden
 				   {
 	   			//IPS_Logmessage("plugwise",$d_a['CIRCLEID']);
-					$data_array[$counter]['CIRCLEPINGMS'] = $teil_ms;
+					$data_array[$counter]['CIRCLEPINGMS']    = $teil_ms;
 					$data_array[$counter]['CIRCLEPINGRSSI1'] = $teil_rssi1;
 					$data_array[$counter]['CIRCLEPINGRSSI2'] = $teil_rssi2;
 					
