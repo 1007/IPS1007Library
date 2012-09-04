@@ -19,6 +19,8 @@
 
   GLOBAL $Profil_Plugwise_Leistung;
   GLOBAL $Profil_Plugwise_Verbrauch;
+  GLOBAL $Profil_Plugwise_Kosten;
+
   GLOBAL $Profil_Plugwise_Switch;
   GLOBAL $Profil_Plugwise_MenuItem;
   GLOBAL $Profil_Plugwise_MenuScripte;
@@ -169,6 +171,11 @@
                                 $Profil_Plugwise_Verbrauch[1],
                                 $Profil_Plugwise_Verbrauch[2],
                                 $Profil_Plugwise_Verbrauch[3]);
+  
+  @IPS_DeleteVariableProfile("Plugwise_Kosten");
+  @IPS_CreateVariableProfile("Plugwise_Kosten", 2);
+  IPS_SetVariableProfileText("Plugwise_Kosten", "", " Euro");
+  IPS_SetVariableProfileDigits("Plugwise_Kosten", 2);
                                 
   if ( substr($Profil_Plugwise_Switch[0],0,1) != "~" )
     CreateProfile_Switch ($Profil_Plugwise_Switch[0],
@@ -240,6 +247,10 @@
     if ( $id2 == false )
       $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0); 
 
+    $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
+    if ( $id4 == false )
+      $id4 = CreateVariable("Kosten", 2, $item, 0, 'Plugwise_Kosten', 0, 0);
+
 
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
@@ -271,6 +282,12 @@
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
+
+  		  AC_SetLoggingStatus($archive_id  , $id4, True); 	// Logging einschalten
+  		  //AC_SetAggregationType($archive_id, $id4, $aggtype);// Logging auf Type setzen
+        IPS_ApplyChanges($archive_id);
+
+        
         }
 
       }
@@ -296,6 +313,11 @@
     $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
     if ( $id2 == false )
       $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
+
+    $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
+    if ( $id4 == false )
+      $id4 = CreateVariable("Kosten", 2, $item, 0, 'Plugwise_Kosten', 0, 0);
+
 
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
@@ -327,6 +349,12 @@
         AC_SetLoggingStatus($archive_id,  $id2, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id2, $aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
+
+  		  AC_SetLoggingStatus($archive_id  , $id4, True); 	// Logging einschalten
+  		  //AC_SetAggregationType($archive_id, $id4, $aggtype);// Logging auf Type setzen
+        IPS_ApplyChanges($archive_id);
+
+
         }
 
       }
@@ -357,6 +385,11 @@
         if ( $id3 == false )
           $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
 
+        $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
+        if ( $id4 == false )
+          $id4 = CreateVariable("Kosten", 2, $item, 0, 'Plugwise_Kosten', 0, 0);
+
+
         if ( $archive_id )
           { 
           $archivlogging = true;
@@ -378,6 +411,11 @@
             AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
             AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
             IPS_ApplyChanges($archive_id);
+
+  		      AC_SetLoggingStatus($archive_id  , $id4, True); 	// Logging einschalten
+  		      //AC_SetAggregationType($archive_id, $id4, $aggtype);// Logging auf Type setzen
+            IPS_ApplyChanges($archive_id);
+
             }
           }
 

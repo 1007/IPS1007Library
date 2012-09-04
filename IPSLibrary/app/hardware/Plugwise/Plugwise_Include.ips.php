@@ -320,6 +320,10 @@ function createCircle($mac, $parentID){
 	//if ( $id3 == false )
 		$id3 = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0);
 
+	$Profil_Plugwise_Kosten = 'Plugwise_Kosten';
+	$id4 = CreateVariable("Kosten", 2, $item, 0, $Profil_Plugwise_Kosten, 0, 0);
+	
+
   $aggtype = 1;   // Zaehler
   if ( defined('AGGTYPE') )
         $aggtype = AGGTYPE;
@@ -343,6 +347,12 @@ function createCircle($mac, $parentID){
   		AC_SetLoggingStatus($archive_id  , $id3, True); 	// Logging einschalten
   		AC_SetAggregationType($archive_id, $id3, $aggtype);// Logging auf Type setzen
       IPS_ApplyChanges($archive_id);
+
+  		AC_SetLoggingStatus($archive_id  , $id4, True); 	// Logging einschalten
+  		//AC_SetAggregationType($archive_id, $id4, $aggtype);// Logging auf Type setzen
+      IPS_ApplyChanges($archive_id);
+
+      
 		}
 
 	//$myVar = CreateVariable("gaina",2,$item,0,"",0,0);
@@ -2522,7 +2532,7 @@ function circle_on_off($mac,$status)
 function create_css3menu()
 	{
 	IPSUtils_Include ("Plugwise_CSS3Menu.inc.php","IPSLibrary::config::hardware::Plugwise");
-	return;
+	
 	GLOBAL $CSS3_Plugwise_Menu;
 	GLOBAL $CSS3_Plugwise_CSSFile;
 
@@ -2535,14 +2545,14 @@ function create_css3menu()
 
 	$html = "";
 	$counter = 0;
-
+	echo $CSS3_Plugwise_CSSFile;
    $html = "";
    $html = $html . '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd/">';
    $html = $html . '<html dir="ltr">';
 	$html = $html . '<head>';
 	$html = $html . '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
 //	$html = $html . '<!-- Start css3menu.com HEAD section -->';
-//	$html = $html . '<link rel="stylesheet" href="/User/Plugwise/style.css" type="text/css" />';
+	$html = $html . '<link rel="stylesheet" href="/User/Plugwise/css3menu/'.$CSS3_Plugwise_CSSFile.'" type="text/css" />';
 	$html = $html . '<!-- End css3menu.com HEAD section -->';
 	$html = $html . '</head>';
 	$html = $html . '<body style="background-color:#EBEBEB">';

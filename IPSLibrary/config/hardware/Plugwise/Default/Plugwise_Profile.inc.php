@@ -21,6 +21,7 @@
 
   GLOBAL $Profil_Plugwise_Leistung;
   GLOBAL $Profil_Plugwise_Verbrauch;
+  GLOBAL $Profil_Plugwise_Kosten;
   GLOBAL $Profil_Plugwise_Switch;
   GLOBAL $Profil_Plugwise_MenuItem;
   GLOBAL $Profil_Plugwise_MenuScripte;
@@ -36,6 +37,15 @@
   $Profil_Plugwise_Switch = array(
                 "~Switch" );
                 
+
+  $Profil_Plugwise_Kosten = array( 
+                "Plugwise_Kosten",                      // Parameter0
+                array( 0	=> "",                        // Parameter1
+                       1 => "   " ),
+								'',                                     // Parameter2
+                array( 0  =>	0xFFCC00,                 // Parameter3
+                       1  =>	0x00FFCC) );
+
  
   $Profil_Plugwise_MenuItem = array( 
                 "Plugwise_MenuItem",                    // Parameter0
