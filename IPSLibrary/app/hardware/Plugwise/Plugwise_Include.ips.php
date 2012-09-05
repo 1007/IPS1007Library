@@ -2531,6 +2531,8 @@ function circle_on_off($mac,$status)
 *******************************************************************************/
 function create_css3menu()
 	{
+	
+	return;
 	IPSUtils_Include ("Plugwise_CSS3Menu.inc.php","IPSLibrary::config::hardware::Plugwise");
 	
 	GLOBAL $CSS3_Plugwise_Menu;
