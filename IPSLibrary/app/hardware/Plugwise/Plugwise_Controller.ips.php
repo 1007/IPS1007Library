@@ -598,7 +598,7 @@ function plugwise_0024_received($buf)
          
    if ( $autorestore == false )
       {
-	   IPS_LogMessage("Plugwise","Autorestore false");
+	   
 
 		$einaus    = substr($buf,41,1);
 		$id        = IPS_GetVariableIDByName("Status",$myCat);
