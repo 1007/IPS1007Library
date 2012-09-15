@@ -396,8 +396,35 @@ function plugwise_0013_received($buf)
 		return;
 	   }
 
-	$t = time()  ;
-	SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
+	// Circleantwortzeit berechnen
+	//$t = time()  ;
+	//SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$t);
+
+	$id = IPS_GetVariableIDByName("LastMessage", $myCat);
+	$obj = IPS_GetObject(IPS_GetObjectIDByIdent("LastMessage",$myCat));
+	$string = $obj['ObjectInfo'];
+	$string_array = explode(";", $string);
+
+	$start_timestamp = @$string_array[0];
+	$ende_timestamp  = @$string_array[1];
+	$ende_timestamp  = microtime(true);
+	$string = $start_timestamp .";".$ende_timestamp;
+	$diff = round(($ende_timestamp - $start_timestamp) * 1000);
+
+
+	IPS_SetInfo($id,$string);
+   SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$diff);
+
+
+	//IPS_LogMessage("Info","[".$string."]".$diff);
+	//*********************************************
+
+
+
+
+
+
+
 
 	If ($pulse == "FFFF")
 		{	// Circle ausgeschaltet, meldet FFFF ( nicht immer ?? )
@@ -516,7 +543,7 @@ function plugwise_0013_received($buf)
 	if ( GetValue($id ) != 0 )
 		SetValue($id,0);
 
-		
+
 	logging($text,'plugwisepowerinformation.log' );
 
 
@@ -1034,6 +1061,22 @@ function request_circle_data()
 			
 		$id_info = IPS_GetObject($item);
 
+		
+		
+		$id = IPS_GetVariableIDByName("LastMessage", $item);
+		$obj = IPS_GetObject(IPS_GetObjectIDByIdent("LastMessage",$item));
+		$string = $obj['ObjectInfo'];
+		$string_array = explode(";", $string);
+
+		$start_timestamp = @$string_array[0];
+		$ende_timestamp  = @$string_array[1];
+		$start_timestamp = microtime(true);
+		$string = $start_timestamp .";".$ende_timestamp;
+
+		//IPS_LogMessage(".......",$string);
+		
+		//$timestamp = microtime(true).";0";
+		IPS_SetInfo(IPS_GetObjectIDByIdent("LastMessage",$item),$string);
 		PW_SendCommand("0012".$id_info['ObjectIdent']);
 		
 		PW_SendCommand("0023".$id_info['ObjectIdent']);

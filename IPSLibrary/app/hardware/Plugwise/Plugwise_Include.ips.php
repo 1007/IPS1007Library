@@ -539,6 +539,7 @@ function update_uebersicht_circles()
 		$data_array[$x]['CIRCLESWVERSION'] = "SW?" ;
 		$data_array[$x]['CIRCLEHWVERSION'] = "HW?" ;
 		$data_array[$x]['CIRCLELASTSEEN'] = 0 ;
+		$data_array[$x]['CIRCLELASTMILLISEC'] = 0 ;
 		$data_array[$x]['CIRCLEWATT'] = 0 ;
 		$data_array[$x]['CIRCLEKWH'] = 0 ;
 		$data_array[$x]['CIRCLEPINGMS'] = 0;
@@ -559,9 +560,23 @@ function update_uebersicht_circles()
 		$data_array[$counter]['CIRCLENEW'] = false;
 		$data_array[$counter]['CIRCLEERROR'] = @GetValue(IPS_GetVariableIDByName('Error',$circle));
 		$data_array[$counter]['CIRCLESTATUS'] = @GetValue(IPS_GetVariableIDByName('Status',$circle));
-		$last_seen = @GetValue(IPS_GetVariableIDByName('LastMessage',$circle));
-		$last_seen = intval($last_seen);
-		$data_array[$counter]['CIRCLELASTSEEN'] = date('d.m.Y H:i:s',$last_seen);
+
+
+		$objlastmessage = IPS_GetObject(IPS_GetObjectIDByIdent("LastMessage",$circle));
+		$string = $objlastmessage['ObjectInfo'];
+		$string_array = explode(";", $string);
+
+		$start_timestamp = @$string_array[0];
+		$ende_timestamp  = @$string_array[1];
+      $last_seen = intval($ende_timestamp);
+
+		$last_ms = @GetValue(IPS_GetVariableIDByName('LastMessage',$circle));
+		$last_ms = intval($last_ms);
+		$data_array[$counter]['CIRCLELASTSEEN'] = date('d.m.y H:i:s',$last_seen);
+		$data_array[$counter]['CIRCLELASTMILLISEC'] = $last_ms;
+		//
+
+
 
 		$watt = @number_format(GetValue(IPS_GetVariableIDByName('Leistung',$circle)),1,",","");
 		$y = strlen($watt);
@@ -708,6 +723,7 @@ function update_uebersicht_circles()
 		   $c_swv    	 = $data_array[$start_data]['CIRCLESWVERSION'];
 		   $c_hwv     	 = $data_array[$start_data]['CIRCLEHWVERSION'];
 		   $c_ls     	 = $data_array[$start_data]['CIRCLELASTSEEN'];
+		   $c_lsms      = $data_array[$start_data]['CIRCLELASTMILLISEC'];
 		   $c_watt   	 = $data_array[$start_data]['CIRCLEWATT'];
 		   $c_kwh    	 = $data_array[$start_data]['CIRCLEKWH'];
 		   $c_pingms    = $data_array[$start_data]['CIRCLEPINGMS'];
@@ -761,6 +777,7 @@ function update_uebersicht_circles()
 							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
 
 						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;&nbsp;".$c_ls."</FONT>";
+						$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;[&nbsp;".$c_lsms."&nbsp;]</FONT>";
 
 						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
 						}

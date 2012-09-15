@@ -1,3 +1,5 @@
+Version=1.2.1028
+ - Anzeige geaendert in Last Message
 Version=1.2.1027
  - Starten eines Scripts moeglich wenn Circle ausgefallen
 Version=1.2.1026
