@@ -2209,7 +2209,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 		hide_data1data2();
 		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),true);
 		}
-	if ( $was == "AUSWERTUNG" )
+	if ( $was == "ANTWORTZEITEN" )
 		{
 		hide_data1data2();
 		$id1 = IPS_GetObjectIDByIdent("Uebersicht",$IdGraph);

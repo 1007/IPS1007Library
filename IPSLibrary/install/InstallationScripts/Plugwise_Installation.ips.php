@@ -482,8 +482,8 @@
   IPS_SetHidden($IDCircles,true);
 	$IDSystemst  = CreateDummyInstance("Systemsteuerung",$VisuID_menu,30);
   IPS_SetHidden($IDSystemst,true);
-	$IDAuswert   = CreateDummyInstance("Auswertungen",$VisuID_menu,30);
-  IPS_SetHidden($IDAuswert,true);
+	//$IDAuswert   = CreateDummyInstance("Auswertungen",$VisuID_menu,30);
+  //IPS_SetHidden($IDAuswert,true);
  
   $htmlboxid  = CreateVariable("Webfront", 3, $CategoryIdVisu, 0, "~HTMLBox", false, false);
   
@@ -523,7 +523,7 @@
 	// Systemsteuerung und Auswertung erstellen
 	//***************************************************************************
   $id = CreateVariable("Systemsteuerung", 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
-  $id = CreateVariable("Auswertungen"   , 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
+  $id = CreateVariable("Antwortzeiten"  , 1, $IDAllgemein, 0, "Plugwise_MenuItem", $ActionScriptId, false);
   IPS_SetHidden($id,true);
 	//***************************************************************************
 	// Gruppenmenu erstellen fuer Circles und Externe
