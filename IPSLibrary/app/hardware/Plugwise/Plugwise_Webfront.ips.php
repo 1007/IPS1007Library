@@ -59,8 +59,8 @@
    $IdGroups    	= get_ObjectIDByPath($GroupsPath);
 	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
    $IdSystemst    = get_ObjectIDByPath($SystemstPath);
-	$AuswPath     	= "Visualization.WebFront.Hardware.Plugwise.MENU.Auswertungen";
-   $IdAusw       	= get_ObjectIDByPath($AuswPath);
+//	$AuswPath     	= "Visualization.WebFront.Hardware.Plugwise.MENU.Antwortzeiten";
+//   $IdAusw       	= get_ObjectIDByPath($AuswPath);
 
 	$parent = IPS_GetParent($IPS_VARIABLE);
 	$object = IPS_GetObject($parent);
@@ -94,8 +94,8 @@
 			reset_menu_stromzaehler();
 			reset_gruppen();
 			IPS_SetHidden($IdSystemst,false);
-			SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
-			IPS_SetHidden($IdAusw,true);
+			//SetValue(IPS_GetVariableIDByName("Antwortzeiten",$IdAllg),0);
+			//IPS_SetHidden($IdAusw,true);
 			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
 			SetValue($IPS_VARIABLE,1);
 			
@@ -106,8 +106,8 @@
 			reset_menu_stromzaehler();
 			reset_gruppen(true);
 		   IPS_SetHidden($IdSystemst,true);
-         SetValue(IPS_GetVariableIDByName("Auswertungen",$IdAllg),0);
-         IPS_SetHidden($IdAusw,true);
+         //SetValue(IPS_GetVariableIDByName("Antwortzeiten",$IdAllg),0);
+         //IPS_SetHidden($IdAusw,true);
 			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
 			SetValue($IPS_VARIABLE,0);
 		   }
@@ -117,7 +117,7 @@
 	//***************************************************************************
 	// Auswertungen
 	//***************************************************************************
-	if ( $self['ObjectName'] == 'Auswertungen' )
+	if ( $self['ObjectName'] == 'Antwortzeiten' )
 	   {	
 	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
 			{
@@ -127,7 +127,7 @@
 			IPS_SetHidden($IdAusw,false);
 			SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
 			IPS_SetHidden($IdSystemst,true);
-			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
+			//IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
 			SetValue($IPS_VARIABLE,1);
 			}
 		else // ist angewaehlt angewaehlt
@@ -285,13 +285,14 @@
 	//***************************************************************************
 	// Soll Auswertung angezeigt werden ?
 	// **************************************************************************
-	if ( GetValue(IPS_GetObjectIDByIdent('Auswertungen',$IdAllg)) > 0 )
+/*
+	if ( GetValue(IPS_GetObjectIDByIdent('Antwortzeiten',$IdAllg)) > 0 )
 	   {
       show_status_in_menu(0,true);
-		update_webfront_123("AUSWERTUNG",0,true);
+		update_webfront_123("ANTWORTZEITEN",0,true);
 		return;
 		}
-		
+*/
 	//***************************************************************************
 	// Soll ein Stromzaehler angezeigt werden ?
 	// **************************************************************************
