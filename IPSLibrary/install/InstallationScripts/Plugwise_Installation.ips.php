@@ -178,14 +178,21 @@
   IPS_SetVariableProfileDigits("Plugwise_Kosten", 2);
                                 
   if ( substr($Profil_Plugwise_Switch[0],0,1) != "~" )
+    {
+    $icon_off = @$Profil_Plugwise_Switch[6];
+    $icon_on  = @$Profil_Plugwise_Switch[7];
+    
     CreateProfile_Switch ($Profil_Plugwise_Switch[0],
                                 $Profil_Plugwise_Switch[1],
                                 $Profil_Plugwise_Switch[2],
                                 $Profil_Plugwise_Switch[3],
                                 $Profil_Plugwise_Switch[4],
-                                $Profil_Plugwise_Switch[5]
+                                $Profil_Plugwise_Switch[5],
+                                $icon_off,$icon_on
                                 );
-
+   }
+   
+   
   if ( substr($Profil_Plugwise_MenuItem[0],0,1) != "~" )
     CreateProfile_Associations ($Profil_Plugwise_MenuItem[0],
                                 $Profil_Plugwise_MenuItem[1],
