@@ -570,7 +570,7 @@ function plugwise_0019_received($buf)
 		return;
 	   }
 
-	$text = IPS_GetName($myCat) . " Adresse empfangen [".$buf."] ";
+	$text = " Adresse empfangen [".$buf."] ";
 
 	$mac = substr($buf,24,16);
 	if (!($mac == "FFFFFFFFFFFFFFFF"))

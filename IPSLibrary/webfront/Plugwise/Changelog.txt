@@ -1,5 +1,5 @@
 Version=1.2.1029
- - BeimProfil Switch Icons moeglich
+ - IPSLibrary GUI Version 
 Version=1.2.1028
  - Anzeige geaendert in Last Message
 Version=1.2.1027

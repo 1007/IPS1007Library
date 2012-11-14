@@ -388,7 +388,7 @@ function get_version()
 	{
 	IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
    $moduleManager = new IPSModuleManager('Plugwise');
-	$version = "<h3>Version : " .$moduleManager->VersionHandler()->GetModuleVersion() ."</h3>";
+	$version = "<h3>Version : " .$moduleManager->VersionHandler()->GetVersion('Plugwise') ."</h3>";
 
 	$pfad =IPS_GetKernelDir()."webfront\\User\\Plugwise";
 	$file = $pfad . "\\Changelog.txt";
