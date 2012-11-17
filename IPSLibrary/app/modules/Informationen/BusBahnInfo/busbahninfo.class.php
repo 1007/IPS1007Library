@@ -19,26 +19,26 @@
           var $timetable=array();
           var $bahnhof=false;
           var $_FETCHMETHOD;
-          function bahn($bahnhof=null,$type="abfahrt")
+          function bahn($bahnhof=null,$type="abfahrt",$dbid="")
               {
+					$bahnhof = $bahnhof. $dbid;
               $type=strtolower($type);
-              if(!$bahnhof)
-                $bahnhof="Hannover HBF";
+
               $this->_init($bahnhof);
               $this->fetchMethodCURL(true);
               $this->boardType($type);
               //$this->_query();
               }
 
-    function TypeICE($state=true)     {$this->_PARAMS['GUIREQProduct_0'] = ($state) ? "on" : false;}
-    function TypeIC($state=true)      {$this->_PARAMS['GUIREQProduct_1'] = ($state) ? "on" : false;}
-    function TypeIR($state=true)      {$this->_PARAMS['GUIREQProduct_2'] = ($state) ? "on" : false;}
-    function TypeRE($state=true)      {$this->_PARAMS['GUIREQProduct_3'] = ($state) ? "on" : false;}     
-    function TypeSBAHN($state=true)	  {$this->_PARAMS['GUIREQProduct_4'] = ($state) ? "on" : false;}
-    function TypeBUS($state=true)     {$this->_PARAMS['GUIREQProduct_5'] = ($state) ? "on" : false;}
-    function TypeFAEHRE($state=true)	{$this->_PARAMS['GUIREQProduct_6'] = ($state) ? "on" : false;}     
-    function TypeUBAHN($state=true)	  {$this->_PARAMS['GUIREQProduct_7'] = ($state) ? "on" : false;}
-    function TypeTRAM($state=true)		{$this->_PARAMS['GUIREQProduct_8'] = ($state) ? "on" : false;}     
+    function TypeICE($state=true)     	{$this->_PARAMS['GUIREQProduct_0'] = ($state) ? "on" : false;}
+    function TypeIC($state=true)      	{$this->_PARAMS['GUIREQProduct_1'] = ($state) ? "on" : false;}
+    function TypeIR($state=true)      	{$this->_PARAMS['GUIREQProduct_2'] = ($state) ? "on" : false;}
+    function TypeRE($state=true)      	{$this->_PARAMS['GUIREQProduct_3'] = ($state) ? "on" : false;}
+    function TypeSBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_4'] = ($state) ? "on" : false;}
+    function TypeBUS($state=true)     	{$this->_PARAMS['GUIREQProduct_5'] = ($state) ? "on" : false;}
+    function TypeFAEHRE($state=true)  	{$this->_PARAMS['GUIREQProduct_6'] = ($state) ? "on" : false;}
+    function TypeUBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_7'] = ($state) ? "on" : false;}
+    function TypeTRAM($state=true)		{$this->_PARAMS['GUIREQProduct_8'] = ($state) ? "on" : false;}
 
 
 /***************************************************************************//**
@@ -74,17 +74,12 @@ function zeit($zeit)
 /***************************************************************************//**
 * 
 *******************************************************************************/
-function fetch($proxy,$html=null)
-    {
-    if($html)
-      {
-      return $this->_parse($html);
+function fetch($proxy)
+	{
+   if($this->_FETCHMETHOD=="CURL")
+   	{
+      return $this->_queryCurl($proxy);
       }
-    else
-      if($this->_FETCHMETHOD=="CURL")
-        {
-        return $this->_queryCurl($proxy);
-        }
     }
 
 
@@ -94,7 +89,10 @@ function fetch($proxy,$html=null)
 function _queryCurl($proxy)
     {
     $this->buildQueryURL();
-    $result=$this->_call($proxy); if ( !$result ) return false ;
+    $result=$this->_call($proxy);
+	 if ( !$result )
+	 	return false ;
+	
     return $this->_parse($result);
     }
 
@@ -113,6 +111,7 @@ function buildQueryURL()
     rtrim($fields_string,'&');
 
     $this->_URL=$this->_BASEURL.$fields_string;
+    logging($this->_URL);
     return $this->_URL;
     }
 
@@ -122,12 +121,24 @@ function buildQueryURL()
 *******************************************************************************/
 function _parse($data)
     {
+    libxml_use_internal_errors(true);
+    
     $dom = new DOMDocument();
-    @$dom->loadHTML($data);
+    $err = $dom->loadHTML($data);
+
+    $errors = libxml_get_errors();
 
     $select=$dom->getElementById("rplc0");
     
-    if($select->tagName=="select")
+    if ( $select == NULL )
+      {
+      logging("ElementID rplc0 nicht gefunden");
+      return false;
+      
+      }
+
+    
+    if(@$select->tagName=="select")
       {
       $options=$select->getElementsByTagName("option");
       foreach($options AS $op)
@@ -138,9 +149,14 @@ function _parse($data)
       }
     else
       {
-      $this->bahnhof=utf8_decode($select->getAttribute("value"));
-      $this->_process_dom($dom);
+		$att = false;
+		$att = @$select->getAttribute("value");
+		
+		$this->bahnhof=utf8_decode($att);
+
+		$this->_process_dom($dom);
       return true;
+		
       }
     }
 
@@ -328,7 +344,63 @@ function _init($bahnhof)
     }
 
 }
+function display_xml_error($error, $xml="")
+{
+	$return = "";
+	
+    switch ($error->level) {
+        case LIBXML_ERR_WARNING:
+            $return .= "Warning $error->code: ";
+            break;
+         case LIBXML_ERR_ERROR:
+            $return .= "Error $error->code: ";
+            break;
+        case LIBXML_ERR_FATAL:
+            $return .= "Fatal Error $error->code: ";
+            break;
+    }
 
+    $return .= trim($error->message) .
+               "\n  Line: $error->line" .
+               "\n  Column: $error->column";
+
+    if ($error->file) {
+        $return .= "\n  File: $error->file";
+    }
+
+    return "$return\n\n--------------------------------------------\n\n";
+}
+
+
+/***************************************************************************//**
+*	Logging
+*******************************************************************************/
+function logging($text,$file = 'busbahninfo.log' ,$space = false)
+	{
+	
+	if ( !LOG_MODE )
+		return;
+
+	$ordner = IPS_GetKernelDir() . "logs\\BusBahnInfo";
+   if ( !is_dir ( $ordner ) )
+		mkdir($ordner);
+
+   if ( !is_dir ( $ordner ) )
+	   return;
+
+
+
+	$time = date("d.m.Y H:i:s",time());
+	$logdatei = IPS_GetKernelDir() . "logs\\BusBahnInfo\\" . $file;
+	$datei = fopen($logdatei,"a+");
+	if ( $space )
+		fwrite($datei, $text . chr(13));
+	else
+		fwrite($datei, $time ." ". $text . chr(13));
+
+	fclose($datei);
+
+	}
 /***************************************************************************//**
 * @}
 * @}

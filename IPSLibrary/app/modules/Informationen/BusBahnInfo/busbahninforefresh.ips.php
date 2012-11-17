@@ -39,7 +39,8 @@
 
 	$debug 	= DEBUG_MODE;      /**< Debugmode true/false */
 	$log 		= LOG_MODE;
-	$log = true;
+
+	//$debug = true;
 	GLOBAL $stationen;
 
 	check_unused($stationen);
@@ -51,8 +52,12 @@
 		if ( $line[0] != "" and $line[1] != "" and $line[2] != "" )
 		   {
 	   	 if ( $debug ) echo "\n" . $line[0] ." - " . $line[1] ." - " .$line[2];
-
-			 $bahn=new bahn($line[1],$line[2]);
+			 logging("",'busbahninfo.log',true); // Leerzeile
+			 logging("[".$line[0] ."][" . $line[1] ."][" .$line[2] ."]");
+			 
+			 if ( !ISSET($line[13] ) ) $line[13] = false ;
+			 
+			 $bahn=new bahn($line[1],$line[2],$line[13]);
 			 $bahn->TypeICE($line[4]);
 			 $bahn->TypeIC($line[5]);
 			 $bahn->TypeIR($line[6]);
@@ -67,10 +72,12 @@
 				{
     			anzeige($bahn,$line,$sort_nummer);
     			$sort_nummer = $sort_nummer + 10 ;
-    			
 				}
 			 else
+			   {
 	   		if ( $debug ) echo "\nKeine Informationen vorhanden ";
+				logging("Keine Informationen vorhanden");
+				}
 
 	    }
 	  }
