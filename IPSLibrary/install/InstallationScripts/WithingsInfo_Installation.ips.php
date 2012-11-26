@@ -25,7 +25,7 @@
 
   $moduleManager->VersionHandler()->CheckModuleVersion('IPS','2.50');
 	$moduleManager->VersionHandler()->CheckModuleVersion('IPSModuleManager','2.50.1');
-  $moduleManager->VersionHandler()->SetModuleVersion("1.0.0");
+  //$moduleManager->VersionHandler()->SetModuleVersion("1.0.0");
   
   IPSUtils_Include ("IPSInstaller.inc.php",                "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("IPSMessageHandler.class.php",         "IPSLibrary::app::core::IPSMessageHandler");
