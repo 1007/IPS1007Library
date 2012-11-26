@@ -23,7 +23,7 @@
 *
 *******************************************************************************/
 
-  IPSUtils_Include ("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
 
 	IPSUtils_Include ("BusBahnInfo_Configuration.inc.php", "IPSLibrary::config::modules::Informationen::BusBahnInfo");
 	IPSUtils_Include ("busbahninfo.class.php", "IPSLibrary::app::modules::Informationen::BusBahnInfo");
@@ -219,18 +219,22 @@ function anzeige($bahn,$station,$sort_nummer)
 	$station_wegezeit = $station[3];    // Wegezeit zum Bahnhof
 	$auswahl_string   = "";             // Ausgewaehlte Verkehrsmittel
 	$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
-	//$vardataname      = $station_alias;
+	
 	//***************************************************************************
 	// HTML Kopf
 	//***************************************************************************
 	$str = "<html><head>";
 	$str .= "<link rel='stylesheet' type='text/css' href='".$csspath."BusBahnInfo.css'>";
+	$str .= "<link rel='stylesheet' type='text/css' href='".$csspath."BusBahnInfoCSS3.css'  />";
 	$str .= "</head>";
 
 	//***************************************************************************
 	// HTML Body
 	//***************************************************************************
 	$str .= "<body>";
+	
+	//$str .= create_css3_menu();
+	
 	$str .= "<div class='body'></div>";
 	$str .= "<table width='100%' align='center' border='0'>";
 	//$str .= "<table div class='table' >";
@@ -457,6 +461,50 @@ function verkehrsmittel($station)
 	return $auswahl_string;
 	}
 
+
+function create_css3_menu()
+	{
+	GLOBAL $stationen;
+	
+	$html = "";
+	
+	$html = $html . '<!-- Start css3menu.com BODY section -->';
+	$html = $html . '<ul id="css3menu1" class="topmenu">';
+	
+	$html = $html . '<li class="topfirst"><a          style="height:15px;line-height:15px;">Bus/Bahn Informationen</a></li>';
+	$html = $html . '<li class="topmenu" ><a href="#" style="height:15px;line-height:15px;"><span>Abfahrt</span></a>';
+	$html = $html . '<ul>' ;
+	foreach ( $stationen as $station )
+	   {
+	   if ( $station[1] != '' And $station[2] == 'Abfahrt' )
+			$html = $html . '<li><a>'.$station[0].'</a></li>';
+	   }
+	$html = $html . '</ul>' ;
+	$html = $html . '</li>';
+
+	$html = $html . '<li class="topmenu" ><a href="#" style="height:15px;line-height:15px;"><span>Ankunft</span></a>';
+	$html = $html . '<ul>' ;
+	foreach ( $stationen as $station )
+	   {
+	   if ( $station[1] != '' And $station[2] == 'Ankunft' )
+	      {
+			$html = $html . '<li><a ';
+			$html = $html .  "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=1 '; return false;\"  >";
+
+			$html = $html . "<span onmouseover=\"this.style.cursor = 'pointer' \" ";
+			$html = $html . '>'.$station[0].'</span></a>';
+			
+			$html = $html . '</li>';
+			}
+	   }
+	$html = $html . '</ul>' ;
+	$html = $html . '</li>';
+
+	$html = $html . '<li class="topmenu" ><a href="#" style="height:15px;line-height:15px;"><span>Info</span></a></li>';
+
+	$html = $html . '</ul>';
+	return $html;
+	}
 
 /***************************************************************************//**
 * @}
