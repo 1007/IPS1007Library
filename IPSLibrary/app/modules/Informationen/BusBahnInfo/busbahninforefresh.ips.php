@@ -324,204 +324,6 @@ function stationen_manager($stationen)
 	}
 
 
-/***************************************************************************//**
-* Erstellt ein String und schreibt in Data 
-* Variablen werden automatisch erstellt.
-* @param  $bahn     class bahn
-* @param  $station  aktuelle Station
-* @return none
-* @todo   nothing
-*******************************************************************************/
-function anzeige($bahn,$station)
-	{
-	GLOBAL   $CategoryData;
-	GLOBAL   $CategoryPath;
-	GLOBAL   $VisuPath;
-	GLOBAL   $VisuData;
-	GLOBAL 	$debug;
-	GLOBAL   $imagepath;
-	GLOBAL   $csspath;
-
-
-	$station_alias 	= $station[0];    // Name fuer Webtab
-	$station_name  	= $station[1];    // Name Bahnhof
-	$station_richtung = $station[2];    // Ankunft / Abfahrt
-	$station_wegezeit = $station[3];    // Wegezeit zum Bahnhof
-	$auswahl_string   = "";             // Ausgewaehlte Verkehrsmittel
-	$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
-	
-	//***************************************************************************
-	// HTML Kopf
-	//***************************************************************************
-	$str  = "<html><head>";
-	$str .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
-	$str .= "<link rel='stylesheet' type='text/css' href='".$csspath."BusBahnInfoCSS3.css'  />";
-	$str .= "<link rel='stylesheet' type='text/css' href='".$csspath."BusBahnInfo.css'>";
-	$str .= "</head>";
-
-	//***************************************************************************
-	// HTML Body
-	//***************************************************************************
-	$str .= "<body>";
-	
-	//$str .= create_css3_menu();
-	
-	$str .= "<div class='body'></div>";
-	$str .= "<table width='100%' align='center' border='0'>";
-	//$str .= "<table div class='table' >";
-   $str .= "<colgroup>";
-	$str .= "<col width='10' >";
-	$str .= "<col width='10' >";
-	$str .= "<col width='10' >";
-	$str .= "<col width='10' >";
-	$str .= "<col width='10'>";
-	$str .= "<col width='10' >";
-	$str .= "<col width='10'>";
-	$str .= "<col width='*'>";
-	$str .= "</colgroup>";
-
-   $str .= "<tr>";
-	$str .= "<th><div class='titel_verkehrsmittel'></div></th>";
-	$str .= "<th><div class='titel_train'></div></th>";
-	$str .= "<th><div class='titel_srichtung'>".$station_richtung."</div></th>";
-	$str .= "<th><div class='titel_diff'>Diff</div></th>";
-	$str .= "<th><div class='titel_richtung'>Richtung</div></th>";
-	$str .= "<th><div class='titel_ankunft'>Ankunft</div></th>";
-	$str .= "<th><div class='titel_plattform'>Plattform</div></th>";
-	$str .= "<th><div class='titel_aktuelles'>Aktuelles</div></th>";
-	$str .= "</tr>";
-
-	if ( $debug )print_r($bahn->timetable);
-	$eintrag = array("","","","","","","");
-	$pos = 0;
-   for($i=0; $i<sizeof($bahn->timetable); $i++)
-   	{
-      $caller = $bahn->timetable[$i]["type"];
-
-		switch($caller)
-		  		{
-           	case "UBAHN": 	$eintrag[0] = "<img src=".$imagepath."ubahn_24x24.gif>"	;break;
-           	case "SBAHN": 	$eintrag[0] = "<img src=".$imagepath."sbahn_24x24.gif>"	;break;
-           	case "BUS":		$eintrag[0] = "<img src=".$imagepath."bus_24x24.gif>"		;break;
-           	case "RE":		$eintrag[0] = "<img src=".$imagepath."re_24x24.gif>"		;break;
-           	case "IR":		$eintrag[0] = "<img src=".$imagepath."ir_24x24.gif>"		;break;
-           	case "ICE":		$eintrag[0] = "<img src=".$imagepath."ice_24x24.gif>"		;break;
-           	case "IC":		$eintrag[0] = "<img src=".$imagepath."ec_ic_24x24.gif>"	;break;
-           	case "EC":		$eintrag[0] = "<img src=".$imagepath."ec_ic_24x24.gif>"	;break;
-           	case "TRAM":	$eintrag[0] = "<img src=".$imagepath."tram_24x24.gif>"	;break;
-           	case "SCHIFF":	$eintrag[0] = "<img src=".$imagepath."faehre_24x24.gif>"	;break;
-            default:			$eintrag[0] = $caller												;break;
-      		}
-
-
-		$eintrag[0]="<div class='verkehrsmittel'>".$eintrag[0]."</div>";
-
-      $eintrag[1] = $bahn->timetable[$i]["train"];
-		$eintrag[1]="<div class='train'>".$eintrag[1]."</div>";
-
-      $eintrag[2] = $bahn->timetable[$i]["time"];
-		$eintrag[2]="<div class='abfahrt'>".$eintrag[2]."</div>";
-
-      // differenz zur aktuellen zeit ausrechnen.
-      $timestampField = strtotime($bahn->timetable[$i]["time"]);
-      $timestampNow = time();//+1*60*60;
-
-      $diff = $timestampField - $timestampNow;
-
-      if ($diff >0)
-      	{
-         $eintrag[3] = $uhrzeit = date("H:i",$diff-1*60*60);
-         if ($diff > $station_wegezeit*60)
-            {
-            $eintrag[3]="<div class='diff_wird_erreicht'>".$eintrag[3]."</div>";
-            }
-         else
-         	{
-            $eintrag[3]="<div class='diff_wegezeit_zulang'>".$eintrag[3]."</div>";
-            }
-        	}
-      else
-      	{
-         // nicht mehr zu schaffen da zeit abgelaufen
-         $eintrag[3] = "--:--";
-         if ($station_wegezeit <>0)
-            {
-            $eintrag[3]="<div class='diff_abgefahren'>".$eintrag[3]."</div>";
-				}
-        	}
-
-		$route = array();
-		$route = @$bahn->timetable[$i]["route"];
-		$div_id = $station_name."_".$pos."_".rand(1,100000);
-
-		$zielstring_raw = $bahn->timetable[$i]["route_ziel"];
-		$zielstring_raw = cosmetic_string($zielstring_raw,4);
-		
-		$spalte4    = "<div onclick=\"{with(document.getElementById('".$div_id."').style){if(display=='none'){display='inline';}else{display='none';}}};\">";
-		$spalte4   .= $zielstring_raw."</div>";
-		$eintrag[4] = $spalte4;
-		$eintrag[4]="<div class='richtung'>".$eintrag[4]."</div>";
-
-      $eintrag[5] = substr($route[count($route)-1],0,5);
-		$eintrag[5]="<div class='ankunft'>".$eintrag[5]."</div>";
-
-		$platform_str = @$bahn->timetable[$i]["platform"];
-		$platform_nr = intval($platform_str);
-
-		if ( $platform_nr != 0 ) $platform_str = $platform_nr;
-
-   	$platform_str = cosmetic_string($platform_str,6);
-      $eintrag[6] = $platform_str;
-      
-		$eintrag[6]="<div class='plattform'>".$eintrag[6]."</div>";
-
-      $spalte7    = @$bahn->timetable[$i]["ris"];
-		$spalte7 = cosmetic_string($spalte7,7);
-		
-		$spalte7 .= "<div id='".$div_id."' style='display:none;'</div><br>";
-
-		if ( is_array($route) )
-	 	foreach ( $route as $halt )
-		 		{
-				//$spalte7 .= $halt."<br>";
-   			$halt = cosmetic_string($halt,7);
-				$spalte7 .="<div class='route'>".$halt."</div>";
-
-				}
-
-		//$spalte7 .= "</div>";
-      $eintrag[7] = $spalte7;
-      $eintrag[7]="<div class='aktuelles'>".$eintrag[7]."</div>";
-
-      $str .= "<tr valign='top'>";
-
-		//$eintrag[1] = $div_id;
-		$str .= '<td align="center">'.$eintrag[0].'</td>';
-		$str .= '<td align="left">'  .$eintrag[1].'</td>';
-		$str .= '<td align="center">'.$eintrag[2].'</td>';
-		$str .= '<td align="center">'.$eintrag[3].'</td>';
-		$str .= '<td align="left">'  .$eintrag[4].'</td>';
-		$str .= '<td align="center">'.$eintrag[5].'</td>';
-		$str .= '<td align="center">'.$eintrag[6].'</td>';
-		$str .= '<td align="left">'  .$eintrag[7].'</td>';
-
-		$str .= "</tr>";
-      $pos++;
-
-      if($pos >= MAX_LINES)
-            break;
-    }
-
-   $str .= "</table>";
-	$str .= "</body>";
-	$str .= "</html>";
-	//***************************************************************************
-	// HTML Ende
-	//***************************************************************************
-
-	return $str;
-
-}
 
 /***************************************************************************//**
 * HTML Head
@@ -577,6 +379,7 @@ function html_body($bahn,$station)
 	GLOBAL 	$debug;
 	GLOBAL   $imagepath;
 	GLOBAL   $csspath;
+	
 
 	$station_alias 	= $station[0];    // Name fuer Webtab
 	$station_name  	= $station[1];    // Name Bahnhof
@@ -586,7 +389,19 @@ function html_body($bahn,$station)
 	$vardataname      = $station_name . " - " . $station_alias . " - " .$station_richtung;
 
 	$str  = '';
-	$str .= "<div class='body' style='font-size: 12pt'>$station_richtung - $station_alias</div>";
+	$str .= "<div class='body' valign=middle style='font-size: 13pt'>$station_richtung - $station_alias - ";
+	if ( $station[4] ) 	$str .=  "<img align=top src=".$imagepath."ice_24x24.gif>";  	// ICE
+	if ( $station[5] ) 	$str .=  "<img align=top src=".$imagepath."ec_ic_24x24.gif>";  	// IC/EC
+	if ( $station[6] ) 	$str .=  "<img align=top src=".$imagepath."ir_24x24.gif>";  		// Interregio/Schnellzuege
+	if ( $station[7] ) 	$str .=  "<img align=top src=".$imagepath."re_24x24.gif>";  	// Nahverkehr/Sonstiges
+	if ( $station[8] ) 	$str .=  "<img align=top src=".$imagepath."sbahn_24x24.gif>";  	// SBahn
+	if ( $station[9] ) 	$str .=  "<img align=top src=".$imagepath."bus_24x24.gif>";  	// Bus
+	if ( $station[10] ) 	$str .=  "<img align=top src=".$imagepath."ice_24x24.gif>";  	// Faehren
+	if ( $station[11] ) 	$str .=  "<img align=top src=".$imagepath."ubahn_24x24.gif>";  	// UBahn
+	if ( $station[12] ) 	$str .=  "<img align=top src=".$imagepath."faehre_24x24.gif>";  // Tram
+
+
+	$str .= "</div>";
 
 	$str .= "<table width='100%' align='center' border='0'>";
 	//$str .= "<table div class='table' >";
@@ -615,6 +430,7 @@ function html_body($bahn,$station)
 	//if ( $debug )print_r($bahn->timetable);
 	$eintrag = array("","","","","","","");
 	$pos = 0;
+	$heute = 0;
    for($i=0; $i<sizeof($bahn->timetable); $i++)
    	{
       $caller = $bahn->timetable[$i]["type"];
@@ -644,11 +460,18 @@ function html_body($bahn,$station)
 		$eintrag[2]="<div class='abfahrt'>".$eintrag[2]."</div>";
 
       // differenz zur aktuellen zeit ausrechnen.
-      $timestampField = strtotime($bahn->timetable[$i]["time"]);
+      $timestampField = strtotime($bahn->timetable[$i]["time"]) ;
       $timestampNow = time();//+1*60*60;
-
+		//echo "\n" . $timestampField;
+		
+		//echo date('l jS \of F Y H:i:s A',$timestampField) . $bahn->timetable[$i]["time"];
+		
       $diff = $timestampField - $timestampNow;
-
+		
+		
+		if ( $diff < -14400 )   // wird wohl morgen sein
+		   $diff = $diff + 86400;
+		
       if ($diff >0)
       	{
          $eintrag[3] = $uhrzeit = date("H:i",$diff-1*60*60);
