@@ -14,31 +14,34 @@
 ********************************************************************************/
 
     class bahn{
-          var $_BASEURL="http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20";
-          var $_PARAMS=array();
-          var $timetable=array();
-          var $bahnhof=false;
-          var $_FETCHMETHOD;
-          function bahn($bahnhof=null,$type="abfahrt",$dbid="")
-              {
-					$bahnhof = $bahnhof. $dbid;
-              $type=strtolower($type);
+          	var $_BASEURL ="http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20&";  // aktuelle Daten ohne Ziel
+          	var $_BASEURLZ="http://reiseauskunft.bahn.de/bin/query.exe/dn?maxJourneys=20&";     // aktuelle Daten mit Ziel
 
-              $this->_init($bahnhof);
-              $this->fetchMethodCURL(true);
-              $this->boardType($type);
-              //$this->_query();
+          	var $_PARAMS	= array();
+          	var $timetable	= array();
+          	var $bahnhof	= false;
+          	var $noresult	= "";
+          	var $_FETCHMETHOD;
+          	function bahn($bahnhof=null,$type="abfahrt")
+              {
+					$bahnhof = $bahnhof;
+              	$type=strtolower($type);
+
+              	$this->_init($bahnhof);
+              	$this->fetchMethodCURL(true);
+              	$this->boardType($type);
+              	//$this->_query();
               }
 
-    function TypeICE($state=true)     	{$this->_PARAMS['GUIREQProduct_0'] = ($state) ? "on" : false;}
-    function TypeIC($state=true)      	{$this->_PARAMS['GUIREQProduct_1'] = ($state) ? "on" : false;}
-    function TypeIR($state=true)      	{$this->_PARAMS['GUIREQProduct_2'] = ($state) ? "on" : false;}
-    function TypeRE($state=true)      	{$this->_PARAMS['GUIREQProduct_3'] = ($state) ? "on" : false;}
-    function TypeSBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_4'] = ($state) ? "on" : false;}
-    function TypeBUS($state=true)     	{$this->_PARAMS['GUIREQProduct_5'] = ($state) ? "on" : false;}
-    function TypeFAEHRE($state=true)  	{$this->_PARAMS['GUIREQProduct_6'] = ($state) ? "on" : false;}
-    function TypeUBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_7'] = ($state) ? "on" : false;}
-    function TypeTRAM($state=true)		{$this->_PARAMS['GUIREQProduct_8'] = ($state) ? "on" : false;}
+    			function TypeICE($state=true)     	{$this->_PARAMS['GUIREQProduct_0'] = ($state) ? "on" : false;}
+    			function TypeIC($state=true)      	{$this->_PARAMS['GUIREQProduct_1'] = ($state) ? "on" : false;}
+    			function TypeIR($state=true)      	{$this->_PARAMS['GUIREQProduct_2'] = ($state) ? "on" : false;}
+    			function TypeRE($state=true)      	{$this->_PARAMS['GUIREQProduct_3'] = ($state) ? "on" : false;}
+    			function TypeSBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_4'] = ($state) ? "on" : false;}
+    			function TypeBUS($state=true)     	{$this->_PARAMS['GUIREQProduct_5'] = ($state) ? "on" : false;}
+    			function TypeFAEHRE($state=true)  	{$this->_PARAMS['GUIREQProduct_6'] = ($state) ? "on" : false;}
+    			function TypeUBAHN($state=true)	  	{$this->_PARAMS['GUIREQProduct_7'] = ($state) ? "on" : false;}
+    			function TypeTRAM($state=true)		{$this->_PARAMS['GUIREQProduct_8'] = ($state) ? "on" : false;}
 
 
 /***************************************************************************//**
@@ -60,6 +63,16 @@ function datum($datum)
     {
     $this->_PARAMS['date']=$datum;
     } 
+
+
+/***************************************************************************//**
+*
+*******************************************************************************/
+function ziel($ziel)
+    {
+    
+    $this->_ZIEL['ziel']=$ziel;
+    }
 
 
 /***************************************************************************//**
@@ -101,18 +114,32 @@ function _queryCurl($proxy)
 * 
 *******************************************************************************/
 function buildQueryURL()
-    {
-    $fields_string="";
-    foreach($this->_PARAMS as $key=>$value)
+	{
+    
+	if ( $this->_ZIEL == false )
+		{
+    	$fields_string="";
+    	foreach($this->_PARAMS as $key=>$value)
         {
         if($value)
           $fields_string .= $key.'='.urlencode($value).'&';
         };
-    rtrim($fields_string,'&');
+    	rtrim($fields_string,'&');
 
-    $this->_URL=$this->_BASEURL.$fields_string;
-    logging($this->_URL);
-    return $this->_URL;
+    	$this->_URL=$this->_BASEURL.$fields_string;
+    	logging($this->_URL);
+    	return $this->_URL;
+		}
+	else
+	   {
+	   //S={%Start|iso-8859-1}&Z={%Ziel|iso-8859-1}&T={%Zeit|iso-8859-1}&start=1
+	   $startb = urlencode($this->_PARAMS['input']);
+		$zielb  = urlencode($this->_ZIEL['ziel']);
+	   $this->_URL=$this->_BASEURLZ."S=".$startb."&Z=".$zielb."&start=true";
+	   logging($this->_URL);
+	   return $this->_URL;
+	   }
+	   
     }
 
 
@@ -143,7 +170,9 @@ function _parse($data)
       $options=$select->getElementsByTagName("option");
       foreach($options AS $op)
           {
-          echo utf8_decode($op->getAttribute("value")."-".$op->nodeValue)."n";
+          $sss = "<br>" . utf8_decode($op->getAttribute("value")." - ".$op->nodeValue);
+          
+          $this->noresult = $this->noresult . $sss;
           }
       return false;
       }
@@ -318,6 +347,7 @@ function _call($proxy)
 *******************************************************************************/
 function _init($bahnhof)
     {
+    $this->_ZIEL=false;
     $this->_PARAMS=array
         (
         'country'=>'DEU',                   // Deutschland
@@ -333,17 +363,21 @@ function _init($bahnhof)
         'GUIREQProduct_8'=>'on',            // Strassenbahn
         'REQ0JourneyStopsSID'=>'',
         'REQTrain_name'=>'',
-        'REQTrain_name_filterSelf'=>'1',
+ //       'REQTrain_name_filterSelf'=>'1',
         'advancedProductMode'=>'',
         'boardType'=>'dep',                 // dep oder arr
-        'date'=>date("d.m.Y"),
+        'date'=>date("d.m.y"),
         'input'=>$bahnhof,
         'start'=>'Suchen',
         'time'=>date("H:i")
         );
+        
+		
     }
 
 }
+
+
 function display_xml_error($error, $xml="")
 {
 	$return = "";

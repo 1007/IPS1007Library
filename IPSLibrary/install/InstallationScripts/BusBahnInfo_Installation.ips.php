@@ -48,9 +48,25 @@
 	$cssDefault    = IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfo.css";
 	$cssFile       = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfo.css";
 
+	$css3Default   = IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfoCSS3.css";
+	$css3File      = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfoCSS3.css";
+
+	$css768Default = IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfo768.css";
+	$css768File    = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfo768.css";
+
+	$css1024Default= IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfo1024.css";
+	$css1024File   = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfo1024.css";
+
+	$css1680Default= IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfo1680.css";
+	$css1680File   = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfo1680.css";
+
+	$css1920Default= IPS_GetKernelDir()."webfront\user\BusBahnInfo\Default\BusBahnInfo1920.css";
+	$css1920File   = IPS_GetKernelDir()."webfront\user\BusBahnInfo\BusBahnInfo1920.css";
+
+
 	echo "--- Create BusBahnInfo --------------------------------------------\n";
 
-  	$CategoryIdData = CreateCategoryPath($DataPath);
+  $CategoryIdData = CreateCategoryPath($DataPath);
 	$CategoryIdApp  = CreateCategoryPath($AppPath);
 
   $webfrontScriptId = IPS_GetScriptIDByName('busbahninfowebfront', $CategoryIdApp );
@@ -66,11 +82,18 @@
 
 	$id = 0;
 	
-	$bahnhofsliste = array();
+	EmptyCategory($CategoryIdData);
+	EmptyCategory($CategoryIdVisu);
+	
+	$bahnhofsliste = array('Default');
+	
 	foreach( $stationen as $station )
 	   {
 	   if ( $station[1] != '' )
-	   	array_push($bahnhofsliste,$station[1]);
+	     {
+	    $sn = $station[0] . "-" .$station[1] . "-" .$station[2] ;
+	   	array_push($bahnhofsliste,$sn);
+      }
 	   }
 	   
 	$bahnhofsliste = array_unique($bahnhofsliste);
@@ -83,21 +106,54 @@
 
 
 		
-   $Id  = CreateVariable("Bahnhof/Station", 1 /* */,  $CategoryIdVisu,1,"BusBahnInfo_Stationen", $webfrontScriptId, 0);
+   //$Id  = CreateVariable("Bahnhof/Station", 1 /* */,  $CategoryIdVisu,1,"BusBahnInfo_Stationen",     $webfrontScriptId, 0);
+   //IPS_SetHidden($Id,true);
 
-   $Id  = CreateVariable("Anzeigetafel", 1 /* */,  $CategoryIdVisu,2,"BusBahnInfo_Anzeigetafeln", $webfrontScriptId, 1);
+   //$Id  = CreateVariable("Anzeigetafel",    1 /* */,  $CategoryIdVisu,2,"BusBahnInfo_Anzeigetafeln", $webfrontScriptId, 1);
+   //IPS_SetHidden($Id,true);
+
+   $Id  = CreateVariable("Station",    1 /* */,  $CategoryIdVisu,2,"BusBahnInfo_Stationen", $webfrontScriptId, 0);
+   SetValue($Id, 1);
+   IPS_SetHidden($Id,true);
     
+   $HTMLBoxId  = CreateVariable("Data",            3,        $CategoryIdVisu,3,"~HTMLBox",false,false,"");
+   SetValue($HTMLBoxId, "Init");
 
 
-  	if ( file_exists($cssFile))
-	   {
-	   echo "\nUser-CSS-File existiert. Wird nicht ueberschrieben";
-		}
-	else
+  if ( !file_exists($cssFile))
 	   {
 	   echo "\nUser-CSS-File existiert nicht . Default wird kopiert";
 	   copy($cssDefault,$cssFile);
-		}
+		 }
+
+  if ( !file_exists($css3File))
+    {
+	   echo "\nUser-CSS3-File existiert nicht . Default wird kopiert";
+	   copy($css3Default,$css3File);
+    }
+
+  if ( !file_exists($css768File))
+    {
+	   echo "\nUser-CSS768-File existiert nicht . Default wird kopiert";
+	   copy($css768Default,$css768File);
+    }
+  if ( !file_exists($css1024File))
+    {
+	   echo "\nUser-CSS1024-File existiert nicht . Default wird kopiert";
+	   copy($css1024Default,$css1024File);
+    }
+  if ( !file_exists($css1680File))
+    {
+	   echo "\nUser-CSS1680-File existiert nicht . Default wird kopiert";
+	   copy($css1680Default,$css1680File);
+    }
+  if ( !file_exists($css1920File))
+    {
+	   echo "\nUser-CSS1920-File existiert nicht . Default wird kopiert";
+	   copy($css1920Default,$css1920File);
+    }
+
+
 
 	echo "\n--- Create Webfront -----------------------------------------------\n";
   	$WFC10_Enabled    = $moduleManager->GetConfigValue('Enabled', 		 'WFC10');
@@ -119,9 +175,24 @@
     	$categoryId_WebFront = CreateCategoryPath($WFC10_Path);
 
     	DeleteWFCItems($WFC10_ConfigId, $WFC10_TabItem);
-      
-		  CreateWFCItemCategory ($WFC10_ConfigId, $WFC10_TabItem, $WFC10_TabParent,$WFC10_TabOrder, $WFC10_TabName, $WFC10_TabIcon, $CategoryIdVisu ) ;
+      IPS_ApplyChanges($WFC10_ConfigId);
+		  //CreateWFCItemCategory ($WFC10_ConfigId, $WFC10_TabItem, $WFC10_TabParent,$WFC10_TabOrder, $WFC10_TabName, $WFC10_TabIcon, $CategoryIdVisu ) ;
 
+      $WebfrontTitle  = $WFC10_TabName;
+      echo "\n.............." . $WebfrontTitle;
+      //$WebfrontTitle = htmlentities($WebfrontTitle);
+      $WebfrontItemId = $HTMLBoxId; 
+      $WebfrontIcon   = $WFC10_TabIcon;                                                      
+      $Configuration  = "{\"title\":\"$WebfrontTitle\",\"baseID\":\"$WebfrontItemId\"}";
+      //$Configuration  = "{\"title\":\"$WebfrontTitle\"}";
+      //IPS_LogMessage("..",$Configuration.$WFC10_ConfigId);
+      //PrepareWFCItemData ($WFC10_TabItem, $WFC10_TabParent, $WebfrontTitle);  echo "\n.............." . $WebfrontTitle;
+      //IPS_LogMessage("..",$Configuration.$WFC10_ConfigId.$WebfrontTitle);
+      //CreateWFCItem($WFC10_ConfigId,$WFC10_TabItem, $WFC10_TabParent, $WFC10_TabOrder , "BusBahnInfo", '' , 'ContentChanger' ,$Configuration );
+      //IPS_ApplyChanges($WFC10_ConfigId);
+      
+      CreateWFCItemExternalPage($WFC10_ConfigId,$WFC10_TabItem, $WFC10_TabParent, $WFC10_TabOrder , $WebfrontTitle, '' , 'user\/BusBahnInfo\/0.html','false');
+      //user\/IPSWeatherForcastAT\/Weather.php
 		}
 
 

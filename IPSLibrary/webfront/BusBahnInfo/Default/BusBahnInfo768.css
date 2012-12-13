@@ -1,0 +1,205 @@
+body {
+	color: #fff;
+	background-color: #006699;
+	font-family: arial,sans-serif;
+	font-size: 12px;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+}
+
+a:link {
+	color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	background-color: #0000FF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:active {
+	background-color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:focus {
+	background-color: #FFFFFF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.titel_verkehrsmittel {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 12px;
+	text-align: center;
+	width: 30px;
+}
+
+.titel_train {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 12px;
+	text-align: center;
+	width: 50px;
+}
+
+.titel_srichtung {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699ff;
+	font-size: 10px;
+	text-align: center;
+	width: 50px;
+}
+
+.titel_richtung {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 10px;
+	text-align: center;
+	width: 300px;
+}
+
+.titel_ankunft {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 10px;
+	text-align: center;
+	width: 30px;
+}
+
+.titel_plattform {
+	border-style: solid;
+	border-width: 0px;
+	color: #0099FF;
+	font-size: 10px;
+	text-align: center;
+	width: 100px;
+}
+
+.titel_aktuelles {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 10px;
+	text-align: left;
+	width: 100px;
+}
+
+.titel_diff {
+	border-style: solid;
+	border-width: 0px;
+	color: #6699FF;
+	font-size: 10px;
+	text-align: center;
+	width: 50px;
+}
+
+.verkehrsmittel {
+	border-style: solid;
+	border-width: 0px;
+	color: #00FFFF;
+	font-size: 10px;
+	text-align: center;
+}
+
+.train {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 12px;
+	vertical-align: middle;
+}
+
+.abfahrt {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 18px;
+	text-align: center;
+}
+
+.diff_wird_erreicht {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 18px;
+	text-align: center;
+}
+
+.diff_wegezeit_zulang {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFF00;
+	font-size: 18px;
+	text-align: center;
+}
+
+.diff_abgefahren {
+	border-style: solid;
+	border-width: 0px;
+	color: #FF0000;
+	font-size: 18px;
+	text-align: center;
+}
+
+.richtung {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 15px;
+	text-align: center;
+}
+
+.ankunft {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 18px;
+	text-align: center;
+}
+
+.plattform {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 12px;
+	text-align: center;
+}
+
+.aktuelles {
+	border-style: solid;
+	border-width: 0px;
+	color: #FFFFFF;
+	font-size: 12px;
+	text-align: left;
+}
+
+.route {
+	border-style: solid;
+	border-width: 0px;
+	color: #FF9933;
+	font-size: 12px;
+	text-align: left;
+}
+
+.table {
+	border-style: solid;
+	border-width: 1px;
+	width: 100%;
+}
