@@ -150,7 +150,7 @@ function buildQueryURL()
 function _parse($data,$counter)
     {
 	 GLOBAL $debug;
-	 $debug = true ;
+	 
 	 
     libxml_use_internal_errors(true);
     
