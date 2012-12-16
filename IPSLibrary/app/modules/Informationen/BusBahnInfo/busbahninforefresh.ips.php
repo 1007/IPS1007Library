@@ -57,7 +57,11 @@
 			 
 			 $startt = time();
 			 
-			 $bahn=new bahn($line[1],$line[2]);
+			 // Klasse einrichten
+			 $bahn=new bahn($line[1]);
+
+			 $bahn->Type($line[2]);    // Ankunft-Abfahrt
+
 			 $bahn->TypeICE($line[4]);
 			 $bahn->TypeIC($line[5]);
 			 $bahn->TypeIR($line[6]);
@@ -67,6 +71,7 @@
 			 $bahn->TypeFAEHRE($line[10]);
 			 $bahn->TypeUBAHN($line[11]);
 			 $bahn->TypeTRAM($line[12]);
+			 
 			 $bahn->noresult = "";
 			 
 			 if ( ISSET($line[14]) )
@@ -77,7 +82,7 @@
 
 			 $html = html_head();
 			 
-			 if($bahn->fetch(PROXY_SERVER))
+			 if($bahn->fetch(PROXY_SERVER,$counter))
 				{
     			//$html = anzeige($bahn,$line);
     			$html = $html . html_body($bahn,$line);

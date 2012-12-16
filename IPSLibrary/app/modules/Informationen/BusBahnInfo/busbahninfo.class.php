@@ -22,16 +22,13 @@
           	var $bahnhof	= false;
           	var $noresult	= "";
           	var $_FETCHMETHOD;
-          	function bahn($bahnhof=null,$type="abfahrt")
+          	function bahn($bahnhof=null)
               {
-					$bahnhof = $bahnhof;
-              	$type=strtolower($type);
-
               	$this->_init($bahnhof);
               	$this->fetchMethodCURL(true);
-              	$this->boardType($type);
-              	//$this->_query();
               }
+
+    			function Type($type='Abfahrt')      {$this->boardType($type);}
 
     			function TypeICE($state=true)     	{$this->_PARAMS['GUIREQProduct_0'] = ($state) ? "on" : false;}
     			function TypeIC($state=true)      	{$this->_PARAMS['GUIREQProduct_1'] = ($state) ? "on" : false;}
@@ -49,9 +46,10 @@
 *******************************************************************************/
 function boardType($type)
     {
+    $type = strtolower($type);
     if($type=="ankunft")
       $this->_PARAMS['boardType']="arr";
-    else
+    if($type=="abfahrt")
       $this->_PARAMS['boardType']="dep";
     }
 
@@ -87,11 +85,11 @@ function zeit($zeit)
 /***************************************************************************//**
 * 
 *******************************************************************************/
-function fetch($proxy)
+function fetch($proxy,$counter)
 	{
    if($this->_FETCHMETHOD=="CURL")
    	{
-      return $this->_queryCurl($proxy);
+      return $this->_queryCurl($proxy,$counter);
       }
     }
 
@@ -99,14 +97,14 @@ function fetch($proxy)
 /***************************************************************************//**
 * 
 *******************************************************************************/
-function _queryCurl($proxy)
+function _queryCurl($proxy,$counter)
     {
     $this->buildQueryURL();
     $result=$this->_call($proxy);
 	 if ( !$result )
 	 	return false ;
 	
-    return $this->_parse($result);
+    return $this->_parse($result,$counter);
     }
 
 
@@ -115,7 +113,9 @@ function _queryCurl($proxy)
 *******************************************************************************/
 function buildQueryURL()
 	{
-    
+
+	 // Kein Ziel angegeben also
+	 // bhftafel.exe
 	if ( $this->_ZIEL == false )
 		{
     	$fields_string="";
@@ -130,6 +130,7 @@ function buildQueryURL()
     	logging($this->_URL);
     	return $this->_URL;
 		}
+	// query.exe
 	else
 	   {
 	   //S={%Start|iso-8859-1}&Z={%Ziel|iso-8859-1}&T={%Zeit|iso-8859-1}&start=1
@@ -146,13 +147,23 @@ function buildQueryURL()
 /***************************************************************************//**
 * 
 *******************************************************************************/
-function _parse($data)
+function _parse($data,$counter)
     {
+	 GLOBAL $debug;
+	 $debug = true ;
+	 
     libxml_use_internal_errors(true);
     
     $dom = new DOMDocument();
     $err = $dom->loadHTML($data);
 
+	 if ( $debug )
+	   {
+    	$ordner = IPS_GetKernelDir() . "logs\\BusBahnInfo";
+    	$file = $ordner . "\\".$counter.".html";
+    	$dom->saveHTMLFile($file);
+      }
+    
     $errors = libxml_get_errors();
 
     $select=$dom->getElementById("rplc0");
@@ -237,10 +248,7 @@ function _process_dom($dom)
                               $data[$k]['route_ziel'] = (trim($span->nodeValue));
                             	}
 								   else break;
-								   
-									//echo "ROUTE:" . $data[$k]['route_ziel'] ."\n";
 									
-                           
                            $tmp=array();
                            
 									$td->nodeValue = trim($td->nodeValue);
@@ -248,36 +256,26 @@ function _process_dom($dom)
                            $route=explode( "\n",$td->nodeValue);
 									array_splice($route,0,7);
 									$count = count($route);
-									//print_r($route);
+									
 
 									if ( $count )
 									   {
 									   $yy = 0;
 										for ( $x=0;$x<$count;$x=$x+3)
 									   	{
-									   	//echo "\n".$x."[".$route[$x]."]";
+									   	
 									   	$zwischenhalt = "?";
 									   	$zwischenhalt = @$route[$x+1] . " - " .$route[$x];
 									   	$data[$k]['route'][$yy] = utf8_decode($zwischenhalt);
 									   	$yy++;
 									   	}
 										}
-										
-									/*
-									foreach($data[$k]['route'] AS $dk=>$dv)
-                              	{
-                              	//echo "[[".$dv."]]";
-                              	 //$data[$k]['route'][$dk]=utf8_decode(trim(html_entity_decode(str_replace("\n","",$dv))));
-                                 $data[$k]['route'][$dk]=(str_replace("\n","",$dv));
-
-                                 }
-
-									*/
+								
                         	break;
 
-				case 'time':
+				case 'time':    
 
-				case 'platform':
+				case 'platform':    
 
 				case 'ris':
                         	$data[$k][$dtype]=$td->nodeValue;
@@ -285,21 +283,27 @@ function _process_dom($dom)
 
 
                     }
-                    //echo "n";
+                    
                 }
             }
 
 
-            foreach($data AS $d){ 
-                if(array_key_exists("train",$d)){
-                   foreach($d AS $dk=>$dv)
-                      if(!is_array($dv))
-                          $d[$dk]=ltrim(str_replace("\n","",utf8_decode(trim(html_entity_decode($dv)))),"-");
-                    $d['route_start']=$this->bahnhof;
-                    $this->timetable[]=$d;
-             }
-            }
-    }
+	print_r($data);
+	foreach($data AS $d)
+		{
+      if(array_key_exists("train",$d))
+			{
+         foreach($d AS $dk=>$dv)
+         	if(!is_array($dv))
+            	$d[$dk]=ltrim(str_replace("\n","",utf8_decode(trim(html_entity_decode($dv)))),"-");
+
+            $d['route_start']=$this->bahnhof;
+            
+            $this->timetable[]=$d;
+			}
+      }
+
+	}
 
     
     

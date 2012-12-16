@@ -191,7 +191,7 @@
       //CreateWFCItem($WFC10_ConfigId,$WFC10_TabItem, $WFC10_TabParent, $WFC10_TabOrder , "BusBahnInfo", '' , 'ContentChanger' ,$Configuration );
       //IPS_ApplyChanges($WFC10_ConfigId);
       
-      CreateWFCItemExternalPage($WFC10_ConfigId,$WFC10_TabItem, $WFC10_TabParent, $WFC10_TabOrder , $WebfrontTitle, '' , 'user\/BusBahnInfo\/0.html','false');
+      CreateWFCItemExternalPage($WFC10_ConfigId,$WFC10_TabItem, $WFC10_TabParent, $WFC10_TabOrder , $WebfrontTitle, $WFC10_TabIcon , 'user\/BusBahnInfo\/0.html','false');
       //user\/IPSWeatherForcastAT\/Weather.php
 		}
 
