@@ -343,7 +343,7 @@ function html_head()
 
 	$str .= "<html><head>";
 //	$str .= '<meta http-equiv="cache-control" content="no-cache">';
-	$str .= '<meta http-equiv="Content-Type" content="text/html; ">';
+	$str .= '<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1 ">';
 // $str .= '<script src="'.$csspath.'jquery.min.js" type="text/javascript"></script>';
 //	$str .= '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>';
 
@@ -401,15 +401,15 @@ function html_body($bahn,$station)
 	if ( $station[7] ) 	$str .=  "<img align=top src=".$imagepath."re_24x24.gif>";  	// Nahverkehr/Sonstiges
 	if ( $station[8] ) 	$str .=  "<img align=top src=".$imagepath."sbahn_24x24.gif>";  	// SBahn
 	if ( $station[9] ) 	$str .=  "<img align=top src=".$imagepath."bus_24x24.gif>";  	// Bus
-	if ( $station[10] ) 	$str .=  "<img align=top src=".$imagepath."ice_24x24.gif>";  	// Faehren
+	if ( $station[10] ) 	$str .=  "<img align=top src=".$imagepath."faehre_24x24.gif>";  	// Faehren
 	if ( $station[11] ) 	$str .=  "<img align=top src=".$imagepath."ubahn_24x24.gif>";  	// UBahn
-	if ( $station[12] ) 	$str .=  "<img align=top src=".$imagepath."faehre_24x24.gif>";  // Tram
+	if ( $station[12] ) 	$str .=  "<img align=top src=".$imagepath."re_24x24.gif>";  // Tram
 
 
 	$str .= "</div>";
 
 	$str .= "<table width='100%' align='center' border='0'>";
-	//$str .= "<table div class='table' >";
+	
    $str .= "<colgroup>";
 	$str .= "<col width='10' >";
 	$str .= "<col width='10' >";
@@ -427,12 +427,17 @@ function html_body($bahn,$station)
 	$str .= "<th><div class='titel_srichtung'>".$station_richtung."</div></th>";
 	$str .= "<th><div class='titel_diff'>Diff</div></th>";
 	$str .= "<th><div class='titel_richtung'>Richtung</div></th>";
-	$str .= "<th><div class='titel_ankunft'>Ankunft</div></th>";
+
+	If ( $station_richtung == "Abfahrt")
+		$str .= "<th><div class='titel_ankunft'>Ankunft</div></th>";
+	If ( $station_richtung == "Ankunft")
+		$str .= "<th><div class='titel_ankunft'></div></th>";
+
 	$str .= "<th><div class='titel_plattform'>Plattform</div></th>";
 	$str .= "<th><div class='titel_aktuelles'>Aktuelles</div></th>";
 	$str .= "</tr>";
 
-	//if ( $debug )print_r($bahn->timetable);
+	
 	$eintrag = array("","","","","","","");
 	$pos = 0;
 	$heute = 0;
@@ -467,9 +472,6 @@ function html_body($bahn,$station)
       // differenz zur aktuellen zeit ausrechnen.
       $timestampField = strtotime($bahn->timetable[$i]["time"]) ;
       $timestampNow = time();//+1*60*60;
-		//echo "\n" . $timestampField;
-		
-		//echo date('l jS \of F Y H:i:s A',$timestampField) . $bahn->timetable[$i]["time"];
 		
       $diff = $timestampField - $timestampNow;
 		
@@ -512,19 +514,13 @@ function html_body($bahn,$station)
 		$eintrag[4] = $spalte4;
 		$eintrag[4]="<div class='richtung'>".$eintrag[4]."</div>";
 
-/*
-		$eintrag[4] .= "<div  id='".$div_id."' style='display:none;'</div><br>";
-		if ( is_array($route) )
-	 	foreach ( $route as $halt )
-		 		{
-				//$spalte7 .= $halt."<br>";
-   			$halt = cosmetic_string($halt,7);
-   			
-				$eintrag[4] .="<div class='route'>".$halt."</div>";
+      $eintrag[5] = "99:99";
+		if ( $station_richtung == "Abfahrt" )
+      	$eintrag[5] = substr($route[count($route)-1],0,5);
+		if ( $station_richtung == "Ankunft" )
+      	$eintrag[5] = "";
 
-				}
-*/
-      $eintrag[5] = substr($route[count($route)-1],0,5);
+      
       if ( strlen($eintrag[5]) > 2 )
       	if ( $eintrag[5][2] != ':' )
          	$eintrag[5] = "Info";
@@ -559,13 +555,13 @@ function html_body($bahn,$station)
 
 				}
 
-		//$spalte7 .= "</div>";
+		
       $eintrag[7] = $spalte7;
       $eintrag[7]="<div class='aktuelles'>".$eintrag[7]."</div>";
 
       $str .= "<tr valign='top'>";
 
-		//$eintrag[1] = $div_id;
+		
 		$str .= '<td align="center">'.$eintrag[0].'</td>';
 		$str .= '<td align="left">'  .$eintrag[1].'</td>';
 		$str .= '<td align="center">'.$eintrag[2].'</td>';
@@ -670,7 +666,7 @@ function create_css3_menu()
 	$html = $html . '<ul id="css3menu1" class="topmenu">';
 	
 	// Menu fuer Abfahrt
-	$html = $html . '<li class="topfirst"><a href="#" target="_self" style="height:15px;line-height:15px;">Bus/Bahn Informationen</a></li>';
+	$html = $html . '<li class="topfirst"><a href="/user/BusBahnInfo/0.html" target="_self" style="height:15px;line-height:15px;">Bus/Bahn Informationen</a></li>';
 	$html = $html . '<li class="topmenu" ><a href="#" target="_self" style="height:15px;line-height:15px;"><span>Abfahrt</span></a>';
 	$html = $html . '<ul>' ;
 
@@ -680,18 +676,8 @@ function create_css3_menu()
 	   if ( $station[1] != '' And $station[2] == 'Abfahrt' )
 			{
 			$html = $html . '<li><a href="/user/BusBahnInfo/'.$counter.'.html">  ';
-
-//			$html = $html .  "ontouchstart=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; return false;\"  ";
-//			$html = $html .  "onclick=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; return false;\" ";
-//			$html = $html . "<span onmouseover=\"this.style.cursor = 'pointer'; \" ";
-//			$html = $html .  "ontouchstart=\" a = new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter ';\"  ";
-//			$html = $html .  "onclick=\" a = new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; \" ";
-//			$html = $html .  "onclick=\"self.location.href='/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; \" ";
-
 			$html = $html .$station[0].'</span></a>';
-
 			$html = $html . '</li>';
-
 			}
 			
 		$counter = $counter + 1;
@@ -710,9 +696,6 @@ function create_css3_menu()
 	      {
 			$html = $html . '<li><a href="/user/BusBahnInfo/'.$counter.'.html">';
 
-//			$html = $html .  "ontouchstart=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; return false;\"  ";
-//			$html = $html .  "onclick=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=$counter '; return false;\"  >";
-//			$html = $html . "<span onmouseover=\"this.style.cursor = 'pointer' \" ";
 			$html = $html . $station[0].'</a>';
 			
 			$html = $html . '</li>';
@@ -727,8 +710,6 @@ function create_css3_menu()
 	// Info
 	$html = $html . '<li class="topmenu" ><a ';
 
-//	$html = $html .  "ontouchstart=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=9999 '; return false;\"  ";
-//	$html = $html .  "onclick=\"new Image().src = '/user/BusBahnInfo/BusBahnInfoWebMenuController.php?Button=9999 '; return false;\" ";
 	$html = $html . 'href="/user/BusBahnInfo/0.html" style="height:15px;line-height:15px;"><span>Info</span></a></li>';
 
 	$html = $html . '</ul>';

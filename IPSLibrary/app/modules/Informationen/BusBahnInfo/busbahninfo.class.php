@@ -152,6 +152,7 @@ function _parse($data,$counter)
 	 GLOBAL $debug;
 	 
 	 
+	 
     libxml_use_internal_errors(true);
     
     $dom = new DOMDocument();
@@ -193,7 +194,7 @@ function _parse($data,$counter)
 		$att = @$select->getAttribute("value");
 		
 		$this->bahnhof=utf8_decode($att);
-
+		//$this->bahnhof=($att);
 		$this->_process_dom($dom);
       return true;
 		

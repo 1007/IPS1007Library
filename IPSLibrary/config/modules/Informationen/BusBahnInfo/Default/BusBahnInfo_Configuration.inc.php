@@ -61,7 +61,7 @@
   //  Sonstiges
   //****************************************************************************
   define  ( 'MAX_LINES'    , 12 );    // maximale Eintraege pro Seite
-  define  ( 'REFRESH_TIME' , 300 );   // wie oft sollen Daten aktualisiert werden ( Minuten )
+  define  ( 'REFRESH_TIME' , 300 );   // wie oft sollen Daten aktualisiert werden ( Sekunden )
   //****************************************************************************
   //  PROXY SERVER
   //****************************************************************************
