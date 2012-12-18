@@ -403,7 +403,7 @@ function html_body($bahn,$station)
 	if ( $station[9] ) 	$str .=  "<img align=top src=".$imagepath."bus_24x24.gif>";  	// Bus
 	if ( $station[10] ) 	$str .=  "<img align=top src=".$imagepath."faehre_24x24.gif>";  	// Faehren
 	if ( $station[11] ) 	$str .=  "<img align=top src=".$imagepath."ubahn_24x24.gif>";  	// UBahn
-	if ( $station[12] ) 	$str .=  "<img align=top src=".$imagepath."re_24x24.gif>";  // Tram
+	if ( $station[12] ) 	$str .=  "<img align=top src=".$imagepath."tram_24x24.gif>";  // Tram
 
 
 	$str .= "</div>";
@@ -568,7 +568,7 @@ function html_body($bahn,$station)
 		$str .= '<td align="center">'.$eintrag[3].'</td>';
 		$str .= '<td align="left">'  .$eintrag[4].'</td>';
 		$str .= '<td align="center">'.$eintrag[5].'</td>';
-		$str .= '<td nowrap align="center">'.$eintrag[6].'</td>';
+		$str .= '<td align="center">'.$eintrag[6].'</td>';
 		$str .= '<td nowrap align="left">'  .$eintrag[7].'</td>';
 
 		$str .= "</tr>";

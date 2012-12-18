@@ -289,7 +289,7 @@ function _process_dom($dom)
             }
 
 
-	print_r($data);
+
 	foreach($data AS $d)
 		{
       if(array_key_exists("train",$d))
