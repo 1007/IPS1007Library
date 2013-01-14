@@ -137,7 +137,9 @@ function getwithingsdata($person,$usernummer)
 	if ( $debug ) print_r($person);
 
 	// wenn Daten nicht public dann raus
-	if ( $ispublic != 5 )
+	// 1 	Body scale
+	// 4 	Blood pressure monitor
+	if ( $ispublic != 5 OR $ispublic != 1 OR $ispublic != 4 )
 	   {
 		if ($log) logging ("USER:".$shortname." nicht public");
 	   return false;
