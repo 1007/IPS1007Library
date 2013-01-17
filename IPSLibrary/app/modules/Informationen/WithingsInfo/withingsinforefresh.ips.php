@@ -139,12 +139,22 @@ function getwithingsdata($person,$usernummer)
 	// wenn Daten nicht public dann raus
 	// 1 	Body scale
 	// 4 	Blood pressure monitor
-	if ( $ispublic != 5 OR $ispublic != 1 OR $ispublic != 4 )
+	$publicOK = false;
+	
+	if ( $ispublic == 5 )
+		$publicOK = true;
+	if ( $ispublic == 1 )
+		$publicOK = true;
+	if ( $ispublic == 4 )
+		$publicOK = true;
+		
+	if ( $publicOK == false)
 	   {
 		if ($log) logging ("USER:".$shortname." nicht public");
 	   return false;
 	   }
-	   
+	
+	
 	$userpath = $CategoryPath .".".$shortname;
    $userwaagepath = $userpath . ".WAAGE";
    $userblutdruckpath = $userpath . ".BLUTDRUCK";
