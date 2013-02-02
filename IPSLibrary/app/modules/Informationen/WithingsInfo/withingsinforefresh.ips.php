@@ -16,6 +16,7 @@
 
 	IPSUtils_Include ("WithingsInfo_Configuration.inc.php", "IPSLibrary::config::modules::Informationen::WithingsInfo");
 	IPSUtils_Include ("withingsinfoapi.inc.php", "IPSLibrary::app::modules::Informationen::WithingsInfo");
+ 	IPSUtils_Include ("IPSLogger.inc.php",       "IPSLibrary::app::core::IPSLogger");
 
    $CategoryPath = "Program.IPSLibrary.data.modules.Informationen.WithingsInfo";
 
@@ -25,16 +26,14 @@
 	$log 	 = LOG_MODE;
 
 	// Teste ob Withings API OK
-	echo WBSAPI_OnceProbe ();
+	//echo WBSAPI_OnceProbe ();
 	if (WBSAPI_OnceProbe ())
 		{
-		if ($debug) echo "\nTeste API : OK\n";
-		if ($log) logging("Teste API : OK");
+		if ($debug) IPSLogger_Dbg(__FILE__, "Teste API : OK");
 		}
 	else
 		{
-		if ($debug) echo "\nTeste API : NOK\n";
-		if ($log) logging("Teste API : NOK");
+		if ($debug) IPSLogger_Dbg(__FILE__, "Teste API : NOK");
 		exit(-1);
 		}
 	//***************************************************************************
@@ -42,12 +41,12 @@
 	//***************************************************************************
 	if ( MYMAIL == "" )
 	   {
-	   echo "\nMYMAIL in Konfigurationsfile nicht definiert";
+	   IPSLogger_Dbg(__FILE__, "MYMAIL in Konfigurationsfile nicht definiert");
 	   exit(false);
 		}
 	if ( MYPASS == "" )
 	   {
-	   echo "\nMYPASS in Konfigurationsfile nicht definiert";
+	   IPSLogger_Dbg(__FILE__, "MYPASS in Konfigurationsfile nicht definiert");
 	   exit(false);
 		}
 
@@ -57,8 +56,7 @@
 	WBSAPI_AccountGetuserslist ( MYMAIL, MYPASS, $user );
 	if ( !$user )
 	   {
-		if ($debug) echo "\nFehler beim Holen der User MYMAIL und MYPASS ueberpruefen";
-		if ($log) logging("Fehler beim Holen der User  MYMAIL und MYPASS ueberpruefen");
+	   IPSLogger_Dbg(__FILE__, "Fehler beim Holen der User MYMAIL und MYPASS ueberpruefen");
 		exit(-1);
 	   }
 	   
@@ -75,13 +73,17 @@
 			if ( $per == $shortname )
 			   {
 			   $gefunden = true;
+			   if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$per." wird geholt");
+
 			   if ($log) logging ("USER:".$per." wird geholt");
 			   getwithingsdata($person,$x); break;
 				}
 			}
 		if ( !$gefunden )
+		   {
+		   if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." nicht in Konfiguration");
 			if ($log) logging ("USER:".$shortname." nicht in Konfiguration");
-
+			}
 
 	   }
 
@@ -125,16 +127,16 @@ function getwithingsdata($person,$usernummer)
 	$groesse    	= false ;
 
 	$gewichtdatum 	= false;
-	$gewicht       = false;
-	$fettfrei      = false;
-	$fettanteil    = false;
-	$fettprozent   = false;
-	$diastolic     = false;
-	$systolic      = false;
-	$puls          = false;
+	$gewicht       = 0;
+	$fettfrei      = 0;
+	$fettanteil    = 0;
+	$fettprozent   = 0;
+	$diastolic     = 0;
+	$systolic      = 0;
+	$puls          = 0;
 	
 
-	if ( $debug ) print_r($person);
+	//if ( $debug ) print_r($person);
 
 	// wenn Daten nicht public dann raus
 	// 1 	Body scale
@@ -151,6 +153,7 @@ function getwithingsdata($person,$usernummer)
 	if ( $publicOK == false)
 	   {
 		if ($log) logging ("USER:".$shortname." nicht public");
+		IPSLogger_Dbg(__FILE__, "USER:".$shortname." nicht public");
 	   return false;
 	   }
 	
@@ -162,6 +165,8 @@ function getwithingsdata($person,$usernummer)
 	$id = IPSUtil_ObjectIDByPath($userpath . ".Name",true);
 	if ( !$id )
 	   {
+	   IPSLogger_Dbg(__FILE__, "User nicht in Data. Installroutine ausfuehren !");
+
 	   echo "\n User nicht in Data. Installroutine ausfuehren !";
 	   return;
 	   }
@@ -215,7 +220,7 @@ function getwithingsdata($person,$usernummer)
 	else
 	   {
 		if ($log) logging ("USER:" .$shortname." keine GroesseDaten ");
-		if ($debug) echo ("\nUSER:".$shortname." keine GroesseDaten ");
+		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine GroesseDaten ");
 		}
 	
 	//***************************************************************************
@@ -229,7 +234,9 @@ function getwithingsdata($person,$usernummer)
 		WBSAPI_MeasureGetmeas ( $personid, $publickey, $data, $startdate,$enddate,$devtype,$meastype,$category,$limit);
 	
 	if ( $data )
-		{
+		{ 
+		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Gewichtsdaten vorhanden ");
+
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
@@ -268,7 +275,7 @@ function getwithingsdata($person,$usernummer)
 	else
 	   {
 		if ($log) logging ("USER:".$shortname." keine GewichtsDaten ");
-		if ($debug) echo ("\nUSER:".$shortname." keine GewichtsDaten ");
+		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine GewichtsDaten ");
 		}
 
 	//***************************************************************************
@@ -284,6 +291,8 @@ function getwithingsdata($person,$usernummer)
 
 	if ( $data )
 		{
+		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Blutdruckdatendaten vorhanden ");
+
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
@@ -310,7 +319,7 @@ function getwithingsdata($person,$usernummer)
 	else
 	   {
 		if ($log) logging ("USER:".$shortname." keine BlutdruckDaten ");
-		if ($debug) echo ("\nUSER:".$shortname." keine BlutdruckDaten ");
+		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine BlutdruckDaten");
 		}
 
 }
