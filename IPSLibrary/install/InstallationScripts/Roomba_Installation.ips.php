@@ -23,16 +23,12 @@
   GLOBAL $roombas;
 	
 	
-	if (!isset($moduleManager)) {
-		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+  IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
 
-		echo 'ModuleManager Variable not set --> Create "default" ModuleManager';
-		$moduleManager = new IPSModuleManager('Roomba');
-	}
-
+	$moduleManager = new IPSModuleManager('Roomba');
+	
   $moduleManager->VersionHandler()->CheckModuleVersion('IPS','2.50');
 	$moduleManager->VersionHandler()->CheckModuleVersion('IPSModuleManager','2.50.1');
-
 
   IPSUtils_Include ("IPSInstaller.inc.php",            "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("IPSMessageHandler.class.php",     "IPSLibrary::app::core::IPSMessageHandler");
@@ -44,78 +40,19 @@
 	$HardwarePath  = "Hardware.Roomba";
 	$VisuPath      = "Visualization.WebFront.Hardware.Roomba";
 
-  echo "\n--- Create Roomba -------------------------------------------------------------------\n";
-	$CategoryIdData = CreateCategoryPath($DataPath);
+ 	$CategoryIdData = CreateCategoryPath($DataPath);
 	$CategoryIdApp  = CreateCategoryPath($AppPath);
 	$CategoryIdHw   = CreateCategoryPath($HardwarePath);
 	$CategoryIdVisu = CreateCategoryPath($VisuPath);
-
-
-  $roomba_array = array();
-  // Gateway finden
-  $xbee_gateway = 0;
-  
-  if ( AUTOSEARCH == true)
-    {   
-    foreach ( IPS_GetInstanceListByModuleType(2) as $modul )
-        {
-		    $instance = IPS_GetInstance($modul);
-		    //print_r($instance);
-        if ( $instance['ModuleInfo']['ModuleName'] == "XBee Gateway" ) 
-          { 
-		      $xbee_gateway = $instance['InstanceID'];          
-          }  
-        }
-    }
-          
-  // Splitter finden
-  if ( AUTOSEARCH == true)
-    {   
-    foreach ( IPS_GetInstanceListByModuleType(2) as $modul )
-        {
-        
-		    $instance = IPS_GetInstance($modul);
-        if ( $instance['ModuleInfo']['ModuleName'] == "XBee Splitter" ) 
-          { 
-          $xbeesplitter_id = $modul; 
-          $object = IPS_GetObject($xbeesplitter_id);
-          $name = $object['ObjectName'];
-          if ( stripos($name,"Roomba") )
-            array_push($roomba_array,array($name,$xbeesplitter_id,true,0));
-          }
-
-        }
-    }
-  else
-    {
-   foreach ( $roombas as $roomba)
-      {  
-      $name             = $roomba[0];
-      $xbeesplitter_id  = $roomba[1];
-      $aktiv            = $roomba[2];
-      $xbeegateway_id   = $roomba[3];
-      
-      if ( $aktiv )
-        array_push($roomba_array,array($name,$xbeesplitter_id,$aktiv,$xbeegateway_id));
-      }     
-    }
-
-
-  if ( !$roomba_array )
-    {
-    echo "\n--- Keine Roombas gefunden ----------------------------------------------------------\n";
-    return;
-    }
 
   $pollingScriptId = IPS_GetScriptIDByName('RoombaPolling', $CategoryIdApp );
   CreateTimer_CyclicBySeconds ("ScriptTimer",$pollingScriptId,POLLING_DEFAULT,true);
   IPS_SetScriptTimer($pollingScriptId,POLLING_DEFAULT);
 
-
   $actionScriptId         = IPS_GetScriptIDByName('RoombaInput', $CategoryIdApp );
   $webfrontScriptId       = IPS_GetScriptIDByName('RoombaWebfront', $CategoryIdApp );
 
-  create_profile("Roomba_ChargingState"	,"",1);
+  CreateProfile_Count("Roomba_ChargingState",0,0,0,"","");
   IPS_SetVariableProfileAssociation("Roomba_ChargingState", 0, "Not charging",            "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ChargingState", 1, "Reconditioning Charging", "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ChargingState", 2, "Full Charging",           "", 0xaaaaaa);
@@ -123,52 +60,53 @@
   IPS_SetVariableProfileAssociation("Roomba_ChargingState", 4, "Waiting",                 "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ChargingState", 5, "Charging Fault Condition","", 0xaaaaaa);
 
-  create_profile("Roomba_mV"	," mV",1);
-  create_profile("Roomba_mA"	," mA",1);
-  create_profile("Roomba_mAh"	," mAh",1);
-  create_profile("Roomba_mm"	," mm",1);
-  create_profile("Roomba_mms"	," mm/s",1);
-  create_profile("Roomba_Winkel"	," °",1);
-  create_profile("Roomba_Temperatur"	," °",1);
+  CreateProfile_Count("Roomba_mV",0,0,0,""," mV");
+  CreateProfile_Count("Roomba_mA",0,0,0,""	," mA");
+  CreateProfile_Count("Roomba_mAh",0,0,0,""	," mAh");
+  CreateProfile_Count("Roomba_mm",0,0,0,""	," mm");
+  CreateProfile_Count("Roomba_mms",0,0,0,""	," mm/s");
+  CreateProfile_Count("Roomba_Winkel",0,0,0,""	," °");
+  CreateProfile_Count("Roomba_Temperatur",0,0,0,""	," °");
 
-  create_profile("Roomba_ON_OFF"	,"",1);
+  CreateProfile_Count("Roomba_ON_OFF",0,0,0,""	,"");
   IPS_SetVariableProfileAssociation("Roomba_ON_OFF", 0, "Off",  "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ON_OFF", 1, "On",   "", 0xaaaaaa);
 
-  create_profile("Roomba_ChargingSource"	,"",1);
+  CreateProfile_Count("Roomba_ChargingSource",0,0,0,""	,"");
   IPS_SetVariableProfileAssociation("Roomba_ChargingSource", 0, "No source",        "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ChargingSource", 1, "Internal Charger", "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_ChargingSource", 2, "Home Base",        "", 0xaaaaaa);
 
-  create_profile("Roomba_OIMode"	,"",1);
+  CreateProfile_Count("Roomba_OIMode",0,0,0,""	,"");
   IPS_SetVariableProfileAssociation("Roomba_OIMode", 0, "Off",     "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_OIMode", 1, "Passive", "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_OIMode", 2, "Safe",    "", 0xaaaaaa);
   IPS_SetVariableProfileAssociation("Roomba_OIMode", 3, "Full",    "", 0xaaaaaa);
 
-  create_profile("Roomba_Overcurrents"	,"",0);
-  IPS_SetVariableProfileAssociation("Roomba_Overcurrents", 0, "OK",          "", 0x000000);
-  IPS_SetVariableProfileAssociation("Roomba_Overcurrents", 1, "Overcurrent", "", 0xaaaaaa);
+  CreateProfile_Switch("Roomba_Overcurrents","OK","Overcurrent","", 0x000000, 0xaaaaaa);
 
-  create_profile("Roomba_cmdbutton"	,"",1);
+  CreateProfile_Count("Roomba_cmdbutton",0,0,0,""	,"");
   IPS_SetVariableProfileAssociation("Roomba_cmdbutton", 0, "START", "", 0x66CC66);
   IPS_SetVariableProfileAssociation("Roomba_cmdbutton", 1, " " ,      "", -1);
 
-
-  foreach ( $roomba_array as $roomba )
+ echo "\n--- Create Roombas -------------------------------------------------------------------\n";
+  
+   foreach ( $roombas as $roomba)
       {
-      $roomba_name     = $roomba[0];
-      $roomba_splitter = $roomba[1];
-      $roomba_gateway  = $roomba[3];
-      
-      if ( $roomba_gateway == 0 )
-          if ( AUTOSEARCH == true)
-            $roomba_gateway = $xbee_gateway;
-      
-      $roomba_rv_Id = CreateRegisterVariable($roomba_name, $CategoryIdHw, $actionScriptId,$roomba_splitter, 0);
-      
+      $roomba_name      = $roomba['Name'];
+      $roomba_splitter  = $roomba['XBeeSplitter'];
+      $aktiv            = $roomba['Aktiv'];
+      $xbeegateway_id   = $roomba['XBeeGateway'];
 
-      
+      echo "\n--- Create $roomba_splitter\n";
+
+      if ( !IPS_InstanceExists($roomba_splitter))
+          continue; 
+
+      echo "\n--- Create $roomba_name\n";
+       
+      $roomba_rv_Id = CreateRegisterVariable($roomba_name, $CategoryIdHw, $actionScriptId,$roomba_splitter, 0);
+            
       $CategoryRoombaData     = CreateCategoryPath($DataPath.".$roomba_name.RoombaData");
 
       $Id  = CreateVariable("ANGLE"                                       , 1 /*Integer*/,  $CategoryRoombaData,100,'Roomba_Winkel', null, 0);
@@ -281,12 +219,12 @@
       $Id  = CreateVariable("POLLING_TIMER_IST"                           , 1 /*Integer*/,  $CategorySystemData,13 ,'', null, 0);
       $Id  = CreateVariable("POLLING_TIMER_SOLL"                          , 1 /*Integer*/,  $CategorySystemData,12 ,'', null, 30);
 
-      $Id  = CreateVariable("XBEE_GATEWAY"                                , 1 /*Integer*/,  $CategorySystemData,900,'', null, $roomba_gateway);
-      SetValueInteger($Id,$roomba_gateway);
-      $Id  = CreateVariable("XBEE_SPLITTER"                               , 1 /*Integer*/,  $CategorySystemData,901,'', null, $roomba_splitter);
-      SetValueInteger($Id,$roomba_splitter);
-      $Id  = CreateVariable("XBEE_REGISTERVARIABLE"                       , 1 /*Integer*/,  $CategorySystemData,902,'', null, $roomba_rv_Id);
-      SetValueInteger($Id,$roomba_rv_Id);
+//      $Id  = CreateVariable("XBEE_GATEWAY"                                , 1 /*Integer*/,  $CategorySystemData,900,'', null, $roomba_gateway);
+//      SetValueInteger($Id,$roomba_gateway);
+//      $Id  = CreateVariable("XBEE_SPLITTER"                               , 1 /*Integer*/,  $CategorySystemData,901,'', null, $roomba_splitter);
+//      SetValueInteger($Id,$roomba_splitter);
+//      $Id  = CreateVariable("XBEE_REGISTERVARIABLE"                       , 1 /*Integer*/,  $CategorySystemData,902,'', null, $roomba_rv_Id);
+//      SetValueInteger($Id,$roomba_rv_Id);
 
                
       $CategoryLighthouseData = CreateCategoryPath($DataPath.".$roomba_name.LighthouseData");
@@ -386,7 +324,10 @@
       $WFC10_ConfigId = $WFC10_WebFrontID;
 
   DeleteWFCItems($WFC10_ConfigId, $WFC10_TabPaneItem);
-  
+ 
+ 
+  return;
+   
   if ($WFC10_Enabled) 
     {
     $src  = IPS_GetKernelDir() ."\\webfront\\user\\Roomba\\images\\Roomba.png";
@@ -461,19 +402,6 @@
     }
 
   ReloadAllWebFronts();
-
-/***************************************************************************//**
-* Ein Profil erstellen
-*******************************************************************************/
-function create_profile($name,$suffix,$typ,$digits=0)
-  {
-  @IPS_DeleteVariableProfile($name);
-	IPS_CreateVariableProfile($name, $typ);       
-	IPS_SetVariableProfileText($name, "",$suffix);
- 
-  if ( $digits > 0 )
-   	IPS_SetVariableProfileDigits($name, $digits);
-  }
 
 
 

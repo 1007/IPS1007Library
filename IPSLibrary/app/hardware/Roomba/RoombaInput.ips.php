@@ -1,9 +1,10 @@
 <?
 	IPSUtils_Include ("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
+   IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
 
 	IPSUtils_Include ("Roomba_Configuration.inc.php", 	"IPSLibrary::config::hardware::Roomba");
 	IPSUtils_Include ("RoombaFuncpool.inc.php",    		"IPSLibrary::app::hardware::Roomba");
-
+  
 	$instr = "";
 	
 	if ($_IPS['SENDER'] == "RegisterVariable")
@@ -13,9 +14,12 @@
 		}
 
 	$debug = false;
-	
+
 	$object = IPS_GetObject($absender);
 	$name = $object['ObjectName'];
+	
+	if ($debug) IPSLogger_Dbg(__FILE__,$name   );
+
 	$SystemDataPathId 		= get_ObjectIDByPath("Program.IPSLibrary.data.hardware.Roomba.$name.SystemData");
 	$RoombaDataPathId 		= get_ObjectIDByPath("Program.IPSLibrary.data.hardware.Roomba.$name.RoombaData");
 	$LighthouseDataPathId 	= get_ObjectIDByPath("Program.IPSLibrary.data.hardware.Roomba.$name.LighthouseData");
@@ -56,24 +60,12 @@
 	// Ladezustand berechnen
 	$akt_mAh = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CHARGE',$RoombaDataPathId));
 	$max_mAh = GetValueInteger(IPS_GetVariableIDByName('BATTERY_CAPACITY',$RoombaDataPathId));
-	$prozent = round(strval(($akt_mAh/$max_mAh)*100));
+	$prozent = @round(strval(($akt_mAh/$max_mAh)*100));
 	if ( $prozent > 100 ) $prozent = 100;
 	if ( $prozent < 0   ) $prozent = 0;
 
 	SetValueInteger(IPS_GetVariableIDByName('BATTERIE',$SystemDataPathId),$prozent);
 
-	//SetValueInteger(BATTERIE,$bat);
-
-	return;
-
-	$distance = GetValueInteger(DISTANCE);
-	$angle 	 = GetValueInteger(ANGLE);
-	$left     = GetValueInteger(LEFT_ENCODER_COUNTS);
-	$right    = GetValueInteger(RIGHT_ENCODER_COUNTS);
-
-	$text = "," . $distance . "," . $angle . "," . $left . "," . $right;
-	if ( GetValueBoolean(ROOMBA_STATUS_MOVING) )
-   	funcpool_logging("roomba.log",$text);
 
 //***********************************************************************
 function packet_7($Byte)
@@ -471,11 +463,11 @@ function packet_34($Byte)
 	{
 	GLOBAL $RoombaDataPathId;
 	//Packet ID: 34	Ladequelle
-	echo "\nCharging sourve" ;
-	print_r( $Byte);
+	//echo "\nCharging sourve" ;
+
 	$b1 = u_0bis255(34,$Byte[0]);
 	$b2 = GetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId));
-	echo $RoombaDataPathId."--".$b1,$b2;
+	//echo $RoombaDataPathId."--".$b1,$b2;
 	if ( $b1 != $b2 )
 		SetValueInteger(IPS_GetVariableIDByName('CHARGING_SOURCES_AVAILABLE',$RoombaDataPathId),$b1);else return;
 		
@@ -832,7 +824,7 @@ function packet_58($Byte)
 function packet_group_0($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:0";
+	//if ($debug) echo "\nPacketgruppe:0";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
 	//BYTE 1       Packet ID: 8	Wall
@@ -881,7 +873,7 @@ function packet_group_0($Byte)
 function packet_group_1($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:1";
+	//if ($debug) echo "\nPacketgruppe:1";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
 	//BYTE 1       Packet ID: 8	Wall
@@ -910,7 +902,7 @@ function packet_group_2($Byte)
 	{
 	$debug = false;
 
-	if ($debug) echo "\nPacketgruppe:2";
+	//if ($debug) echo "\nPacketgruppe:2";
 
 	//BYTE 0  	   Packet ID: 17	Infrared Character Omni
 	packet_17(array($Byte[0]));
@@ -928,7 +920,7 @@ function packet_group_2($Byte)
 function packet_group_3($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:3";
+	//if ($debug) echo "\nPacketgruppe:3";
 	//BYTE 0    	Packet ID: 21	Ladestatus
 	packet_21(array($Byte[0]));
 	//BYTE 1-2		Packet ID: 22	Batteriespannung
@@ -949,7 +941,7 @@ function packet_group_3($Byte)
 function packet_group_4($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:4";
+	//if ($debug) echo "\nPacketgruppe:4";
 	//BYTE 0-1		Packet ID: 27	Wall Signal
 	packet_27(array($Byte[0],$Byte[1]));
 	//BYTE 2-3   	Packet ID: 28	Cliff Left Signal
@@ -971,7 +963,7 @@ function packet_group_4($Byte)
 function packet_group_5($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:5";
+	//if ($debug) echo "\nPacketgruppe:5";
 	//BYTE 0      	Packet ID: 35	OI Mode
 	packet_35(array($Byte[0]));
 	//BYTE 1      	Packet ID: 36	Lied Nummer
@@ -997,7 +989,7 @@ function packet_group_5($Byte)
 function packet_group_6($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:6";
+	//if ($debug) echo "\nPacketgruppe:6";
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
 	//BYTE 1       Packet ID: 8	Wall
@@ -1073,9 +1065,10 @@ function packet_group_6($Byte)
 //******************************************************************************
 function packet_group_100($Byte)
 	{
-	$debug = true;
+	GLOBAL $debug ;
 
-	if ($debug) echo "\nPacketgruppe:100";
+	if ($debug) IPSLogger_Dbg(__FILE__,"Packetgruppe:100");
+
 	//BYTE 0		   Packet ID: 7	Bumps and Wheel Drops
 	packet_7 (array($Byte[0]));
 	//BYTE 1       Packet ID: 8	Wall
@@ -1185,7 +1178,7 @@ function packet_group_100($Byte)
 function packet_group_101($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:101";
+	//if ($debug) echo "\nPacketgruppe:101";
 
    //BYTE 0-1   	Packet ID: 43	Right Encoder Counts
 	packet_43(array($Byte[0],$Byte[1]));
@@ -1227,7 +1220,7 @@ function packet_group_101($Byte)
 function packet_group_106($Byte)
 	{
 	$debug = false;
-	if ($debug) echo "\nPacketgruppe:106";
+	//if ($debug) echo "\nPacketgruppe:106";
 
 	//BYTE 0-1   	Packet ID: 46	Light Bump Left Signal
 	packet_46(array($Byte[0],$Byte[1]));
@@ -1249,8 +1242,8 @@ function packet_group_106($Byte)
 //******************************************************************************
 function packet_group_107($Byte)
 	{
-	$debug = false;
-	if ($debug) echo "\nPacketgruppe:107";
+	//$debug = false;
+	//if ($debug) echo "\nPacketgruppe:107";
 
 	//BYTE 0-1  	Packet ID: 54	Left Motor Current
 	packet_54(array($Byte[0],$Byte[1]));
@@ -1344,10 +1337,10 @@ function lighthouse($i,$b1)
 	{
 	$debug = false;
 
-	$i_fence 		= 33339;
-	$i_force_field = 19709;
-	$i_green_buoy 	= 11635;
-	$i_red_buoy 	= 17528;
+	$i_fence 		= 33339 /*[GERAETE\ROOMBA\LIGHTHOUSES\LIGHTHOUSE01\FENCE]*/;
+	$i_force_field = 19709 /*[GERAETE\ROOMBA\LIGHTHOUSES\LIGHTHOUSE01\FORCE FIELD]*/;
+	$i_green_buoy 	= 11635 /*[GERAETE\ROOMBA\LIGHTHOUSES\LIGHTHOUSE01\GREEN BUOY]*/;
+	$i_red_buoy 	= 17528 /*[GERAETE\ROOMBA\LIGHTHOUSES\LIGHTHOUSE01\RED BUOY]*/;
 
 	$i_virtual_wall = LH_VIRTUAL_WALL_FENCE;
 
@@ -1523,5 +1516,6 @@ function create_zufallspaket()
 	return $s;
 	
 	}
+
 
 ?>

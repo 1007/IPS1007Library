@@ -1,9 +1,37 @@
 <?
-//******************************************************************************
-// Roomba
-//******************************************************************************
+	/*
+	 * This file is part of the IPSLibrary.
+	 *
+	 * The IPSLibrary is free software: you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License as published
+	 * by the Free Software Foundation, either version 3 of the License, or
+	 * (at your option) any later version.
+	 *
+	 * The IPSLibrary is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
+	 */
 
+	/**@ingroup roomba
+	 * @{
+	 *
+	 * @file          RoombaFuncpool.ips.php
+	 * @author        1007
+	 * @version
+	 *  Version 1.0.0, 27.03.2013<br/>
+	 *
+	 * 
+	 *
+	 */
 
+	IPSUtils_Include ("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
+	IPSUtils_Include ("RoombaFuncpool.inc.php","IPSLibrary::app::hardware::Roomba");
+	IPSUtils_Include ("Roomba_Configuration.inc.php","IPSLibrary::config::hardware::Roomba");
+ 	IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
 
 	define ('START'					,128);
 	define ('BAUD'						,129);
@@ -36,15 +64,16 @@
 
 
 	
-//******************************************************************************
-// Daten senden
-//******************************************************************************
+/***************************************************************************//**
+* 	Daten senden
+*******************************************************************************/
 function xbee_send($gateway_id,$xbee_id,$command)
 	{
 	$debug = false;
 	
-	if ($debug) print_r($command);
+	//if ($debug) print_r($command);
 
+	if ($debug) IPSLogger_Dbg(__FILE__, 'XBeeSend Gateway: ' .$command[0]  );
 
 	$string = "";
 	for ( $x = 0 ; $x< sizeof($command) ; $x++)
@@ -54,20 +83,20 @@ function xbee_send($gateway_id,$xbee_id,$command)
 	   }
 
 	$len = strlen($string);
-	if ($debug) echo "\nGateway':".$gateway_id;
-	if ($debug) echo "\nXBee':".$xbee_id;
 
 	$ok = XBee_SendBuffer($gateway_id,$xbee_id,$string);
-	if ($debug) echo "\nOK=".$ok;
+
+	if ($debug) IPSLogger_Dbg(__FILE__, 'XBeeSend Gateway: ' . $gateway_id . " - " . $xbee_id . " OK:".$ok  );
+
 	}
 
-//******************************************************************************
-// Kommando zusammensetzen
-//******************************************************************************
-function command($opcode,$databytes,$xbee_id,$DataPathId)
+/***************************************************************************//**
+* Kommando zusammensetzen
+*******************************************************************************/
+function command($opcode,$databytes,$gateway_id,$xbee_id,$DataPathId)
 	{
-	
-	$aktiv_id = IPS_GetVariableIDByName('AKTIV',$DataPathId);
+
+	$aktiv_id = IPS_GetVariableIDByName('POLLING_AKTIV',$DataPathId);
 	if ( GetValueBoolean($aktiv_id))
 		{
 		echo "\nScript ist gesperrt! Opcode:[$opcode]";
@@ -75,7 +104,6 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 		}
 	SetValueBoolean($aktiv_id,true);
 
-	$gateway_id = GetValueInteger(IPS_GetVariableIDByName('XBEE_GATEWAY',$DataPathId));
 
 	$sendbuffer = array();
 
@@ -126,7 +154,6 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 							xbee_send($gateway_id,$xbee_id,$sendbuffer);
 							break;
 
-	   	
 			// Spot
 		   case 134 :
 							$sendbuffer[0] = 134;
@@ -309,10 +336,9 @@ function command($opcode,$databytes,$xbee_id,$DataPathId)
 	}
 
 
-
-//******************************************************************************
-// Ausgabe von Text auf dem LCD
-//******************************************************************************
+/***************************************************************************//**
+* Ausgabe von Text auf dem LCD
+*******************************************************************************/
 function show_lcd_text($roomba_id,$DataPathId,$string)
 	{
 	$xbee_id = XBee_GetDeviceID($roomba_id);
@@ -324,7 +350,9 @@ function show_lcd_text($roomba_id,$DataPathId,$string)
 	command(DIGIT_LEDS_ASCII,array($byte1,$byte2,$byte3,$byte4),$xbee_id,$DataPathId);
 	}
 
-
+/***************************************************************************//**
+* Init
+*******************************************************************************/
 function cmd_init($roomba_id,$DataPathId)
 	{
 	
