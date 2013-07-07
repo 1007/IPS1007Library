@@ -174,15 +174,15 @@
 * 
 *******************************************************************************/
   $Stromtarife = array(
-	   array("01.06.2011","31.05.2012","Tarifgruppe Normal"		  ,"Normaltarif"  ,"00:00","23:59","26,05"),
-	   array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"00:00","06:29","18,78"),
-		 array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Tagtarif"  	  ,"06:30","22:29","26,05"),
-		 array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"22:30","23:59","18,78"),
+	   array("01.06.2011","31.05.2012","Tarifgruppe Normal"		  ,"Normaltarif"  ,"00:00:00","23:59:59","26,05"),
+	   array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"00:00:00","06:29:59","18,78"),
+		 array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Tagtarif"  	  ,"06:30:00","22:29:59","26,05"),
+		 array("01.06.2011","31.05.2012","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"22:30:00","23:59:59","18,78"),
 
-		 array("01.06.2012","31.05.2013","Tarifgruppe Normal"		  ,"Normaltarif"	,"00:00","23:59","26,05"),
-		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"00:00","06:29","18,78"),
-		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Tagtarif"  	  ,"06:30","22:29","26,05"),
-		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"22:30","23:59","18,78"),
+		 array("01.06.2012","31.05.2013","Tarifgruppe Normal"		  ,"Normaltarif"	,"00:00:00","23:59:59","26,05"),
+		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"00:00:00","06:29:59","18,78"),
+		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Tagtarif"  	  ,"06:30:00","22:29:59","26,05"),
+		 array("01.06.2012","31.05.2013","Tarifgruppe Tag/Nacht"	,"Nachttarif"	  ,"22:30:00","23:59:59","18,78"),
 
 				);
 

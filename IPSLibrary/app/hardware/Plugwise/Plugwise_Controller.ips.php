@@ -128,7 +128,7 @@ function ping_circles()
 	   {
 	   $mac = $circle[0];
 		$cmd = "000D".$mac;
-		PW_SendCommand($cmd);
+		PW_SendCommand($cmd,$mac);
 	   }
 
 	}
@@ -166,34 +166,7 @@ function schaltbefehl($var,$status)
 		   $status = true;
 
 	   circle_on_off($mac,$status);
-/*
-		$parent = $idCatCircles;
-		$id = 0;
-		$id = @IPS_GetObjectIDByIdent($mac,$parent);
 
-		$id = @IPS_GetVariableIDByName("Status",$id);
-
-		if ( IPS_VariableExists($id) )
-		   {
-		   if ( $status == 0 )
-		      $action = 0;
-		   if ( $status == 1 )
-		      $action = 1;
-		   if ( $status == true )
-		      $action = 1;
-		   if ( $status == false )
-		      $action = 0;
-
-			if ( $status == 0 or $status == 1 )
-			   {
-		   	$cmd = "0017".$mac."0".$action;
-				PW_SendCommand($cmd);
-				}
-				
-		   
-		   }
-
-*/
 	   }
 	   
 	   
@@ -304,7 +277,7 @@ function plugwise_0006_received($buf)
 	      logging($text,'plugwiseerror.log' );
 
 	      $cmd = "000701".$mac;
-	      PW_SendCommand($cmd);
+	      PW_SendCommand($cmd,$mac);
 	      }
 	      
 	   $text = $circle[0];
@@ -490,10 +463,45 @@ function plugwise_0013_received($buf)
 			$offNoise = $offNoise_;
 
 
-	//IPS_LogMessage("Kalibrierdaten ungleich offNoise","[".$offNoise."]");
-		$verbrauch = pulsesToKwh(hexdec($totalpulse), $offNoise, $offTotal, $gainA, $gainB);
-		$text = $mcID ."-".$totalpulse." ".$unknown1." ".$unknown2." ".$unknown3."---".$verbrauch;
-		logging($text,$mcID .'plugwiseunknowninformation.log' );
+	  
+			$verbrauch = pulsesToKwh(hexdec($totalpulse), $offNoise, $offTotal, $gainA, $gainB);
+			$type = "ZAEHLER" ;
+			$parent = 0 ;
+			$objectname = $mcID;
+			$leistung = 0;
+
+   		$akt_tk   = aktuelle_kosten($type,$myCat,$objectname,$leistung);  // aktuelle Kosten und Tarif
+   		$kosten   = $akt_tk['KOSTEN'];
+   		$akt_tarif= $akt_tk['TARIF'];
+   		$kt_preis = $akt_tk['PREISKWH'];
+
+		   $id_kosten = IPS_GetVariableIDByName("Kosten",$myCat);
+
+			//$kt_str = $kt_preis . ";" . $verbrauch ;
+			//IPS_SetInfo($id_kosten,$kt_str);  // Preisstring fuer die naechste Zeit merken
+			
+			// letzten Stundenpreis holen
+			$obj_info_kosten = IPS_GetObject($id_kosten);
+			$alt_stundenpreis = $obj_info_kosten['ObjectInfo'];
+			// stunden_preis ist der aktuelle Veerbrauchspreis in dieser Stunde
+			// wird bei Stundenbeginn neu gestartet.
+			$stunden_preis = $verbrauch * $kt_preis;
+			
+			$diff_stunden_preis = 0;
+			if ( $stunden_preis > $alt_stundenpreis )
+			   $diff_stunden_preis = $stunden_preis - $alt_stundenpreis;
+			if ( $stunden_preis < $alt_stundenpreis ) // Stundenbeginn
+			   $diff_stunden_preis = $stunden_preis;
+
+			zaehleKostenhoch($myCat,$diff_stunden_preis);
+			
+			IPS_SetInfo($id_kosten,$stunden_preis);
+			//$kt_preis = floatval($kt_preis);
+			//$string_kt_preis = number_format($kt_preis,2,'.','');
+         $string_kt_preis = str_replace(",", ".", $kt_preis);
+			$text = time() . ";" . $mcID .";".$totalpulse.";".$unknown1.$unknown2.";".$unknown3.";".$verbrauch.";".$string_kt_preis.";".$stunden_preis.";".$diff_stunden_preis;
+			$log_type = "01";
+			circle_data_loggen($log_type,$text,$mcID .'plugwise_data.log',$myCat );
 
 
 
@@ -504,7 +512,7 @@ function plugwise_0013_received($buf)
 		   {IPS_LogMessage("keine Kalibrierdaten vorhanden",$kalib_str);
 		   // Kalibrierungsdaten vom Circle abrufen
 		   $id_info = IPS_GetObject($myCat);
-			PW_SendCommand("0026".$id_info['ObjectIdent']);
+			PW_SendCommand("0026".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 			$pulse = 0;    // Pulse auf Null , da keine Kalibrierung
 		   }
 
@@ -783,10 +791,10 @@ function plugwise_003F_received($buf)
  	$abweichung = $m1 - $m2;
 	$text = IPS_GetName($myCat).": ".date("H:i:s", $myTime)." Abweichung: " . $abweichung ." Sekunden. " .unixtime2pwtime();
 
-	if ( $abweichung > 120 ) // Abweichung groesser 120 Sekunden
+	if ( $abweichung > 30 ) // Abweichung groesser 30 Sekunden
 		{
 		$text = $text . " Uhrzeit wird gestellt.";
- 		PW_SendCommand("0016".IPS_GetName($myCat).unixtime2pwtime());
+ 		PW_SendCommand("0016".IPS_GetName($myCat).unixtime2pwtime(),IPS_GetName($myCat));
 		}
 
 	logging($text,'plugwisetime.log' );
@@ -944,6 +952,11 @@ function plugwise_0049_received($buf)
          if (GetValue($varGesamtverbrauch) != $neuerverbrauch )
 				SetValueFloat ($varGesamtverbrauch,$neuerverbrauch);
 
+			// versuche den Stundenpreis zu finden
+			$text = $usedlogdate . ";" . $mcID . ";" .$ti2 . ";" . $stunde1 . ";" . $verbrauch;
+			$log_type = "60";
+         circle_data_loggen($log_type,$text,$mcID .'plugwise_data.log',$myCat );
+
 		   }
 
 	   }
@@ -977,7 +990,7 @@ function plugwise_0061_received($buf)
 	
 	
 	// Uhrzeit stellen
-   PW_SendCommand("0016".$mac.unixtime2pwtime());
+   PW_SendCommand("0016".$mac.unixtime2pwtime(),$mac);
    //logging($text,'plugwiseaddcircle.log' );
 	logging($text,'plugwiseerror.log' );
 	}
@@ -1046,7 +1059,7 @@ function request_circle_data()
 				
 				
 			// wenn Circle nicht erreichbar Leistung auf 0
-			IPS_LogMessage("Plugwise Circle ausgefallen",$t);
+			//IPS_LogMessage("Plugwise Circle ausgefallen",$t);
       	$id = IPS_GetVariableIDByName("Leistung", $item);
 			if ( GetValue($id ) != 0 )
 				SetValue($id,0);
@@ -1077,9 +1090,9 @@ function request_circle_data()
 		
 		//$timestamp = microtime(true).";0";
 		IPS_SetInfo(IPS_GetObjectIDByIdent("LastMessage",$item),$string);
-		PW_SendCommand("0012".$id_info['ObjectIdent']);
+		PW_SendCommand("0012".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 		
-		PW_SendCommand("0023".$id_info['ObjectIdent']);
+		PW_SendCommand("0023".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 		
 
 		}
@@ -1332,7 +1345,7 @@ function berechne_gruppenverbrauch()
 	GLOBAL $idCatCircles;
 	GLOBAL $idCatOthers;
    GLOBAL $ExterneStromzaehlerGroups;
-   
+
 	$others = IPS_GetChildrenIDs($idCatOthers);
 	$text = "Berechne Gruppenverbrauch";
    logging($text,"Gesamtleistung.log",true);
@@ -1391,7 +1404,7 @@ function berechne_gruppenverbrauch()
 
 	// gehe alle externen durch
 	foreach ( $ExterneStromzaehlerGroups as $group )
-		{
+		{ 
       if ( $group[0] != "" )
          {
 			$mac 	        = $group[0];
@@ -1399,7 +1412,7 @@ function berechne_gruppenverbrauch()
 			$id_leistung  = intval($group[2]);
 			$id_verbrauch = intval($group[3]);
 
-			
+			echo $id_leistung;
 			if ( isset($group[7]) )
 				$in_gesamt = $group[7];
 			else
@@ -1417,7 +1430,7 @@ function berechne_gruppenverbrauch()
 		   	$verbrauch = GetValue($id_verbrauch);
 				$array_leistung[$gruppe]  = $array_leistung[$gruppe]  + $leistung;
 				$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
-				$text = "Gruppe:".$gruppe."-".$verbrauch."SUMME:".$array_verbrauch[$gruppe];
+				$text = "Gruppe:".$gruppe."-".$verbrauch."SUMME:".$array_verbrauch[$gruppe]."-".$id_leistung."-".$id_verbrauch;
    			logging($text,"Gesamtleistung.log",true);
 
 			   }

@@ -30,9 +30,9 @@
    	$id_info = IPS_GetObject($item);
 
 		// Kalibrierungsdaten vom Circle abrufen
-		PW_SendCommand("0026".$id_info['ObjectIdent']);
+		PW_SendCommand("0026".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 		// Zeit lesen. Durch Antwort wird Zeit gestellt
-      PW_SendCommand("003E".$id_info['ObjectIdent']);
+      PW_SendCommand("003E".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 
 		}
 

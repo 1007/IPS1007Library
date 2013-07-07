@@ -28,7 +28,7 @@
 	foreach(IPS_GetChildrenIDs($idCatCircles) as $item)
 		{	// alle Unterobjekte durchlaufen
    	$id_info = IPS_GetObject($item);
- 		PW_SendCommand("0016".$id_info['ObjectIdent'].unixtime2pwtime());
+ 		PW_SendCommand("0016".$id_info['ObjectIdent'].unixtime2pwtime(),$id_info['ObjectIdent']);
 		}
 
 

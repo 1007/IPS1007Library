@@ -64,7 +64,7 @@
 		
 		$LogAddress = str_pad(strtoupper(dechex($LogAddress)), 8 ,'0', STR_PAD_LEFT);
       
-		PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress);
+		PW_SendCommand("0048".$id_info['ObjectIdent'].$LogAddress,$id_info['ObjectIdent']);
 		}
 
 
