@@ -20,7 +20,7 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-create_css3menu();
+//create_css3menu();
 
 /***************************************************************************//**
 *  Plugwise Protocol
@@ -35,7 +35,7 @@ create_css3menu();
 *******************************************************************************/
 function PWPingRequest($macID,$vnumber=false)
 	{
-	PW_SendCommand("000D".$macID);
+	PW_SendCommand("000D".$macID,$macID);
 	}
 
 /***************************************************************************//**
@@ -49,32 +49,18 @@ function PWPingRequest($macID,$vnumber=false)
 *******************************************************************************/
 function PWGetClockRequest($macID,$vnumber=false)
 	{
-	PW_SendCommand("003E".$macID);
+	PW_SendCommand("003E".$macID,$macID);
 	}
 
  
 /***************************************************************************//**
 *  Sendet ein Kommando an Plugwise
 *******************************************************************************/
-function PW_SendCommand($cmd)
+function PW_SendCommand($cmd,$CircleId=false)
 {
+	GLOBAL $CircleGroups;
 
-	// Hier nur Logging
-	switch ( substr($cmd,0,4 ) )
-	   {
-	   case	"0012": 	logging( "S - ".$cmd." Power information request (current)"); break;
-		case	"0016":	logging( "S - ".$cmd." Clock set request"); break;
-		case	"0017":	logging( "S - ".$cmd." Device Ein/Aus"); break;
-		case	"0018":	logging( "S - ".$cmd." Search Circle"); break;
-		case	"0023":	logging( "S - ".$cmd." Device information request"); break;
-		case	"0026":	logging( "S - ".$cmd." Kalibrierungsdaten abrufen"); break;
-		case	"003E":	logging( "S - ".$cmd." Clock information request"); break;
-		case	"0048":	logging( "S - ".$cmd." Power buffer information"); break;
-
-	   default     :  logging( "S - ".$cmd." unbekannter Befehl"); break;
-		}
 		
-
 
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
 	$i = (IPS_GetInstance($comid));
@@ -82,13 +68,83 @@ function PW_SendCommand($cmd)
 
 	if ( $i != 102 ) { echo "\nCOMPort nicht offen"; return ; }
 
+	// Erst mal alte Registervariable - fuer einen Stick
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
 
+	$sticks = array();
+	// suche Circle
+	if ( $CircleId != false )
+		foreach ( $CircleGroups as $Circle )
+	   	{
+			if ( $Circle[0] == $CircleId )
+			   {
+			   if ( isset ( $Circle[9] ) )
+			      {
+					if ( $Circle[9] == false ) //nichts senden
+					   {
+					   logging( "S - ".$CircleId." an diesen Circle nichts senden");
+			   		return ;
+			   		}
+					else
+					   {
+					   //IPS_LogMessage(__File__,$Circle[9]);
+                  $REGVAR = $Circle[9];
+					   }
+					}
+			   }
+	   	}
+
+		foreach ( $CircleGroups as $Circle )
+	   	{
+			if ( isset ( $Circle[9] ) )
+			   {
+			   if ( $Circle[9] != false )
+					if (!in_array($Circle[9], $sticks))
+						{
+    					array_push($sticks,$Circle[9]);
+						}
+				}
+			}
+			
+    
+
+    
 	$ausgabe=strtoupper(dechex(calculate_common_crc16c($cmd)));
 	$ausgabe = str_pad($ausgabe, 4 ,'0', STR_PAD_LEFT); //mit nullen auffüllen
 	$cmd.= $ausgabe;
-	RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
-	
+
+	switch ( substr($cmd,0,4 ) )
+	   {
+	   case	"0012": 	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Power information request (current)"); break;
+		case	"0016":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Clock set request"); break;
+		case	"0017":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Device Ein/Aus"); break;
+		case	"0018":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Search Circle"); break;
+		case	"0023":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Device information request"); break;
+		case	"0026":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Kalibrierungsdaten abrufen"); break;
+		case	"003E":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Clock information request"); break;
+		case	"0048":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Power buffer information"); break;
+		case	"0008":	logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Circlesuche 0008"); break;
+		case	"000801":logging( "S - ".$REGVAR.":".$CircleId." - ".$cmd." Circlesuche 000801"); break;
+
+	   default     :  logging( "S - ".$REGVAR.":".$cmd." unbekannter Befehl"); break;
+		}
+
+	if ( $CircleId != false )
+	   {
+	   //IPS_Logmessage("Plugwise_Include","An nur einen Stick senden");
+		RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
+	   }
+	else
+	   {
+		foreach ( $sticks as $stick )
+		   {
+	   	//IPS_Logmessage("Plugwise_Include","An mehrere Sticks senden " . $stick);
+
+			RegVar_SendText($stick,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
+			}
+	   }
+	   
+	   
 	if ( defined('WAIT_TIME') )
 		$ms = WAIT_TIME;
 	else
@@ -110,7 +166,7 @@ function PW_SwitchMode($InstanceID, $DeviceOn)
    // Zum Schalten
 	$id_info = IPS_GetObject($InstanceID);
 	$cmd = "0017".$id_info['ObjectIdent']."0".$DeviceOn;
-   PW_SendCommand($cmd);
+   PW_SendCommand($cmd,$id_info['ObjectIdent']);
 }
 
 /***************************************************************************//**
@@ -373,14 +429,14 @@ function createCircle($mac, $parentID){
 	IPS_SetHidden($myVar, True);
 
 	// Kalibrierungsdaten vom Circle abrufen
-	PW_SendCommand("0026".$mac);
+	PW_SendCommand("0026".$mac,$mac);
 
 	// Zeit stellen
- 	PW_SendCommand("0016".$mac.unixtime2pwtime());
+ 	PW_SendCommand("0016".$mac.unixtime2pwtime(),$mac);
 
 	// Status abfragen
-	PW_SendCommand("0012".$mac);
-	PW_SendCommand("0023".$mac);
+	PW_SendCommand("0012".$mac,$mac);
+	PW_SendCommand("0023".$mac,$mac);
 
 }
 
@@ -1353,14 +1409,14 @@ function update_data1_data2()
 
 
 
-	$result      = find_id_toshow();
+	$result      = find_id_toshow(); 
 	$type			 = $result['TYPE'];
 	$id 			 = intval($result['ID']);
 	$idleistung  = intval($result['IDLEISTUNG']);
 	$idgesamt 	 = intval($result['IDGESAMT']);
 	$parent   	 = intval($result['PARENT']);
 	$objectname  = $result['OBJECTNAME'];
-
+	
 
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
@@ -1385,7 +1441,9 @@ function update_data1_data2()
 	   
 	
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
-		
+	$ges_kosten = @GetValue(IPS_GetVariableIDByName('Kosten',$parent));
+	$ges_kosten = round($ges_kosten,2);
+	
 	$dateleistung = IPS_GetVariable($idleistung);
 	$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
 		
@@ -1481,9 +1539,9 @@ function update_data1_data2()
 	$html1 = $html1 . "<td class='verbrauchschrift'>kWh</td>";
 	$html1 = $html1 . "</tr>";
 	$html1 = $html1 . "<tr>";
-	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-	$html1 = $html1 . "<td class='verbrauchdaten'></td>";
-	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>Kosten Gesamt</td>";
+	$html1 = $html1 . "<td class='verbrauchdaten'>$ges_kosten</td>";
+	$html1 = $html1 . "<td class='verbrauchschrift'>Euro</td>";
 	$html1 = $html1 . "</tr>";
 	$html1 = $html1 . "<tr>";
 	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
@@ -1565,6 +1623,7 @@ function statistikdaten($gesamtid)
 	
 /***************************************************************************//**
 *	Liefert die aktuellen Kosten nach Tarif
+*  $type = GESAMT , ZAEHLER , EXTERN , GRUPPE
 *******************************************************************************/
 function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	{
@@ -1602,7 +1661,7 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 				}
 	   	}
 		//if ( $tarifgruppe != false )
-	   	//IPS_LogMessage("tarif gefnden fuer Circle",$ident."-".$tarifgruppe);
+	   //IPS_LogMessage("Tarif gefunden fuer Circle",$ident."-".$tarifgruppe);
 		}
 		
 	if ( $type == "EXTERN" )  // suche bei Extern
@@ -2471,7 +2530,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 		if ( !LOG_MODE )
 	   	return;
 
-	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
+	$ordner = IPS_GetKernelDir() . "logs\\Plugwise\\logs";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 
@@ -2481,13 +2540,86 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	list($usec, $sec) = explode(" ", microtime());
     
 	$time = date("d.m.Y H:i:s",$sec);
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\logs\\" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, $time ." ". $text . chr(13));
 	fclose($datei);
 
 	}
 
+/***************************************************************************//**
+*	Logging von Leistungsdaten zur Erfassung des Preises pro Stunde
+*******************************************************************************/
+function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
+	{
+	$max = 1440;
+	$max = (60/REFRESH_TIME) * 12;
+
+	$ordner = IPS_GetKernelDir() . "logs\\Plugwise\\data";
+
+   if ( !is_dir ( $ordner ) )
+		mkdir($ordner);               // Ordner erstellen
+
+   if ( !is_dir ( $ordner ) )
+	   return;                       // Ordner konnte nicht erstellt werden
+
+	$time = date("d.m.Y H:i:s",time());
+	$akt_stunde = date("H",time());
+	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\data\\" . $file;
+
+	$text = "\n".$log_type .";". $akt_stunde.";".$time . ";"  . $text .";".$myCat;
+	
+	$data = array();
+	if (  file_exists ($logdatei) )
+		$data = file($logdatei);
+
+	// suche bei log_type=60 den letzten Eintrag der letzten Stunde
+	$letzter_wert  = 0;
+	$letzter_preis = 0;
+	$letzte_stunde = $akt_stunde - 1 ;
+	if ( $letzte_stunde < 0 )
+	   $letzte_stunde = 23;
+	   
+	if ( $log_type == '60' )
+	   {
+		foreach ( $data as $zeile )
+		   {
+		   $subdata = explode(';',$zeile);
+		   if ( $subdata[0] == '01')
+		   	if ( $subdata[1] == $letzte_stunde)
+					{
+		      	$letzter_wert  = ($subdata[8]);
+		    		$letzter_preis = ($subdata[9]);
+					}
+		   }
+		$textteile = explode(';',$text);
+		
+		$diff_letzte_minute = $textteile[7] - $letzter_wert;
+		if ( $diff_letzte_minute < 0 )
+			$diff_letzte_minute = 0;
+		$preis_letzte_minute = $diff_letzte_minute*$letzter_preis;
+
+		zaehleKostenhoch($myCat,$preis_letzte_minute);
+
+		$text = $text .";".$letzte_stunde.";".$letzter_wert.";".$letzter_preis.";".$diff_letzte_minute.";".$preis_letzte_minute.";".$myCat;
+	   }
+
+
+	while(count($data) >= $max)
+		{
+		//File verkleinern
+    	array_shift($data);
+		}
+
+	
+ 	@array_push($data, $text);
+ 
+	$datei = fopen($logdatei,"w");
+	fwrite($datei,implode('', $data) );
+	fclose($datei);
+
+
+	}
 
 /***************************************************************************//**
 *	Schaltet einen Circle ein/aus
@@ -2538,7 +2670,7 @@ function circle_on_off($mac,$status)
    SetValue($id,$status);
 
 	$cmd = "0017".$mac."0".$action;
-	PW_SendCommand($cmd);
+	PW_SendCommand($cmd,$mac);
 
 
 	}
@@ -2628,7 +2760,27 @@ function create_css3menu()
 	return $html;
 	}
 
+function zaehleKostenhoch($myCat,$diff_stunden_preis)
+	{
+	//IPS_Logmessage($myCat,$diff_stunden_preis);
+	
+	// Stunden_Preis ist in Cent
+	$diff_stunden_preis = $diff_stunden_preis/100;
+	
+	$id_kosten = @IPS_GetVariableIDByName("Kosten",$myCat);
 
+	if ( $id_kosten != 0 )
+	   {
+	   
+	   $kosten = GetValueFloat($id_kosten);
+	   $kosten = $kosten + $diff_stunden_preis;
+	   //$kosten = 0;
+	   SetValueFloat($id_kosten,$kosten);
+	   
+	   }
+	
+	}
+	
 
 /***************************************************************************//**
 * @}
