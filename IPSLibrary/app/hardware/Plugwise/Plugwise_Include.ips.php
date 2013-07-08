@@ -452,6 +452,7 @@ function update_data1_data2_old()
 	$id 			 = intval($result['ID']);
 	$idleistung  = intval($result['IDLEISTUNG']);
 	$idgesamt 	 = intval($result['IDGESAMT']);
+	$idkosten 	 = intval($result['IDKOSTEN']);
 	$parent   	 = intval($result['PARENT']);
 
 
@@ -1414,6 +1415,7 @@ function update_data1_data2()
 	$id 			 = intval($result['ID']);
 	$idleistung  = intval($result['IDLEISTUNG']);
 	$idgesamt 	 = intval($result['IDGESAMT']);
+	$idkosten 	 = intval($result['IDKOSTEN']);
 	$parent   	 = intval($result['PARENT']);
 	$objectname  = $result['OBJECTNAME'];
 	
@@ -1439,10 +1441,8 @@ function update_data1_data2()
 	if ( $data1id == 0 or $data2id == 0)
 	   return;
 	   
-	
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
-	$ges_kosten = @GetValue(IPS_GetVariableIDByName('Kosten',$parent));
-	$ges_kosten = round($ges_kosten,2);
+	$ges_kosten = @round(GetValue($idkosten),2);
 	
 	$dateleistung = IPS_GetVariable($idleistung);
 	$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
@@ -2115,6 +2115,7 @@ function find_id_toshow()
 	$objectname  = "";
 	$idleistung  = 0;
 	$idgesamt    = 0;
+	$idkosten    = 0;
 	$type        = "";
 	$parent      = 0;
 	$objectident = "";
@@ -2151,6 +2152,8 @@ function find_id_toshow()
 	         	{
 					$idleistung = IPS_GetObjectIDByName('Leistung',$parent);
 					$idgesamt   = IPS_GetObjectIDByName('Gesamtverbrauch',$parent);
+					$idkosten   = IPS_GetObjectIDByName('Kosten',$parent);
+
 					foreach ($CircleGroups as $circle )
 	   				{	// Maxwert fuer Circle aus Config
 	    				if ( $info == $circle[0] )
@@ -2195,6 +2198,8 @@ function find_id_toshow()
 	      	$ident       = $object['ObjectIdent'];
 	      	$idleistung  = IPS_GetObjectIDByIdent('Leistung',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
 	      	$idgesamt     = IPS_GetObjectIDByIdent('Gesamtverbrauch',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
+	      	$idkosten     = IPS_GetObjectIDByIdent('Kosten',IPS_GetObjectIDByIdent($ident,$GroupsIdOData));
+
 				$objectname  = $object['ObjectName'];
 				$objectident = $object['ObjectIdent'];
 				$maxleistung = 0;
@@ -2231,6 +2236,7 @@ function find_id_toshow()
 	$id_result['ID']          = $id;
 	$id_result['IDLEISTUNG']  = $idleistung;
 	$id_result['IDGESAMT']    = $idgesamt;
+	$id_result['IDKOSTEN']    = $idkosten;
 	$id_result['MAXLEISTUNG'] = $maxleistung;
 	$id_result['INFO']        = $info;
 	$id_result['OBJECTNAME']  = $objectname;

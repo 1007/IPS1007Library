@@ -1356,6 +1356,8 @@ function berechne_gruppenverbrauch()
          {
 			$array_leistung[$group[2]]  = 0;
 			$array_verbrauch[$group[2]] = 0;
+			$array_kosten[$group[2]] = 0;
+
 			}
 
 	// fuege die externen Gruppen hinzu
@@ -1390,11 +1392,14 @@ function berechne_gruppenverbrauch()
 		   	{
 		   	$leistung  = GetValue(IPS_GetObjectIDByIdent('Leistung',$id));
 		   	$verbrauch = GetValue(IPS_GetObjectIDByIdent('Gesamtverbrauch',$id));
-
+		   	$kosten    = GetValue(IPS_GetObjectIDByIdent('Kosten',$id));
+				
 				if ( $in_gesamt )
 				   {
 					$array_leistung[$gruppe]  = $array_leistung[$gruppe]  + $leistung;
 					$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
+					$array_kosten[$gruppe]    = $array_kosten[$gruppe] + $kosten;
+               
 					}
 
 				}
@@ -1448,18 +1453,23 @@ function berechne_gruppenverbrauch()
 
 		if ( $gruppenid > 0 )
 		   {
-		$wert = $array_leistung[$gruppe];
-		$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);
-		if (GetValue($id) <> $wert)
-			SetValue($id,$wert);
+			$wert = $array_leistung[$gruppe];
+			$id = IPS_GetObjectIDByIdent('Leistung',$gruppenid);
+			if (GetValue($id) <> $wert)
+				SetValue($id,$wert);
 
-		$wert = $array_verbrauch[$gruppe];
-		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
-      if (GetValue($id) <> $wert)
-			SetValue($id,$wert);
+			$wert = $array_verbrauch[$gruppe];
+			$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
+      	if (GetValue($id) <> $wert)
+				SetValue($id,$wert);
+		
+			$wert = $array_kosten[$gruppe];	
+			$id = IPS_GetObjectIDByIdent('Kosten',$gruppenid);
+      	if (GetValue($id) <> $wert)
+				SetValue($id,$wert);
+
+				
 			}
-			
-
 	   }
 
 
