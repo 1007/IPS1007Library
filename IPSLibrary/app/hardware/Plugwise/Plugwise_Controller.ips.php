@@ -1399,7 +1399,7 @@ function berechne_gruppenverbrauch()
 					$array_leistung[$gruppe]  = $array_leistung[$gruppe]  + $leistung;
 					$array_verbrauch[$gruppe] = $array_verbrauch[$gruppe] + $verbrauch;
 					$array_kosten[$gruppe]    = $array_kosten[$gruppe] + $kosten;
-               
+               //IPS_Logmessage($gruppe,$array_kosten[$gruppe]."-".$kosten."-".$id);
 					}
 
 				}
