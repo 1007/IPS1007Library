@@ -1462,8 +1462,9 @@ function berechne_gruppenverbrauch()
 			$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$gruppenid);
       	if (GetValue($id) <> $wert)
 				SetValue($id,$wert);
-		
-			$wert = $array_kosten[$gruppe];	
+
+			$wert = 0;
+			$wert = @$array_kosten[$gruppe];
 			$id = IPS_GetObjectIDByIdent('Kosten',$gruppenid);
       	if (GetValue($id) <> $wert)
 				SetValue($id,$wert);
