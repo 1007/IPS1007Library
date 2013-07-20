@@ -715,25 +715,46 @@ function plugwise_0027_received($buf)
 		logging($text,'plugwisecalibration.log' );
 		return;
 	   }
-	   
+
+	//$buf = substr($buf,0,24) . 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
+	//IPS_LogMessage("Plugwise Kalibrierung : ",substr($buf,0,48));
+	
+	
 	$gaina    = bintofloat(substr($buf,24,8));
 	$gainb    = bintofloat(substr($buf,32,8));
 	$offTotal = bintofloat(substr($buf,40,8));
 	$offNoise = bintofloat(substr($buf,48,8));
 
-	//SetValueFloat(CreateVariable("gaina",2,$myCat,0,"")	,bintofloat(substr($buf,24,8)));
-	//SetValueFloat(CreateVariable("gainb",2,$myCat,0,"")	,bintofloat(substr($buf,32,8)));
-	//SetValueFloat(CreateVariable("offTotal",2,$myCat,0,""),bintofloat(substr($buf,40,8)));
 	if (substr($buf,48,8)=="00000000")
 	   {
-		//SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),0);
       $offNoise = 0;
 		}
 	else
 		{
-		//SetValueFloat(CreateVariable("offNoise",2,$myCat,0,""),bintofloat(substr($buf,48,8)));
       $offNoise = bintofloat(substr($buf,48,8));
 		}
+
+	if (substr($buf,24,8)=="FFFFFFFF")
+		{
+		$gaina = 1;
+		IPS_LogMessage("Plugwise Kalibrierung GainA: ",substr($buf,24,8));
+		}
+	if (substr($buf,32,8)=="FFFFFFFF")
+		{
+		$gainb = 0;
+		IPS_LogMessage("Plugwise Kalibrierung GainB: ",substr($buf,32,8));
+		}
+	if (substr($buf,40,8)=="FFFFFFFF")
+		{
+		$offTotal = 0;
+		IPS_LogMessage("Plugwise Kalibrierung OffTotal: ",substr($buf,40,8));
+		}
+	if (substr($buf,48,8)=="FFFFFFFF")
+		{
+		$offNoise = 0;
+		IPS_LogMessage("Plugwise Kalibrierung OffNoise: ",substr($buf,48,8));
+		}
+
 		
 	$kal_str  = $gaina.";".$gainb.";".$offTotal.";".$offNoise;
 	//IPS_LogMessage("kalib",$offNoise."-".substr($buf,48,8));

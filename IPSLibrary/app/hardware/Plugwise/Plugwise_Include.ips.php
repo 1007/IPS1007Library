@@ -258,10 +258,11 @@ function pulsesToKwh($value, $offRuis, $offTot, $gainA, $gainB)
       return 0;
       }
 	else
-		{
+		{ 
       $value = $value / 3600;
       $pulses = (pow(($value + $offRuis), 2) * $gainB) + (($value + $offRuis) * $gainA) + $offTot;
       $result = (($pulses / 3600) / 468.9385193)*3600;
+      //IPS_Logmessage("plugwise",$result);
       return $result;
       }
     }
