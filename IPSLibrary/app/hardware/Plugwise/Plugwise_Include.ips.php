@@ -19,6 +19,7 @@
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
+ 	IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
 
 //create_css3menu();
 
@@ -2559,6 +2560,8 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 *******************************************************************************/
 function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 	{
+	GLOBAL $CircleGroups;
+
 	$max = 1440;
 	$max = (60/REFRESH_TIME) * 12;
 
@@ -2579,7 +2582,9 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 	$data = array();
 	if (  file_exists ($logdatei) )
 		$data = file($logdatei);
-
+	else
+	   IPS_Logmessage(__FILE__,$logdatei . " nicht gefunden !!");
+	   
 	// suche bei log_type=60 den letzten Eintrag der letzten Stunde
 	$letzter_wert  = 0;
 	$letzter_preis = 0;
@@ -2609,6 +2614,21 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 		zaehleKostenhoch($myCat,$preis_letzte_minute);
 
 		$text = $text .";".$letzte_stunde.";".$letzter_wert.";".$letzter_preis.";".$diff_letzte_minute.";".$preis_letzte_minute.";".$myCat;
+		
+		// Alarmmeldung bei Wertueberschreitung in einer Stunde kWh
+		foreach( $CircleGroups as $Circle ) // suche Eintrag fuer diesen Circle
+		      {
+		      if ( $Circle[0] == $subdata[4] )
+		         break;
+		      }
+		$kWhmax = floatval($Circle[5]);
+		if ( $kWhmax < $letzter_wert )
+		   {
+		   IPSLogger_Dbg(__FILE__, 'Circle  '.$Circle[1].' hat die kWh-max ueberschritten. Max:'.$kWhmax.'kWh Ist:'.round($letzter_wert,4));
+		   }
+		
+		      
+		      
 	   }
 
 
@@ -2769,11 +2789,11 @@ function create_css3menu()
 
 function zaehleKostenhoch($myCat,$diff_stunden_preis)
 	{
-	//IPS_Logmessage($myCat,$diff_stunden_preis);
 	
 	// Stunden_Preis ist in Cent
 	$diff_stunden_preis = $diff_stunden_preis/100;
-	
+	//IPS_Logmessage($myCat,$diff_stunden_preis);
+
 	$id_kosten = @IPS_GetVariableIDByName("Kosten",$myCat);
 
 	if ( $id_kosten != 0 )
@@ -2781,6 +2801,10 @@ function zaehleKostenhoch($myCat,$diff_stunden_preis)
 	   
 	   $kosten = GetValueFloat($id_kosten);
 	   $kosten = $kosten + $diff_stunden_preis;
+	   
+//	   	if ( $myCat == 31930 )
+//				IPS_Logmessage($myCat,($diff_stunden_preis*100)."-".$kosten);
+
 	   //$kosten = 0;
 	   SetValueFloat($id_kosten,$kosten);
 	   

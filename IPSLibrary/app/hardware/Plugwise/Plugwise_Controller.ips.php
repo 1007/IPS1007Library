@@ -479,27 +479,42 @@ function plugwise_0013_received($buf)
 
 			//$kt_str = $kt_preis . ";" . $verbrauch ;
 			//IPS_SetInfo($id_kosten,$kt_str);  // Preisstring fuer die naechste Zeit merken
-			
+			$ttext = "";
 			// letzten Stundenpreis holen
 			$obj_info_kosten = IPS_GetObject($id_kosten);
-			$alt_stundenpreis = $obj_info_kosten['ObjectInfo'];
+			$alt_stundenpreis = floatval($obj_info_kosten['ObjectInfo']);
 			// stunden_preis ist der aktuelle Veerbrauchspreis in dieser Stunde
 			// wird bei Stundenbeginn neu gestartet.
 			$stunden_preis = $verbrauch * $kt_preis;
+			$stunden_preis = round($stunden_preis,6);
 			
 			$diff_stunden_preis = 0;
-			if ( $stunden_preis > $alt_stundenpreis )
-			   $diff_stunden_preis = $stunden_preis - $alt_stundenpreis;
-			if ( $stunden_preis < $alt_stundenpreis ) // Stundenbeginn
-			   $diff_stunden_preis = $stunden_preis;
 
+			if ( $stunden_preis > $alt_stundenpreis )
+				{
+			   $diff_stunden_preis = $stunden_preis - $alt_stundenpreis;
+				$ttext = ">Alt:".$alt_stundenpreis."-Neu:".$stunden_preis;
+				}
+			if ( $stunden_preis < $alt_stundenpreis ) // Stundenbeginn
+				{
+			   $diff_stunden_preis = $stunden_preis;
+				$ttext = "<Neu:".$stunden_preis;
+				//IPS_logmessage("....",$stunden_preis."-".$alt_stundenpreis);
+				}
+//			if ( $stunden_preis == $alt_stundenpreis )
+//			   {
+//				IPS_logmessage("....",$stunden_preis."-".$myCat."-".$alt_stundenpreis);
+//
+//			   }
+
+				
 			zaehleKostenhoch($myCat,$diff_stunden_preis);
 			
 			IPS_SetInfo($id_kosten,$stunden_preis);
 			//$kt_preis = floatval($kt_preis);
 			//$string_kt_preis = number_format($kt_preis,2,'.','');
          $string_kt_preis = str_replace(",", ".", $kt_preis);
-			$text = time() . ";" . $mcID .";".$totalpulse.";".$unknown1.$unknown2.";".$unknown3.";".$verbrauch.";".$string_kt_preis.";".$stunden_preis.";".$diff_stunden_preis;
+			$text = time() . ";" . $mcID .";".$totalpulse.";".$unknown1.$unknown2.";".$unknown3.";".$verbrauch.";".$string_kt_preis.";".$stunden_preis.";".$diff_stunden_preis.";".$ttext;
 			$log_type = "01";
 			circle_data_loggen($log_type,$text,$mcID .'plugwise_data.log',$myCat );
 
