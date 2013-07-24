@@ -600,6 +600,7 @@ function update_uebersicht_circles()
 		$data_array[$x]['CIRCLELASTSEEN'] = 0 ;
 		$data_array[$x]['CIRCLELASTMILLISEC'] = 0 ;
 		$data_array[$x]['CIRCLEWATT'] = 0 ;
+		$data_array[$x]['CIRCLELIVECOUNTER'] = 0 ;
 		$data_array[$x]['CIRCLEKWH'] = 0 ;
 		$data_array[$x]['CIRCLEPINGMS'] = 0;
 		$data_array[$x]['CIRCLEPINGRSSI1'] = 0;
@@ -705,11 +706,32 @@ function update_uebersicht_circles()
 	// alle eingefuegt
 
 
+	// Anzahl der daten in der letzten Stunde
+	if ( $menupunkt == 1 )
+	   {
+	   $instancesarchiv = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
+		$archiveID   = $instancesarchiv[0];
+		$starttimearchiv = time() - 3600;
+		$endetimearchiv  = time() ;
+
+      $counter = 0;
+
+		foreach ( $circles as $circle )
+	   	{
+			$id = IPS_GetVariableIDByName('LastMessage',$circle);
+			$datainarchiv    = @AC_GetLoggedValues($archiveID,$id,$starttimearchiv,$endetimearchiv,-1);
+
+         $data_array[$counter]['CIRCLELIVECOUNTER'] = count($datainarchiv) ;
+			$counter = $counter + 1;
+			}
+			
+		}
+
 	// Pingdaten einfuegen wenn Menupunkt angewaehlt
 	if ( $menupunkt == 6 )
 	   {
    	$file = 'plugwiseping.log';
-		$pingdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+		$pingdatei = IPS_GetKernelDir() . "logs\\Plugwise\\logs\\" . $file;
 		$pingarr = array();
 		if ( file_exists($pingdatei) )
 			{
@@ -788,7 +810,7 @@ function update_uebersicht_circles()
 		   $c_pingms    = $data_array[$start_data]['CIRCLEPINGMS'];
 		   $c_pingrssi1 = $data_array[$start_data]['CIRCLEPINGRSSI1'];
 		   $c_pingrssi2 = $data_array[$start_data]['CIRCLEPINGRSSI2'];
-
+			$c_livecount = $data_array[$start_data]['CIRCLELIVECOUNTER'];
 
 			$text = $text . "<td width='25%'  bgcolor=$hintergrundfarbe >";
 			$circletext = "";
@@ -828,6 +850,7 @@ function update_uebersicht_circles()
 
 				if ( $menupunkt == 1 ) // last seen
 					{
+					$c_livecount = substr("0" . $c_livecount ,-2);
 			   	if ( $c_new == false )
 			      	{
 						if ( $c_error == true  )
@@ -835,8 +858,8 @@ function update_uebersicht_circles()
 						else
 							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
 
-						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;&nbsp;".$c_ls."</FONT>";
-						$circletext = $circletext . "<FONT  SIZE='4'>&nbsp;&nbsp;&nbsp;[&nbsp;".$c_lsms."&nbsp;]</FONT>";
+						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;".$c_ls."</FONT>";
+						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;[&nbsp;".$c_livecount."&nbsp;][&nbsp;".$c_lsms."&nbsp;]</FONT>";
 
 						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
 						}
@@ -1762,6 +1785,9 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 				$startzeit = $zeitraum[4];
 				$endezeit  = $zeitraum[5];
 				$preiskwh  = $zeitraum[6];
+
+            $preiskwh = str_replace(',', '.', $preiskwh);    // Convert , to . for floatval command
+            $preiskwh = floatval($preiskwh);
 
 					if ( $preiskwh > 0 and $tarifname != "" and $endezeit != "" and
 								$startzeit != "" )

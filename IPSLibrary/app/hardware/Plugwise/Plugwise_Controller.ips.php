@@ -384,9 +384,17 @@ function plugwise_0013_received($buf)
 	$string = $start_timestamp .";".$ende_timestamp;
 	$diff = round(($ende_timestamp - $start_timestamp) * 1000);
 
-
 	IPS_SetInfo($id,$string);
-   SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$diff);
+
+	$string1 = GetValue(IPS_GetVariableIDByName ("LastMessage", $myCat));
+	$string_array = explode(';',$string1);
+   $telegramm_counter = 0;
+	if ( isset($string_array[1]) )
+	   {
+		$telegramm_counter = $string_array[1];
+		$telegramm_counter = $telegramm_counter + 1;
+		}
+   SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$diff.";".$telegramm_counter);
 
 
 	//IPS_LogMessage("Info","[".$string."]".$diff);
@@ -474,7 +482,7 @@ function plugwise_0013_received($buf)
    		$kosten   = $akt_tk['KOSTEN'];
    		$akt_tarif= $akt_tk['TARIF'];
    		$kt_preis = $akt_tk['PREISKWH'];
-
+			
 		   $id_kosten = IPS_GetVariableIDByName("Kosten",$myCat);
 
 			//$kt_str = $kt_preis . ";" . $verbrauch ;
@@ -486,6 +494,7 @@ function plugwise_0013_received($buf)
 			// stunden_preis ist der aktuelle Veerbrauchspreis in dieser Stunde
 			// wird bei Stundenbeginn neu gestartet.
 			$stunden_preis = $verbrauch * $kt_preis;
+			
 			$stunden_preis = round($stunden_preis,6);
 			
 			$diff_stunden_preis = 0;
@@ -547,7 +556,7 @@ function plugwise_0013_received($buf)
 
 
 		$id = IPS_GetVariableIDByName("Leistung",$myCat);
-		if ( GetValueFloat($id) != $Leistung )
+		//if ( GetValueFloat($id) != $Leistung )
 			SetValueFloat($id,$Leistung);
 
 //		$id = IPS_GetVariableIDByName ("Status", $myCat);
