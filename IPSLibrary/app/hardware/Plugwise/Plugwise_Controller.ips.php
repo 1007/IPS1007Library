@@ -1197,6 +1197,27 @@ function hole_gesamtverbrauch()
 	   	{
       	$d = GetValue($id_gesamt);
 			$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
+			$oldvalue = GetValue($id);
+			
+			$diff = $d - $oldvalue;
+
+			$kostenunterschied = 0;
+			if ( $diff > 0 )
+				{
+				
+				// aktuellen Strompreis holen
+            $akt_kosten = aktuelle_kosten("GESAMT",0,"",1000);
+				$akt_preis = $akt_kosten['PREISKWH'];
+				$kostenunterschied = ($akt_preis * $diff)/100;  // in Euro
+
+            $idkosten = IPS_GetObjectIDByIdent('Kosten',$id1);
+				$lastkosten = GetValue($idkosten);
+				$neukosten = $lastkosten + $kostenunterschied;
+				SetValue($idkosten,$neukosten);
+            //IPS_Logmessage($oldvalue,$diff."-".$akt_preis."-".$kostenunterschied."-".$neukosten);
+
+				}
+			
 			if (GetValue($id) <> $d)
 				SetValue($id,$d);
 		   $text = "Gesamt Hauptzaehler:".$id_gesamt."-".$d;

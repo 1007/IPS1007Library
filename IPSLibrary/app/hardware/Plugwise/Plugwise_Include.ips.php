@@ -1468,7 +1468,7 @@ function update_data1_data2()
 	   
 	$error      = @GetValue(IPS_GetVariableIDByName('Error',$parent));
 	$ges_kosten = @round(GetValue($idkosten),2);
-	
+
 	$dateleistung = IPS_GetVariable($idleistung);
 	$dateleistung = date('H:i:s',$dateleistung['VariableUpdated']);
 		
@@ -1493,9 +1493,10 @@ function update_data1_data2()
    $kosten = round($kosten,2);
 	
    $array = statistikdaten($idgesamt);
-  
+   
    $verbrauch_heute   = $array['VERBRAUCH_HEUTE'];
    $verbrauch_gestern = $array['VERBRAUCH_GESTERN'];
+   
 
 
 	
@@ -1596,14 +1597,14 @@ function statistikdaten($gesamtid)
 	$start = mktime(0,0,0,date("m"),date("d")-1,date("Y"));
 	$ende  = mktime(23,59,59,date("m"),date("d")-1,date("Y"));
 	$data  = @AC_GetLoggedValues($archive,$gesamtid,$start,$ende,-1);
-   /*
+/*
 	foreach($data as $d)
 		{
    	echo "\n";
-   	echo date('d.m.Y H:i:s',$d['TimeStamp']);
+   	IPS_logmessage("...",date('d.m.Y H:i:s',$d['TimeStamp']));
    	echo " - " .$d['Value'];
 		}
-	*/
+*/
 	$diff_wert = 0;
 	if ( $data )
 	   {
@@ -2243,13 +2244,10 @@ function find_id_toshow()
 		$type        = "GESAMT";
 		$idgesamt   = IPS_GetObjectIDByIdent('SYSTEM_MAIN',$GroupsIdOData);
 		$idleistung = IPS_GetObjectIDByName('Leistung',$idgesamt);
+		$idkosten   = IPS_GetObjectIDByIdent('Kosten',$idgesamt);
 		$idgesamt   = IPS_GetObjectIDByName('Gesamtverbrauch',$idgesamt);
+		
 		$objectname = "Gesamt";
-//		if ( isset($SystemStromzaehlerGroups) )
-//		   {
-//			$idleistung  = intval($SystemStromzaehlerGroups[0][2]);
-//			$idgesamt    = intval($SystemStromzaehlerGroups[0][3]);
-//			}
 		}
 
 

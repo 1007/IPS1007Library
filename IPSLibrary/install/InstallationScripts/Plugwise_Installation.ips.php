@@ -472,7 +472,7 @@
 
    $ActionScriptId = IPS_GetScriptIDByName('Plugwise_Webfront', $CategoryIdApp );
    
-  $graphid  = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
+  $graphid  = CreateVariable("Übersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, false);
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
   IPS_SetHidden($graphid1,true);
   
