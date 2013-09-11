@@ -22,11 +22,16 @@
       } 
     else 
       {
-      $startTime = (int) $_GET['lastTimeStamp'];
+      $startTime = $_GET['lastTimeStamp'];
+      $startTime = substr($startTime,0,9);
+       
+      $startTime = intval($startTime);
       }
     $endTime = time();
 
-
+  //IPS_logMessage("-----",$_GET['lastTimeStamp']);
+  //IPS_logMessage("-----",$startTime);
+  
   if ( $request == "HC" )
     {        
     // ScriptId wurde übergeben -> aktuelle Daten werden geholt
@@ -39,6 +44,7 @@
         
         $data = getLoggedData($CfgDaten['series'], $instances[0], $startTime, $endTime);
         
+        //IPS_logMessage("....",$request."-");
         header("Content-type: text/json");
         echo json_encode($data);
     }
@@ -74,10 +80,20 @@ function getLoggedData($Series, $id_AH, $startTime, $endTime)
   foreach ($Series as $Serie) {
   
             $logEntries = AC_GetLoggedValues($id_AH, intval($Serie['Id']), $startTime, $endTime, 0 );
+
+              $startTime = date("l jS \of F Y h:i:s A",$startTime);
+              $endTime = date("l jS \of F Y h:i:s A",$endTime);
+
+              //IPS_logMessage("....",$startTime."-".$endTime);    
+
+
             if ($logEntries )
-            foreach($logEntries as $logEntry) {
-                $ret[] = array(CreateDateUTC($logEntry['TimeStamp']), $logEntry['Value']);
-            }
+              foreach($logEntries as $logEntry) {
+                  $ret[] = array(CreateDateUTC($logEntry['TimeStamp']), $logEntry['Value']);
+                  }
+            //else
+              //IPS_logMessage("....","NADA");    
+            
         }
         return $ret;
     }
