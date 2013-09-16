@@ -79,6 +79,7 @@
 													case "0024":   plugwise_0024_received($buf);	break;
 													case "0027":   plugwise_0027_received($buf);	break;
 													case "0049": 	plugwise_0049_received($buf);	break;
+													case "003A":   plugwise_003A_received($buf);	break;
 													case "003F":   plugwise_003F_received($buf);	break;
 													case "0061":   plugwise_0061_received($buf);	break;
 	   											default	  :   logging( "Unbekanntes Telegramm [".$buf . "]","plugwiseunknown.log"); break;
@@ -791,6 +792,34 @@ function plugwise_0027_received($buf)
 	logging($text,'plugwisecalibration.log' );
 	
 	}
+	
+
+/***************************************************************************//**
+*	"003A" empfangen	-  aktuelle RTC empfangen
+*  Antwort auf "0029" - RTC auslesen
+
+      <command number="003a" vnumber="1.0" implementation="Plugwise.IO.Commands.V10.PWGetRTCReplyV1_0">
+        <arguments>
+          <argument name="macId" length="16"/>
+          <argument name="seconds" length="2"/>
+          <argument name="minutes" length="2"/>
+          <argument name="hour" length="2"/>
+          <argument name="dayOfWeek" length="2"/>
+          <argument name="day" length="2"/>
+          <argument name="month" length="2"/>
+          <argument name="year" length="2"/>
+        </arguments>
+      </command>
+
+*/
+function plugwise_003A_received($buf)
+	{
+	GLOBAL $idCatCircles;
+
+	$mcID = substr($buf,8,16);
+
+
+	}
 /***************************************************************************//**
 *	"003F" empfangen	-  aktuelle Uhrzeit empfangen
 *  Antwort auf "003E" - Uhrzeit auslesen
@@ -834,12 +863,16 @@ function plugwise_003F_received($buf)
 	$m2  = ($std*60*60) + ($min*60) + $sek;
 
  	$abweichung = $m1 - $m2;
-	$text = IPS_GetName($myCat).": ".date("H:i:s", $myTime)." Abweichung: " . $abweichung ." Sekunden. " .unixtime2pwtime();
+	$text = IPS_GetName($myCat).": ".date("d.m.Y H:i:s", $myTime)." Abweichung: " . $abweichung ." Sekunden. " .unixtime2pwtime();
 
-	if ( $abweichung > 30 ) // Abweichung groesser 30 Sekunden
+	if ( $abweichung > 10  or $abweichung < -10 ) // Abweichung groesser 10 Sekunden
 		{
 		$text = $text . " Uhrzeit wird gestellt.";
- 		PW_SendCommand("0016".IPS_GetName($myCat).unixtime2pwtime(),IPS_GetName($myCat));
+ 		//PW_SendCommand("0016".IPS_GetName($myCat).unixtime2pwtime(),IPS_GetName($myCat));
+
+   	//$id_info = IPS_GetObject($item);
+ 		PW_SendCommand("0016".$mcID.unixtime2pwtime(),IPS_GetName($myCat));
+
 		}
 
 	logging($text,'plugwisetime.log' );
