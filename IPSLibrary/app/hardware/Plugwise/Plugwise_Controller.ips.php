@@ -1281,7 +1281,7 @@ function hole_gesamtverbrauch()
       {
 		$l = 0;
 		$g = 0;
-
+		$k = 0;
 
 		foreach($CircleGroups as $item)
 		   { // addiere Circles
@@ -1296,8 +1296,10 @@ function hole_gesamtverbrauch()
 					$l = $l + $data1;
 					$data2 = GetValueFloat(IPS_GetObjectIDByIdent("Gesamtverbrauch",$id));
 					$g = $g + $data2;
+					$data3 = GetValueFloat(IPS_GetObjectIDByIdent("Kosten",$id));
+					$k = $k + $data3;
 
-					$text = "ID:".$id."-".$data1."-".$l."-".$data2."-".$g;
+					$text = "ID:".$id."-".$data1."-".$l."-".$data2."-".$g."-".$data3."-".$k;
 		   		logging($text,"Gesamtleistung.log",true);
 					}
 				}
@@ -1325,9 +1327,6 @@ function hole_gesamtverbrauch()
 		   }
 
 
-
-
-
 		$id = IPS_GetObjectIDByIdent('Leistung',$id1);
       if (GetValue($id) <> $l)
 			SetValue($id,$l);
@@ -1335,6 +1334,10 @@ function hole_gesamtverbrauch()
 		$id = IPS_GetObjectIDByIdent('Gesamtverbrauch',$id1);
 		if (GetValue($id) <> $g)
       	SetValue($id,$g);
+
+		$id = IPS_GetObjectIDByIdent('Kosten',$id1);
+		if (GetValue($id) <> $k)
+      	SetValue($id,$k);
 
 		}
 		
