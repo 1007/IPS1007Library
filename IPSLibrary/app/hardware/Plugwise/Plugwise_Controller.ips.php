@@ -193,8 +193,8 @@ function plugwise_0000_received($buf)
 		 					logging( "R - ".$buf ." Circle eingeschaltet");
 							$myCat = IPS_GetObjectIDByIdent(substr($buf,12,16), $idCatCircles);
 							$id = IPS_GetVariableIDByName ("Status", $myCat);
-							if ( GetValue($id) <> true)
-								SetValue($id,True);
+							//if ( GetValue($id) <> true)
+							SetValue($id,True);
 							break;
 
 		case "00DE":  	// ausgeschaltet
@@ -202,8 +202,8 @@ function plugwise_0000_received($buf)
 							logging( "R - ".$buf ." Circle ausgeschaltet");
 							$myCat = IPS_GetObjectIDByIdent(substr($buf,12,16), $idCatCircles);
 							$id = IPS_GetVariableIDByName ("Status", $myCat);
-							if ( GetValue($id) <> false)
-								SetValue($id,false);
+							//if ( GetValue($id) <> false)
+							SetValue($id,false);
 							break;
 
 		case "00E1":   // Ein Circle nicht erreichbar
@@ -396,7 +396,7 @@ function plugwise_0013_received($buf)
 		$telegramm_counter = $telegramm_counter + 1;
 		}
    SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$diff.";".$telegramm_counter);
-
+   SetValue(@IPS_GetVariableIDByName ("Laufzeit", $myCat),$diff);
 
 	//IPS_LogMessage("Info","[".$string."]".$diff);
 	//*********************************************

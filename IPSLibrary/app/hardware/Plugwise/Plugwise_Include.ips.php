@@ -773,7 +773,7 @@ function update_uebersicht_circles()
 
 
 	
-	$anzahlzeilen  = 9 ;
+	$anzahlzeilen  = 8 ;
 	$anzahlspalten = 3;
 	if (defined('UEBERSICHTSPALTEN'))
 	   $anzahlspalten = UEBERSICHTSPALTEN;
@@ -2718,11 +2718,36 @@ function circle_on_off($mac,$status)
 	if ( $status == false )
 		$action = 0;
 
-   SetValue($id,$status);
+   //SetValue($id,$status);
+
+	$obj = IPS_GetVariable($id);
+	$t1 = $obj["VariableUpdated"]; // StatusZeit vor dem Schalten
 
 	$cmd = "0017".$mac."0".$action;
 	PW_SendCommand($cmd,$mac);
 
+	$ok = false;
+	for ( $x=0;$x<50;$x++ )
+	   {
+	   
+		$obj = IPS_GetVariable($id);
+		$t2 = $obj["VariableUpdated"]; // StatusZeit nach dem Schalten
+		//echo "\n".$t1 ."-".date('d.m.Y H:i:s',$t1);
+		//echo "\n".$t2."-".date('d.m.Y H:i:s',$t2);
+
+		if ( $t2 > $t1 )
+		   {
+		   $ok = true;
+		   break;
+		   }
+
+	   //IPS_LogMessage("Plugwise","Circle schalten Wait");
+	   IPS_Sleep(100);
+
+
+	   }
+	   
+	return($ok);
 
 	}
 	
