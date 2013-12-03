@@ -396,7 +396,7 @@ function plugwise_0013_received($buf)
 		$telegramm_counter = $telegramm_counter + 1;
 		}
    SetValue(IPS_GetVariableIDByName ("LastMessage", $myCat),$diff.";".$telegramm_counter);
-   SetValue(@IPS_GetVariableIDByName ("Laufzeit", $myCat),$diff);
+   //SetValue(@IPS_GetVariableIDByName ("Laufzeit", $myCat),$diff);
 
 	//IPS_LogMessage("Info","[".$string."]".$diff);
 	//*********************************************
