@@ -2446,8 +2446,14 @@ function check_zaehleractions()
 
 		if ( !$object )
 		   {
-			echo "\nSuche Zaehler bei den Externen";
-
+			//echo "\nSuche Zaehler bei den Externen";
+         if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Externen",$zaehler);
+         $zaehler = intval($zaehler);
+         if ( IPS_VariableExists($zaehler) )
+            {
+         	$leistung_id = $zaehler;
+         	$object = true;
+         	}
 		   }
 	   
 		if ( !$object )
