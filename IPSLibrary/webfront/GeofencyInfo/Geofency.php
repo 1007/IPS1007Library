@@ -11,18 +11,16 @@
 
       
   $Parent = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo");
-  
-  $debug = true;
 
   if ( !isset($_GET["IPSName"] ) )
-    {
-    if ( $debug ) IPSLogger_Dbg(__FILE__,"Kein IPSName angegeben");
+    { 
+    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Kein IPSName angegeben");
     echo "Kein IPSName angegeben";
     return;
     }
   else
     $IPSName      =$_GET["IPSName"];
-      
+  
   if ( isset( $_POST["date"] ) )     $GEOdate         =$_POST["date"] ;      else $GEOdate="";
   if ( isset( $_POST["name"] ) )     $GEOname         =$_POST["name"] ;      else $GEOname="";    
   if ( isset( $_POST["id"] ) )       $GEOid           =$_POST["id"] ;        else $GEOid="";
@@ -31,7 +29,7 @@
   if ( isset( $_POST["entry"] ) )    $GEOentry        =$_POST["entry"] ;     else $GEOEntry="";
   if ( isset( $_POST["device"] ) )   $GEOdevice       =$_POST["device"] ;    else $GEOdevice="";
 
-  $out = $IPSName.",".$GEOdate.",".$GEOname.",".",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
+  $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
   logging(false,$out,'incoming.log');
 
 
@@ -43,7 +41,7 @@
     
   if ( $IPSName == '' )
     {
-    if ( $debug ) IPSLogger_Dbg(__FILE__,"Keine Location angegeben");
+    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Keine Location angegeben");
     echo "Keine Location angegeben";
     return;
     }
@@ -51,7 +49,7 @@
   
   if ( !$Parent )
     {
-    if ( $debug ) IPSLogger_Dbg(__FILE__,"Parent Pfad NOK");
+    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Parent Pfad NOK");
     echo "Parent-Pfad NOK";
     return;    
     }
@@ -91,66 +89,21 @@
     $out = $dev .date('d.m.Y H:i:s') . " Abfahrt: " . date('d.m.Y H:i:s',strtotime($GEOdate)) . "  " . $IPSName . " - " . $GEOid ;
     }
     
-        
-  if ( $debug ) IPSLogger_Dbg(__FILE__,$out);
+   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$out);
     
   logging($Parent,$out);
 
 
-  $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.privat.Informationen.Geofencing.".$IPSName);
+  $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$IPSName);
   $HTMLBoxID = CreateVariable('GoogleMap'  ,3,$DeviceID,99,'~HTMLBox'); 
   DoGoogleMaps($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude));
 
   $HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox'); 
   DoOSMMap($HTMLBoxID);
 
-
-  DoActions($GEOentry,trim($IPSName),trim($GEOname));
-
- 
-
-
-        
-/***************************************************************************//**
-*	Ausfuehren von Aktion bei Erreichen oder Verlassen
-*******************************************************************************/
-function DoActions($isEntry,$device,$location)
-    {
-    $debug = true;
-    // LocationName und DeviceName hier eintragen
-    $DeviceName      = 'iPhone';
-    $LocationName     = 'Home';
-    if ( $isEntry and $device==$DeviceName and $location==$LocationName )
-       {
-       // Hier wird was ausgefuehrt wenn das Geraet den Bereich erreicht
-        if ( $debug ) IPSLogger_Dbg(__FILE__,$DeviceName." hat ".$LocationName." erreicht");
-       
-       }
-    if ( !$isEntry and $device==$DeviceName and $location==$LocationName )
-       {
-       // Hier wird was ausgefuehrt wenn das Geraet den Bereich verlaesst
-        if ( $debug ) IPSLogger_Dbg(__FILE__,$DeviceName." hat ".$LocationName." verlassen");
-
-       }
-
-    // LocationName und DeviceName hier eintragen
-    $DeviceName      = 'iPadMini';
-    $LocationName     = 'Home';
-    if ( $isEntry and $device==$DeviceName and $location==$LocationName )
-       {
-       // Hier wird was ausgefuehrt wenn das Geraet den Bereich erreicht
-        if ( $debug ) IPSLogger_Dbg(__FILE__,$DeviceName." hat ".$LocationName." erreicht");
-
-       }
-    if ( !$isEntry and $device==$DeviceName and $location==$LocationName )
-       {
-       // Hier wird was ausgefuehrt wenn das Geraet den Bereich verlaesst
-        if ( $debug ) IPSLogger_Dbg(__FILE__,$DeviceName." hat ".$LocationName." verlassen");
-
-       }
-    }
   
-
-
+  GEOActions($GEOentry,trim($IPSName),trim($GEOname));
+  
+        
       
 ?>

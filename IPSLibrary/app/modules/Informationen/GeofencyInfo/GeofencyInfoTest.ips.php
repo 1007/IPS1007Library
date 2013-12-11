@@ -9,7 +9,7 @@
 	
 	
 $data = array ('date' => $now ,
-					'name' => 'Home' ,
+					'name' => 'GeofencyTestLocation' ,
 					'longitude' => $lon,
 					'latitude' => $lat,
 					'id' => '1234567890',
@@ -25,7 +25,7 @@ $context = stream_context_create(array(
       'content' => $data
     ),
   ));
-$return = file_get_contents('http://localhost:82/user/GeofencyInfo/Geofency.php?IPSName=GeofencyTest', false, $context);
+$return = file_get_contents('http://localhost:82/user/GeofencyInfo/Geofency.php?IPSName=GeofencyTestDevice', false, $context);
 
 
 
