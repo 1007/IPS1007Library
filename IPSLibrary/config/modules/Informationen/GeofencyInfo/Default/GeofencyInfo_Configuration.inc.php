@@ -1,4 +1,21 @@
 <?
+	/*
+	 * This file is part of the IPSLibrary.
+	 *
+	 * The IPSLibrary is free software: you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License as published
+	 * by the Free Software Foundation, either version 3 of the License, or
+	 * (at your option) any later version.
+	 *
+	 * The IPSLibrary is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
+	 */
+
 /***************************************************************************//**
 * @ingroup informationen
 * @{
@@ -19,6 +36,19 @@
 * 
 *******************************************************************************/
 
+/***************************************************************************//**
+* Einstellungen in der APP Geofency
+*     Mitteilungen aktivieren
+*     Webhook
+*         URL   -   http://..../user/GeofencyInfo/Geofency.php?IPSName=xxxxxxx
+*         POST Einstellungen  - JSON-enkodiert AUS
+*
+*
+*******************************************************************************/
+
+
+  GLOBAL $DeviceConfig;
+  GLOBAL $ActionConfig;
 
 /***************************************************************************//**
 * Debug und Logging
@@ -29,8 +59,8 @@
 *                 wenn TRUE werden Logfiles in Log/GeofencyInfo Ordner
 *                 geschrieben 
 *******************************************************************************/
-  define  ( 'DEBUG_MODE'  , FALSE );
-  define  ( 'LOG_MODE'    , FALSE );
+  define  ( 'DEBUG_MODE'  , true );
+  define  ( 'LOG_MODE'    , true );
  
 /***************************************************************************//**
 * Geraetekonfiguration 
@@ -38,7 +68,7 @@
 *   Feld 01   -   laufende Nummer
 *   Feld 02   -   Geraet aktiv (true/false)
 *   Feld 03   -   Geraetenamen ( identisch mit dem Namen in der URL (IPSName=xx)
-*   Feld 04   -   
+*   Feld 04   -   ID der erstellten Variablen wird bei Installation verwendet 
 *   Feld 05   -   
 *   Feld 06   -   
 *   Feld 07   -                
@@ -46,7 +76,7 @@
 *   Beispiel  - array(1,true,"iPhone",false,false,false,false),
 *******************************************************************************/
   $DeviceConfig = array(
-	   array(1, false,"",false,false,false,false),
+	   array(1, true,"GeofencyTestDevice",false,false,false,false),
 	   array(2, false,"",false,false,false,false),
 	   array(3, false,"",false,false,false,false),
 	   array(4, false,"",false,false,false,false),
@@ -72,7 +102,7 @@
 *   Beispiel  - array(1,true,"iPhone","Home",12345,12345,false),
 *******************************************************************************/
   $ActionConfig = array(
-	   array(1, false,"",false,false,false,false),
+	   array(1, true ,"GeofencyTestDevice","GeofencyTestLocation",12345,54321,false),
 	   array(2, false,"",false,false,false,false),
 	   array(3, false,"",false,false,false,false),
 	   array(4, false,"",false,false,false,false),
@@ -84,7 +114,25 @@
 	   array(10,false,"",false,false,false,false),
 				);
 				
-				
+/***************************************************************************//**
+* Maps 
+*       GEOFENCYIPSMAP  -   GOOGLE/OSM   
+*       
+*       GOOGLEMAPS
+*
+*       
+*
+*       OSM
+*       
+*
+*
+*          
+*******************************************************************************/				
+	define ( 'GEOFENCYIPSMAP'         , 'GOOGLE' );
+
+
+
+
 /***************************************************************************//**
 * MySQL - Anbindung 
 *   MYSQL_ANBINDUNG         - MySQL Anbindung aktiv ( Standard = FALSE )
@@ -115,6 +163,7 @@
   define  ( 'MAPS_GOOGLE_CREATE'      , FALSE );
   define  ( 'MAPS_OSM_CREATE'         , TRUE  );
   define  ( 'TESTLOCALWEBSERVER'      , 'http://localhost:82/' );
+  define  ( 'HTMLLOGLINES'            , 15 );
   
 
       

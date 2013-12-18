@@ -77,22 +77,23 @@
   if ($GEOentry)
     {
     SetValue($IDankunftIPS,time());
-    SetValue($IDankunftGEO,strtotime($GEOdate));
-    $dev = str_pad ( $GEOname, 15 , ' ' );     
-    $out = $dev .date('d.m.Y H:i:s') . " Ankunft: " . date('d.m.Y H:i:s',strtotime($GEOdate)) . "  " . $IPSName . " - " . $GEOid ;
+    $t = strtotime($GEOdate);
+    SetValue($IDankunftGEO,$t);
+    $loc = str_pad ( $GEOname, 15 , ' ' );     
+    $out = "Ankunft: " . $IPSName . " - " . $loc  ;
     }
   else
     {
     SetValue($IDabfahrtIPS,time());
-    SetValue($IDabfahrtGEO,strtotime($GEOdate));
-    $dev = str_pad ( $GEOname, 15 , ' ' );     
-    $out = $dev .date('d.m.Y H:i:s') . " Abfahrt: " . date('d.m.Y H:i:s',strtotime($GEOdate)) . "  " . $IPSName . " - " . $GEOid ;
+    $t = strtotime($GEOdate);
+    SetValue($IDabfahrtGEO,$t);
+    $loc = str_pad ( $GEOname, 15 , ' ' );     
+    $out = "Abfahrt: " . $IPSName . " - " . $loc  ; ;
     }
     
    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$out);
     
-  logging($Parent,$out);
-
+  Logging($Parent,$out,'geofency.log');
 
   $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$IPSName);
   $HTMLBoxID = CreateVariable('GoogleMap'  ,3,$DeviceID,99,'~HTMLBox'); 
@@ -102,8 +103,9 @@
   DoOSMMap($HTMLBoxID);
 
   
-  GEOActions($GEOentry,trim($IPSName),trim($GEOname));
+  $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname));
   
+  HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$ActionOK);
         
       
 ?>

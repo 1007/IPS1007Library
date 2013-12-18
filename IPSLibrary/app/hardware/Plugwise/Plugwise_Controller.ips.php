@@ -522,7 +522,10 @@ function plugwise_0013_received($buf)
 				
 			zaehleKostenhoch($myCat,$diff_stunden_preis);
 			
-			IPS_SetInfo($id_kosten,$stunden_preis);
+			$valstring = strval($stunden_preis);
+			$valstring = str_replace(",",".",$valstring);
+
+			IPS_SetInfo($id_kosten,$valstring);
 			//$kt_preis = floatval($kt_preis);
 			//$string_kt_preis = number_format($kt_preis,2,'.','');
          $string_kt_preis = str_replace(",", ".", $kt_preis);
