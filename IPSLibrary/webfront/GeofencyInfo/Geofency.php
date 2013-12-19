@@ -79,6 +79,8 @@
     SetValue($IDankunftIPS,time());
     $t = strtotime($GEOdate);
     SetValue($IDankunftGEO,$t);
+    SetValue($IDabfahrtGEO,0);
+    
     $loc = str_pad ( $GEOname, 15 , ' ' );     
     $out = "Ankunft: " . $IPSName . " - " . $loc  ;
     }
@@ -100,12 +102,13 @@
   DoGoogleMaps($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude));
 
   $HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox'); 
-  DoOSMMap($HTMLBoxID);
+  DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry);
 
   
   $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname));
   
   HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$ActionOK);
-        
+  
+  CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);      
       
 ?>

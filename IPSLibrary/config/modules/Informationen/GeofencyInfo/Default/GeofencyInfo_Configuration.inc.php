@@ -119,18 +119,20 @@
 *       GEOFENCYIPSMAP  -   GOOGLE/OSM   
 *       
 *       GOOGLEMAPS
-*
+*           GOOGLEMAPS_ZOOM
 *       
 *
 *       OSM
-*       
+*           OSM_ZOOM
 *
 *
 *          
 *******************************************************************************/				
-	define ( 'GEOFENCYIPSMAP'         , 'GOOGLE' );
+	define   ( 'GEOFENCYIPSMAP'         , 'GOOGLE' );
 
+  define   ( 'GOOGLEMAPS_ZOOM'        , 15 );  
 
+  define   ( 'OSM_ZOOM'               , 15 );  
 
 
 /***************************************************************************//**

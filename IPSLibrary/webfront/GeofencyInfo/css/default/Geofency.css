@@ -1,0 +1,203 @@
+/* Tabelleneigenschaften*/
+.tableTop {
+        width:100%;
+        height:60px;
+        border-style:solid;
+        border-width:5px;
+        padding-left: 10px;
+        border-color: #CCCCCC;                                                            
+        background: #CCFFFF; 
+        background-color : transparent;
+        margin-top:0px; 
+        margin-left:0px;
+       }      
+
+.tableBottom {
+        width:100%;
+        height:192px;
+        border-style:solid;
+        border-width:5px;
+        padding-left: 10px;
+        border-color: #CCCCCC;       
+        background: #FFFFFF; 
+        background-color : transparent;
+        margin-top:0px; 
+        margin-left:0px;
+       }      
+.tdStyle {
+
+          border: solid 3px gray; 
+          border-spacing: 9px; 
+          border-radius: 6px
+         }
+
+.tdStyleTimeInfo {
+         color: #FFFFFF;
+        font-family:arial;
+        font-size: 15pt; 
+
+          border: solid 3px gray; 
+          border-spacing: 9px; 
+          border-radius: 6px
+          
+         }
+
+.tdStyleLocationInfo {
+         color: #FFFFFF;
+        font-family:arial;
+        font-size: 25pt; 
+
+          border: solid 3px gray; 
+          border-spacing: 9px; 
+          border-radius: 6px
+          
+         }         
+
+.floatLeft {
+      float:left;
+          }
+.floatRight {
+      float:right;
+          }
+
+.tdStyleHistory {
+        color: #C0C0C0;
+        font-family:arial;
+        font-size: 15pt; 
+        margin-top:0px;
+        padding:0px;
+        margin:0px;  
+         }         
+ 
+.divImgGeofency {
+        color: #00FF00;
+        font-family:arial;
+        font-size: 4pt; 
+        width:100px;
+        height:100px;
+        margin-top:3px; 
+        margin-left:3px;
+        margin-bottom:3px;
+	      /*top:50%;left:50%;*/
+	      background: #FFFFFF;
+	      float:left;
+	      background-color : transparent;
+	   }
+.imgGeofency {
+        width:100%;
+        height:100%;
+        margin-top:0px; 
+        margin-left:0px;	      
+	     }
+
+.divImgGreenArrow {
+        color: #FFFFFF;
+        font-family:arial;
+        font-size: 15pt; 
+        width:280px;
+        height:42px;
+        margin-top:10px;      
+	      background: #000000;
+	      float:left;
+	      background-color : transparent;
+	   }
+.imgGreenArrow {
+        /*margin-top:15px;*/ 
+          
+
+    }
+
+.divImgRedArrow {
+        color: #FFFFFF;
+        font-family:arial;
+        font-size: 15pt; 
+        width:280px;
+        height:42px;
+        margin-top:10px;      
+	      background: #000000;
+	      float:left;
+	      background-color : transparent;
+	   }
+
+.divTimeInfo {
+        color: #FFFFFF;
+        font-family:arial;
+        font-size: 15pt; 
+  } 
+  
+.txtLocationInfo {
+        color: #FFFFFF;
+        font-family:arial;
+        font-size: 11pt; 
+  } 
+  
+                    
+/* Eigenschaften fuer die Verbrauchsschriften */
+.verbrauchschrift { 
+        color:#6699FF;
+        font-size:15px;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Verbrauchsdaten */
+.verbrauchdaten { 
+        color:#FFCC00;
+        font-size:20px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Tarifanzeige */
+.tarifschrift { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Tarifanzeige Daten */
+.tarifdaten { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Zeitanzeige */
+.zeitschrift { 
+        color:#FFFFFF;
+        font-size:15px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Zeitanzeige Daten */
+.zeitdaten { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Leistung Schrift */
+.leistungschrift { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Leistung Daten */
+.leistungdaten { 
+        color:#FFFF90;
+        font-size:40px;
+        font-weight:bold;
+        text-align:center;
+        }      
+/* Eigenschaften fuer die Kosten Schrift */
+.kostenschrift { 
+        color:#FFFFFF;
+        font-size:20px;
+        font-weight:normal;
+        text-align:left;
+        }      
+/* Eigenschaften fuer die Kosten Daten */
+.kostendaten { 
+        color:#FFFF90;
+        font-size:40px;
+        font-weight:bold;
+        text-align:center;
+        }      

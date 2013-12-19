@@ -78,6 +78,10 @@
   $ImgScriptNOKDefault  = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\scriptnok.png";
 	$ImgScriptNOK         = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\scriptnok.png";
 
+  $cssFileDefault       = IPS_GetKernelDir()."webfront\user\GeofencyInfo\css\default\Geofency.css";
+  $cssFile              = IPS_GetKernelDir()."webfront\user\GeofencyInfo\css\Geofency.css";
+
+
   //****************************************************************************
   // Variablen bauen
   //****************************************************************************
@@ -208,6 +212,11 @@
 	   {
 	   echo "\nImageFile existiert nicht . Default wird kopiert";
 	   copy($ImgEmptyDefault,$ImgEmpty);
+		 }		 
+    if ( !file_exists($cssFile))
+	   {
+	   echo "\nCSSFile existiert nicht . Default wird kopiert";
+	   copy($cssFileDefault,$cssFile);
 		 }		 
    
   
