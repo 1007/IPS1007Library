@@ -180,7 +180,7 @@ function HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$Ac
 	$img_scriptok = "/user/GeofencyInfo/images/scriptok.png";
 	$img_scriptnok= "/user/GeofencyInfo/images/scriptnok.png";
 
-	$htmlText = "<table border = '0' width='100%' >";
+	$htmlText = "<table border = '0' width='100%' scrolling='no'>";
 	$htmlText = $htmlText . "<colgroup>";
 
 	$htmlText = $htmlText . "<col width='25'><col width='20%'><col width='25'><col width='10%'>";
@@ -363,15 +363,22 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 			}
 		}
 
+	$HistoryAnzahl = 6;
+	if ( @defined ( 'HISTORYLINES' ) )
+	   {
+		$HistoryAnzahl = HISTORYLINES;
+		}
+
 	ksort($HistoryArray);
 	$HistoryArray = array_reverse($HistoryArray);
-	$HistoryArray = array_slice($HistoryArray,1,7);
+	$HistoryArray = array_slice($HistoryArray,1,$HistoryAnzahl);
 		
 	// Create History-HTML
 	$htmlHistory  = "";
 	foreach ( $HistoryArray as $Location )
 	   {	
 		$htmlHistory .= "<p class='tdStyleHistory'>" . $Location[0] ."</p>" ;
+
 		if ( $Location[1] )
 			$Location[1] = date("d.m.y H:i:s",$Location[1]);
 		else
@@ -381,9 +388,10 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 			$Location[2] = date("d.m.y H:i:s",$Location[2]);
 		else
 		   $Location[2] = "";
-
+		
+		
 		$htmlHistory = $htmlHistory . "<img class='imgGreenArrow' src='".$img_green."' height='20px' width='20px' align='ABSMIDDLE'>".$Location[1]."</br>";
-		$htmlHistory = $htmlHistory . "<img class='imgRedArrow'   src='".$img_red."'   height='20px' width='20px' align='ABSMIDDLE'>".$Location[2]."<p></p>";
+		$htmlHistory = $htmlHistory . "<img class='imgRedArrow'   src='".$img_red."'   height='20px' width='20px' align='ABSMIDDLE'>".$Location[2]."";
 		}
 
 	// checke ob Script ausgefuehrt
@@ -411,11 +419,18 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 
 		}
 		
+	$MapHeight = 500;
+	if ( @defined ( 'MAPHEIGHT' ) )
+	   {
+		$MapHeight = MAPHEIGHT;
+		}
 
 
-	$htmlText = "<head><link rel='stylesheet' type='text/css' href='/user/GeofencyInfo/css/Geofency.css'></head><body>";
+	$htmlText = "<head><link rel='stylesheet' type='text/css' href='/user/GeofencyInfo/css/Geofency.css'>";
+	$htmlText = $htmlText . "<style>overflow-x:auto</style>";
+	$htmlText = $htmlText . "</head><body>";
 
-	$htmlText = $htmlText . "<table border = '0' width='100%' >";
+	$htmlText = $htmlText . "<table border = '0' width='100%' scrolling='No'>";
 
 	$htmlText = $htmlText . "<tr>";
 
@@ -441,25 +456,25 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 		}
 		
 	$htmlText = $htmlText . "<td class='tdStyleLocationInfo' width='60%' ><center>" . $IPSName . "" ;
-	$htmlText = $htmlText . "<p class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p></td>" ;
+	$htmlText = $htmlText . "<p  class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p></td>" ;
 
 	$htmlText = $htmlText . "</tr>";
 	$htmlText = $htmlText . "</table>";
 
-	$htmlText = $htmlText . "<table border = '0' width='100%' >";
+	$htmlText = $htmlText . "<table border = '0' width='100%' scrolling='No'>";
 	
 	$htmlText = $htmlText . "<tr>";
 	$htmlText = $htmlText . "<td class='tdStyle' valign='top'  width='200' height='400'> " ;
 
-	$htmlText = $htmlText . "<p>" . $htmlHistory . "</p></td>" ;
+	$htmlText = $htmlText . "" . $htmlHistory . "</td>" ;
 
-	$htmlText = $htmlText . "<td class='tdStyle' height='500'> " . $map . "</td>" ;
+	$htmlText = $htmlText . "<td class='tdStyle' height='".$MapHeight."'> " . $map . "</td>" ;
 
 	$htmlText = $htmlText . "</tr>";
 	$htmlText = $htmlText . "</table>";
 	$htmlText = $htmlText . "</body>";
 
-   
+   //$htmlText = "<iframe>".$htmlText ."</iframe>";
 	SetValueString($ContentId,$htmlText);
 
 	}

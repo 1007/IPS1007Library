@@ -33,11 +33,13 @@
 
 	$now = date('c');
 	
+	$zufall = rand(1,10);
+	
 	$lon = rand(7500000,8500000)/1000000;
 	$lat = rand(48500000,49500000)/1000000;
 
 	$data = array ('date' => $now ,
-					'name' => 'GeofencyTestLocation' ,
+					'name' => 'TestLocation' . $zufall ,
 					'longitude' => $lon,
 					'latitude' => $lat,
 					'id' => '1234567890',
@@ -55,8 +57,10 @@
 
 	$return = file_get_contents(TESTLOCALWEBSERVER.'user/GeofencyInfo/Geofency.php?IPSName=GeofencyTestDevice', false, $context);
 
+	IPS_Sleep(10000);
+
 	$data = array ('date' => $now ,
-					'name' => 'GeofencyTestLocation' ,
+					'name' => 'TestLocation' . $zufall,
 					'longitude' => $lon,
 					'latitude' => $lat,
 					'id' => '1234567890',

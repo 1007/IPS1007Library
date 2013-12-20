@@ -132,7 +132,7 @@
 		  }
 	 else
 	 	{	DeleteWFCItem($WFC_ConfigId, $Item['ID']);
-
+     IPS_ApplyChanges($WFC_ConfigId);
 		}
 	 }
   
@@ -143,8 +143,8 @@
     CreateWFCItemTabPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent, $WFC_TabPaneOrder, $WFC_TabPaneName, $WFC_TabPaneIcon); 
 
 
-    $Configuration = '{"title":"Info","name":"'.$WFC_TabPaneItem.'Info","baseID":'.$LogIdLink.'}';
-    CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.'Info', $WFC_TabPaneItem, 99 , "", '' , 'ContentChanger' ,$Configuration );
+    $Configuration = '{"title":"Info","name":"'.$WFC_TabPaneItem.'Info","baseID":'.$LogIdLink.',"icon":"Information"}';
+    CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.'Info', $WFC_TabPaneItem, 99 , "", 'Information' , 'ContentChanger' ,$Configuration );
 
     foreach($DeviceConfig as $Device)
       {
@@ -159,8 +159,8 @@
           {
           //$Configuration = '{"title":"'.$Name.'","name":"'.$WFC_TabPaneItem.$Name.',"baseID":'.$id.'}';
           //CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.$Name, $WFC_TabPaneItem, $Number , "", '' , 'ContentChanger' ,$Configuration );
-          $Configuration = '{"title":"'.$Name.'","name":"'.$WFC_TabPaneItem.'Info1","baseID":'.$id.'}';
-          CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.$Name, $WFC_TabPaneItem, $Number , "", '' , 'ContentChanger' ,$Configuration );
+          $Configuration = '{"title":"'.$Name.'","name":"'.$WFC_TabPaneItem.'Info1","baseID":'.$id.',"icon":"Notebook"}';
+          CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.$Name, $WFC_TabPaneItem, $Number , "Shuffle", '' , 'ContentChanger' ,$Configuration );
 
           }
         }
