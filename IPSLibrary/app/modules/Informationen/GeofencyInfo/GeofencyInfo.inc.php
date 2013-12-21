@@ -260,7 +260,7 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 
 	if ( !$ContentId )
 	   {
-		IPSLogger_Dbg(__FILE__,'Keine ContentID gefunden');
+		IPSLogger_Dbg(__FILE__,'Keine ContentID gefunden.Geraetenamen in Konfig eintragen und Modul neu installieren');
 		return;
 	   }
 
@@ -269,7 +269,7 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	$CategoryId = @IPS_GetCategoryIDByName($IPSName,$Parent);
 	if ( !$CategoryId )
 	   {
-		IPSLogger_Dbg(__FILE__,'Keine $CategoryId gefunden');
+		IPSLogger_Dbg(__FILE__,'Keine $CategoryId gefunden.Testmeldung von Geraet senden');
 		return;
 	   }
 	$array = IPS_GetChildrenIDs($CategoryId);
