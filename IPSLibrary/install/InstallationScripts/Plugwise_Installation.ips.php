@@ -104,7 +104,7 @@
       IPS_ApplyChanges($cutterid);
       if ( $comid )
         {
-        IPS_DisconnectInstance($cutterid);
+        //IPS_DisconnectInstance($cutterid);
         IPS_ConnectInstance($cutterid,$comid);
         }
      }
