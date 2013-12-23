@@ -1517,9 +1517,12 @@ function update_data1_data2()
 	$html1 = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
 	$html1 = $html1 . "<table border='0' class='table'>";
 	$html1 = $html1 . "<tr>";
-	$html1 = $html1 . "<td class='zeitschrift'>Aktuell</td>";
+//	$html1 = $html1 . "<td class='zeitschrift'>Aktuell</td>";
 	$html1 = $html1 . "<td class='zeitdaten'>$dateleistung</td>";
-	$html1 = $html1 . "<td class='zeitschrift'>Uhr</td>";
+	$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
+	$html1 = $html1 . "<td class='tarifschrift'>$img_ingesamt$img_ingruppe</td>";
+
+//	$html1 = $html1 . "<td class='zeitschrift'>Uhr</td>";
 	$html1 = $html1 . "</tr>";
 	$html1 = $html1 . "<tr>";
 	$html1 = $html1 . "<td class='leistungschrift'>Leistung</td>";
@@ -1531,11 +1534,11 @@ function update_data1_data2()
 	$html1 = $html1 . "<td class='kostendaten'>$kosten</td>";
 	$html1 = $html1 . "<td class='kostenschrift'>$waehrung</td>";
 	$html1 = $html1 . "</tr>";
-	$html1 = $html1 . "<tr>";
-	$html1 = $html1 . "<td class='tarifschrift'>Tarif</td>";
-	$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
-	$html1 = $html1 . "<td class='tarifschrift'>$img_ingesamt$img_ingruppe</td>";
-	$html1 = $html1 . "</tr>";
+//	$html1 = $html1 . "<tr>";
+//	$html1 = $html1 . "<td class='tarifschrift'>Tarif</td>";
+//	$html1 = $html1 . "<td class='tarifdaten'>$akt_tarif</td>";
+//	$html1 = $html1 . "<td class='tarifschrift'>$img_ingesamt$img_ingruppe</td>";
+//	$html1 = $html1 . "</tr>";
 
 	$html1 = $html1 . "</table></body>";
 
@@ -1569,11 +1572,11 @@ function update_data1_data2()
 	$html1 = $html1 . "<td class='verbrauchdaten'>$ges_kosten</td>";
 	$html1 = $html1 . "<td class='verbrauchschrift'>Euro</td>";
 	$html1 = $html1 . "</tr>";
-	$html1 = $html1 . "<tr>";
-	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-	$html1 = $html1 . "<td class='verbrauchdaten'></td>";
-	$html1 = $html1 . "<td class='verbrauchschrift'></td>";
-	$html1 = $html1 . "</tr>";
+	//$html1 = $html1 . "<tr>";
+	//$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	//$html1 = $html1 . "<td class='verbrauchdaten'></td>";
+	//$html1 = $html1 . "<td class='verbrauchschrift'></td>";
+	//$html1 = $html1 . "</tr>";
 	$html1 = $html1 . "</table></body>";
 
    SetValueString($data2id,$html1);

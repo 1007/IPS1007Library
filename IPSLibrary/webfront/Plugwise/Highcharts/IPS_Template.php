@@ -190,13 +190,13 @@
 		
 	<body>
 	
-		<!-- 3. Add the container -->
-	<table border="0" width=100% height=600px>	
+		<!-- 3. Add the container
+	<table border="1" width=100% height=600px>	
 	<tr height=210px><td> 
   <div id="data1data2" style="width: 100% height:200"></div> 
   </td>
-  </tr>
-	<tr height=416px><td> 		
+  </tr>   -->
+	<tr height=216px><td> 		
   <div id="container"  style="width: <?php echo $AdditionalConfigData['Width'] ?>; height: <?php echo $AdditionalConfigData['Height'] ?>; margin: 0 auto"></div>
   
   </td></tr>

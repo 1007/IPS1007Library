@@ -89,7 +89,7 @@
   //****************************************************************************
   // Cutter erstellen
   //****************************************************************************  
-  $cutterid = @IPS_GetInstanceIDByName('PlugwiseCUTTER',0);
+  $cutterid = IPS_GetInstanceIDByName('PlugwiseCUTTER',0);
   if ( !$cutterid )
     $cutterid = IPS_CreateInstance ('{AC6C6E74-C797-40B3-BA82-F135D941D1A2}');
 	if ( $cutterid )
@@ -103,7 +103,10 @@
     
       IPS_ApplyChanges($cutterid);
       if ( $comid )
+        {
+        IPS_DisconnectInstance($cutterid);
         IPS_ConnectInstance($cutterid,$comid);
+        }
      }
   else
     echo "\nCutter konnte nicht angelegt werden ";
@@ -121,11 +124,16 @@
   //****************************************************************************
   // Registervariable erstellen
   //****************************************************************************  
-
-  $Name     = "PlugwiseRegisterVariable";
+  $registerid = @IPS_GetInstanceIDByName('PlugwiseRegisterVariable',$CategoryIdHw);
+ 
   
-  $id = CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
-
+  if ( !$registerid )
+    {
+    $Name     = "PlugwiseRegisterVariable";
+  
+    $id = CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
+    }
+    
   //****************************************************************************
   // Timer fuer Plugwise_Controller setzten
   //****************************************************************************  
@@ -204,7 +212,7 @@
                                 $Profil_Plugwise_MenuUebersicht[2],
                                 $Profil_Plugwise_MenuUebersicht[3]);
  
- 
+
   //****************************************************************************
   //  CircleGroups in Data erstellen anhand der Liste im Configurationsfile
   //****************************************************************************
@@ -466,9 +474,29 @@
 
     
    $VisuID_menu  = CreateCategory("MENU",$CategoryIdVisu,10);
+   $VisuID_data  = CreateCategory("DATA",$CategoryIdVisu,10);
    $VisuID_data1 = CreateCategory("DATA1",$CategoryIdVisu,10);
    $VisuID_data2 = CreateCategory("DATA2",$CategoryIdVisu,10);
    $VisuID_graph = CreateCategory("GRAPH",$CategoryIdVisu,10);
+   $VisuID_hc    = CreateCategory("Highcharts",$CategoryIdVisu,10);
+
+	//***************************************************************************
+	// Webdata1 und Webdata2 erstellen
+	//***************************************************************************
+  $idWEBDATA1 = CreateVariable("WEBDATA1", 3, $VisuID_data1, 1, "~HTMLBox", false, "");
+  $idWEBDATA2 = CreateVariable("WEBDATA2", 3, $VisuID_data2, 1, "~HTMLBox", false, "");
+  $idWEBDATA  = CreateVariable("WEBDATA",  3, $VisuID_data,  1, "~HTMLBox", false, "");
+
+
+    //****************************************************************************
+    //  Highcharts Variablen erstellen
+    //****************************************************************************
+    $id = CreateVariable("StartTime", 1,$VisuID_hc, 0, "~UnixTimestamp" , time() - 86400, 0);
+    SetValue($id, time() - 86400);
+    $id = CreateVariable("EndTime",   1,$VisuID_hc, 0 , "~UnixTimestamp" ,time() , 0);
+    SetValue($id, time() );
+    $id = CreateVariable("Now",       0,$VisuID_hc, 0, "~Switch" , true, 0);
+    SetValue($id,true);
 
    $ActionScriptId = IPS_GetScriptIDByName('Plugwise_Webfront', $CategoryIdApp );
    
@@ -507,7 +535,31 @@
     {  
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-     CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem, 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+//     CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem, 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
+
+	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANEMAIN", $WFC_TabPaneItem , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 0 , 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
+	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANESUB", $WFC_TabPaneItem."-SPLITPANEMAIN" , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
+
+    $WebfrontTitle = "Titel";
+    $WebfrontItemId = $WFC_TabPaneItem."-SPLITPANESUB";
+
+    $Configuration = '{"title":"Info","name":"'.$WFC_TabPaneItem.'Info","baseID":'.$idWEBDATA1.',"icon":"Information","showBorder":false}';
+    //$Configuration = '{"showBorder":false,"alignmentType":1,"ratioTarget":0,"ratioType":0,"title":"Plugwise","name":"IPSLibraryPlugwise-SPLITPANESUB","icon":"Lightning","ratio":50}';
+    CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.'DATA1', $WFC_TabPaneItem."-SPLITPANESUB", 1 , "", 'Information' , 'ContentChanger' ,$Configuration );
+
+    $Configuration = '{"title":"Info","name":"'.$WFC_TabPaneItem.'Info","baseID":'.$idWEBDATA2.',"icon":"Information","showBorder":false}';
+    CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.'DATA2', $WFC_TabPaneItem."-SPLITPANESUB", 2 , "", 'Information' , 'ContentChanger' ,$Configuration );
+
+    $Configuration = '{"title":"Info","name":"'.$WFC_TabPaneItem.'Info","baseID":'.$graphid.',"icon":"Information","showBorder":false}';
+    CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem.'GRAPH', $WFC_TabPaneItem."-SPLITPANEMAIN", 99 , "", 'Information' , 'ContentChanger' ,$Configuration );
+
+    //$Configuration = "{\"title\":\"$WebfrontTitle\",\"name\":\"$WebfrontItemId\",\"baseID\":\"$htmlboxid\"}";
+    //CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem."-WEBFRONT", $WFC_TabPaneParent, $WFC_TabPaneOrder , "Plugwise1", '' , 'ContentChanger' ,$Configuration );
+    IPS_ApplyChanges($WFC_ConfigId);
+
+
+     // $idWEBDATA1
+
     }
   else
     {
@@ -603,11 +655,6 @@
     IPS_SetInfo($id,"Script");
     
 
-	//***************************************************************************
-	// Webdata1 und Webdata2 erstellen
-	//***************************************************************************
-  $id = CreateVariable("WEBDATA1", 3, $VisuID_data1, 1, "~HTMLBox", false, "");
-  $id = CreateVariable("WEBDATA2", 3, $VisuID_data2, 1, "~HTMLBox", false, "");
   
     
 	//***************************************************************************
@@ -646,6 +693,32 @@
 	   echo "\nUser-CSS-File existiert nicht . Default wird kopiert";
 	   copy($cssDefault,$cssFile);
 		}
+
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsStunde.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsStunde.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsStunde.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsTag.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsTag.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsTag.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsWoche.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsWoche.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsWoche.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsMonat.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsMonat.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsMonat.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsJahr.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsJahr.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsJahr.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsHome.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsHome.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsHome.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsVorwaerts.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsVorwaerts.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsVorwaerts.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsRueckwaerts.png"))
+    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsRueckwaerts.png" ,
+            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsRueckwaerts.png");
+            
 
   
   ReloadAllWebFronts() ;

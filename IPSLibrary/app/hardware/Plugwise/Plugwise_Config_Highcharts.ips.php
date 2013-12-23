@@ -8,7 +8,11 @@
 	$ContentPath    = "Visualization.WebFront.Hardware.Plugwise.GRAPH.Uebersicht";
 	$ContentId      = get_ObjectIDByPath($ContentPath);
 
+	$HighchartsPath    = "Visualization.WebFront.Hardware.Plugwise.Highcharts";
+	$HighchartsId      = get_ObjectIDByPath($HighchartsPath);
 
+	
+	
 	// damit kann der Script auch von anderen Scripten aufgerufen werden
 	// und bereits mit CfgDaten vorkonfiguriert werden
 	Global $CfgDaten; 
@@ -37,26 +41,52 @@
 	$CfgDaten['ContentVarableId']= $ContentId;
    // ID des Highcharts Scripts
 	$CfgDaten['HighChartScriptId']= IPS_GetScriptIDByName('Highcharts', $CategoryIdApp );  				
-	  //echo $CfgDaten['HighChartScriptId'];
-	  //echo "<a href='http://www.ip-symcon.de/forum/'>forum</a>";
-	// Highcharts oder Highstock (default = Highcharts
+	// Highcharts
 	$CfgDaten['Ips']['ChartType'] = 'Highcharts';
-	
+
+	//***************************************************************************
 	// Zeitraum welcher dargestellt werden soll
-	// (kann durch die Zeitvorgaben in den Serien verändert werden)
-	if ( defined('HIGHCHARTS_ZEITRAUM') )
-		$zeitrum_stunden = HIGHCHARTS_ZEITRAUM;
+	//***************************************************************************
+	$startid = IPS_GetVariableIDByName('StartTime',$HighchartsId);
+	$endeid  = IPS_GetVariableIDByName('EndTime',$HighchartsId);
+
+	$start = getValue(IPS_GetVariableIDByName('StartTime',$HighchartsId));
+	$ende  = getValue(IPS_GetVariableIDByName('EndTime',$HighchartsId));
+
+	if ( $start == 0 )
+	   {
+		if ( defined('HIGHCHARTS_ZEITRAUM') )
+			$zeitrum_stunden = HIGHCHARTS_ZEITRAUM;
+		else
+			$zeitrum_stunden = 24;
+
+		$starttime = time() - (60*60*$zeitrum_stunden );
+
+		SetValue($startid,$starttime);
+		
+		}
 	else
-		$zeitrum_stunden = 24;
-	   
-	$offset = 0;
-	$CfgDaten['StartTime'] = time() - (60*60*$zeitrum_stunden )-$offset;   // letzten 2 Tage
-   $CfgDaten['EndTime']   = time()-$offset;
+	   $starttime = $start;
+
+	if ( $ende == 0 )
+	   {
+		$endetime = time() ;
+
+		SetValue($endeid,$endetime);
+
+		}
+	else
+	   $endetime = $ende;
+
+	// Highcharts-Theme
+	$CfgDaten['HighChart']['Theme']="ips1007.js";
+
+	$CfgDaten['StartTime'] = $starttime;
+	$CfgDaten['EndTime']   = $endetime;
 	
 	// damit wird die Art des Aufrufes festgelegt
-	$CfgDaten['RunMode'] = "script"; 	// file, script oder popup
-	//$CfgDaten['RunMode'] = "file"; 	// file, script oder popup
-
+	$CfgDaten['RunMode'] = "script";
+	
 	// **************************************************************************************
 	// *** Highcharts Options ***
 	// **************************************************************************************
@@ -65,19 +95,24 @@
 	// Informationen über die Parametrierung findet man unter http://www.highcharts.com/ref/
 	
    $CfgDaten['chart']['animation'] = false;
-	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
-	$CfgDaten['title']['style']['color'] = "#FFFFFF";
+//	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
+	$CfgDaten['title']['text'] = " ";
+//	$CfgDaten['title']['style']['color'] = "#FFFFFF";
 
-	$CfgDaten['SubTitle'] = false;
-	//$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%";
-	//$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i";
-   
+	//$CfgDaten['title']['text'] = date("d.m.y H:i",$starttime) ." - ".date("d.m.y H:i",$endetime);
+
+	$CfgDaten['subtitle']['text'] = " ";
+//	$CfgDaten['subtitle']['text'] = "Zeitraum: %STARTTIME% - %ENDTIME%";
+//	$CfgDaten['subtitle']['Ips']['DateTimeFormat'] = "(D) d.m.Y H:i";
+//   $CfgDaten['subtitle']['text'] = date("d.m.y H:i",$starttime) ." - ".date("d.m.y H:i",$endetime);
 
 	$CfgDaten['yAxis'][0]['title']['text'] = "Watt";
 	$CfgDaten['yAxis'][0]['Unit'] = "Watt";
 	$CfgDaten['yAxis'][0]['opposite'] = false;
 	$CfgDaten['yAxis'][0]['min'] = 0;
 
+	$CfgDaten['yAxis'][1]['title']['text'] = date("d.m.y H:i",$starttime) ." - ".date("d.m.y H:i",$endetime);
+	
 	if ( $maxleistung > 0 )
 	   {
     	$pb['from'] = $maxleistung;
@@ -85,6 +120,126 @@
     	$pb['color'] = 'rgba(255, 0, 0, 0.2)';
     	$CfgDaten["yAxis"][0]['plotBands'][] = $pb;
 		}
+
+	//***************************************************************************
+	// Serienübergreifende Einstellung für das Laden von Werten
+	// Systematik funktioniert jetzt additiv.
+	// D.h. die angegebenen Werte gehen ab dem letzten Wert
+	//
+	//            -5 Tage           -3 Tage    					EndTime
+	// |           |              	|            				 |
+	// |           |DayValue = 2     |HourValues = 3          |
+	// |Tageswerte |Stundenwerte     |jeder geloggte Wert     |
+	//***************************************************************************
+	$CfgDaten['AggregatedValues']['HourValues'] 		= 2;      	// ist der Zeitraum größer als X Tage werden Stundenwerte geladen
+	$CfgDaten['AggregatedValues']['DayValues'] 		= 35;       // ist der Zeitraum größer als X Tage werden Tageswerte geladen
+	$CfgDaten['AggregatedValues']['WeekValues'] 		= -1;      	// ist der Zeitraum größer als X Tage werden Wochenwerte geladen
+	$CfgDaten['AggregatedValues']['MonthValues'] 	= -1;      	// ist der Zeitraum größer als X Tage werden Monatswerte geladen
+	$CfgDaten['AggregatedValues']['YearValues'] 		= -1;     	// ist der Zeitraum größer als X Tage werden Jahreswerte geladen
+	$CfgDaten['AggregatedValues']['NoLoggedValues'] = 1000; 		// ist der Zeitraum größer als X Tage werden keine Boolean Werte mehr geladen,
+																					//	diese werden zuvor immer als Einzelwerte geladen
+	$CfgDaten['AggregatedValues']['MixedMode'] 		= true;    // alle Zeitraumbedingungen werden kombiniert
+//	$CfgDaten['AggregatedValues']['MixedMode'] 		= false;    // alle Zeitraumbedingungen werden kombiniert
+
+
+
+	//***************************************************************************
+	// Buttons fuer Zeitraumauswahl erstellen
+	//***************************************************************************
+	$PosYOffset = 5;
+	$PosXOffset = 5;
+	$PosY = 0;
+	$PosX = 0;
+	$ImageSizeHeight = 30;
+	$ImageSizeWidth  = 55;
+	$StartPosLeft = 5 ;
+
+   $IPS_SELF = IPS_GetScriptIDByName('Plugwise_Config_Highcharts', $CategoryIdApp );
+
+	$CfgDaten['exporting']['buttons']['Back']['x']       		= ($StartPosLeft-15) - ( 2 * $ImageSizeWidth ) - 14 ;
+	$CfgDaten['exporting']['buttons']['Back']['y'] 				= $PosY;
+	$CfgDaten['exporting']['buttons']['Back']['symbol']  		= "url(/user/Plugwise/images/HighchartsRueckwaerts.png)";
+	$CfgDaten['exporting']['buttons']['Back']['symbolX'] 		= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Back']['symbolY'] 		= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Back']['height']  		= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Back']['width']   		= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Back']['_titleKey'] 	= 'myBackButton';
+	$CfgDaten['exporting']['buttons']['Back']['onclick'] 		= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Backward&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Home']['x']       		= ($StartPosLeft-15) - ( 1 * $ImageSizeWidth ) - 7;
+	$CfgDaten['exporting']['buttons']['Home']['y'] 				= $PosY;
+	$CfgDaten['exporting']['buttons']['Home']['symbol']  		= "url(/user/Plugwise/images/HighchartsHome.png)";
+	$CfgDaten['exporting']['buttons']['Home']['symbolX'] 		= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Home']['symbolY'] 		= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Home']['height']  		= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Home']['width']   		= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Home']['_titleKey'] 	= 'myHomeButton';
+	$CfgDaten['exporting']['buttons']['Home']['onclick'] 		= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Home&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['For']['x']       		= $StartPosLeft-15;
+	$CfgDaten['exporting']['buttons']['For']['y'] 				= $PosY;
+	$CfgDaten['exporting']['buttons']['For']['symbol']  		= "url(/user/Plugwise/images/HighchartsVorwaerts.png)";
+	$CfgDaten['exporting']['buttons']['For']['symbolX'] 		= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['For']['symbolY'] 		= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['For']['height']  		= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['For']['width']   		= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['For']['_titleKey'] 	= 'myForButton';
+	$CfgDaten['exporting']['buttons']['For']['onclick'] 		= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Forward&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Stunde']['x']       	= $StartPosLeft ;
+	$CfgDaten['exporting']['buttons']['Stunde']['y'] 			= $PosY;
+	$CfgDaten['exporting']['buttons']['Stunde']['symbol']  	= "url(/user/Plugwise/images/HighchartsStunde.png)";
+	$CfgDaten['exporting']['buttons']['Stunde']['symbolX'] 	= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Stunde']['symbolY'] 	= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Stunde']['height']  	= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Stunde']['width']   	= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Stunde']['align']     = "left" ;
+	$CfgDaten['exporting']['buttons']['Stunde']['_titleKey'] = 'myHourButton';
+	$CfgDaten['exporting']['buttons']['Stunde']['onclick'] 	= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Hour&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Tag']['x']       		= $StartPosLeft + ( 1 * $ImageSizeWidth ) + 7;
+	$CfgDaten['exporting']['buttons']['Tag']['y'] 				= $PosY;
+	$CfgDaten['exporting']['buttons']['Tag']['symbol']  		= "url(/user/Plugwise/images/HighchartsTag.png)";
+	$CfgDaten['exporting']['buttons']['Tag']['symbolX'] 		= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Tag']['symbolY'] 		= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Tag']['height']  		= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Tag']['width']   		= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Tag']['align']       	= "left" ;
+	$CfgDaten['exporting']['buttons']['Tag']['_titleKey'] 	= 'myDayButton';
+	$CfgDaten['exporting']['buttons']['Tag']['onclick'] 		= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Day&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Woche']['x']       	= $StartPosLeft + ( 2 * $ImageSizeWidth ) + 14;
+	$CfgDaten['exporting']['buttons']['Woche']['y'] 			= $PosY;
+	$CfgDaten['exporting']['buttons']['Woche']['symbol']  	= "url(/user/Plugwise/images/HighchartsWoche.png)";
+	$CfgDaten['exporting']['buttons']['Woche']['symbolX'] 	= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Woche']['symbolY'] 	= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Woche']['height']  	= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Woche']['width']   	= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Woche']['align']      = "left" ;
+	$CfgDaten['exporting']['buttons']['Woche']['_titleKey'] 	= 'myWeekButton';
+	$CfgDaten['exporting']['buttons']['Woche']['onclick'] 	= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Week&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Monat']['x']       	= $StartPosLeft + ( 3 * $ImageSizeWidth ) + 21;
+	$CfgDaten['exporting']['buttons']['Monat']['y'] 			= $PosY;
+	$CfgDaten['exporting']['buttons']['Monat']['symbol']  	= "url(/user/Plugwise/images/HighchartsMonat.png)";
+	$CfgDaten['exporting']['buttons']['Monat']['symbolX'] 	= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Monat']['symbolY'] 	= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Monat']['height']  	= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Monat']['width']   	= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Monat']['align']      = "left" ;
+	$CfgDaten['exporting']['buttons']['Monat']['_titleKey'] 	= 'myMonthButton';
+	$CfgDaten['exporting']['buttons']['Monat']['onclick'] 	= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Month&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
+
+	$CfgDaten['exporting']['buttons']['Jahr']['x']       		= $StartPosLeft + ( 4 * $ImageSizeWidth ) + 28;
+	$CfgDaten['exporting']['buttons']['Jahr']['y'] 				= $PosY;
+	$CfgDaten['exporting']['buttons']['Jahr']['symbol']  		= "url(/user/Plugwise/images/HighchartsJahr.png)";
+	$CfgDaten['exporting']['buttons']['Jahr']['symbolX'] 		= $PosXOffset;
+	$CfgDaten['exporting']['buttons']['Jahr']['symbolY'] 		= $PosYOffset;
+	$CfgDaten['exporting']['buttons']['Jahr']['height']  		= $ImageSizeHeight;
+	$CfgDaten['exporting']['buttons']['Jahr']['width']   		= $ImageSizeWidth;
+	$CfgDaten['exporting']['buttons']['Jahr']['align']       = "left" ;
+	$CfgDaten['exporting']['buttons']['Jahr']['_titleKey'] 	= 'myYearButton';
+	$CfgDaten['exporting']['buttons']['Jahr']['onclick'] 		= "@function() { new Image().src = '/user/Plugwise/HighchartsCommand.php?VarID=".$IPS_SELF."&Time=Year&Start=".$CfgDaten['StartTime']."&End=".$CfgDaten['EndTime']." '; }@";
 
 	// **************************************************************************************
 	// *** series *** 
@@ -94,13 +249,14 @@
 	$serie['Id'] = $id;
 	//$serie['color'] = "#CC9933";
 	$serie['Unit'] = "Watt";
-	$serie['ReplaceValues'] = true;
+	//$serie['ReplaceValues'] = true;
 	
 	$serie['step'] = true;
 	$serie['type'] = "areaspline";
 	$serie['type'] = "area";
 	$serie['yAxis'] = 0;
 	$serie['marker']['enabled'] = false;
+	//$serie['AggType'] = 0;
 	$serie['AggType'] = 0;
 	$serie['shadow'] = false;
 	$serie['lineWidth'] = 0;
@@ -125,51 +281,33 @@
 
 	// Abmessungen des erzeugten Charts
 	$CfgDaten['HighChart']['Width'] = 0; 			// in px,  0 = 100%
-	$CfgDaten['HighChart']['Height'] = 400; 		// in px
+	$CfgDaten['HighChart']['Height'] = 450; 		// in px
 
 	//***************************************************************************
 	// und jetzt los ......
 	//***************************************************************************
-	//$s = IPS_GetScript($CfgDaten['HighChartScriptId']);
-	
-	//include($s['ScriptFile']);
 
 	IPSUtils_Include ("Highcharts.ips.php",      "IPSLibrary::app::hardware::Plugwise");
+	//IPSUtils_Include ("IPSHighcharts.inc.php","IPSLibrary::app::modules::Charts::IPSHighcharts");
 
+	$TimeControl = false;
+   if ( isset($CfgDaten['RefreshID'] ) )
+	 	$TimeControl = $CfgDaten['RefreshID'];
 
   	// hier werden die CfgDaten geprüft und bei Bedarf vervollständigt
-	$CfgDaten = CheckCfgDaten($CfgDaten);
+	$CfgDaten = CheckCfgDaten($CfgDaten);								// hier werden die CfgDaten geprüft und bei Bedarf vervollständigt
+	//IPSLogger_Dbg(__FILE__,date('d.m.Y h:i:s',$CfgDaten['StartTime'])."+++++++++++".date('d.m.Y h:i:s',$CfgDaten['EndTime']));
 
 
-	// abhängig von der Art des Aufrufs -> json String für Highcharts erzeugen
-	if (isset($CfgDaten['RunMode'])
-		&& ($CfgDaten['RunMode'] == "script" || $CfgDaten['RunMode'] == "popup"))
-	{
-		// Variante1: Übergabe der ScriptId.
-		// Daten werden beim Aufruf der PHP Seite erzeugt und direkt übergeben.
-		// Dadurch kann eine autom. Aktualisierung der Anzeige erfolgen
-		if ($IPS_SENDER != "WebInterface")
-		{
+		if ($IPS_SENDER != "WebInterface" or $TimeControl == true )
+			{
+			$CfgDaten = CheckCfgDaten($CfgDaten);
+
 			WriteContentWithScriptId ($CfgDaten, $IPS_SELF);     		// und jetzt noch die ContentTextbox
 			return;                                               	// Ende, weil durch die Zuweisung des Script sowieso nochmals aufgerufen wird
-		}
+			}
 
 		$sConfig = CreateConfigString($CfgDaten);             		// erzeugen und zurückgeben des Config Strings
-		
-	}
-	else
-	{
-		// Variante2: Übergabe des Textfiles.
-		// Daten werden in tmp-File gespeichert.
-		// Eine automatische Aktualisierung beim Anzeigen der Content-Textbox erfolgt nicht
-		$sConfig = CreateConfigString($CfgDaten);             		// erzeugen und zurückgeben des Config Strings
-		
-		$tmpFilename = CreateConfigFile($sConfig, $IPS_SELF);     	// und ab damit ins tmp-Files
-		if ($IPS_SENDER != "WebInterface")
-		{
-			WriteContentWithFilename ($CfgDaten, $tmpFilename);   	// und jetzt noch die ContentTextbox
-		}
-	}
 
 
 

@@ -44,7 +44,7 @@
 		DebugModuleName($cfg,"WriteContentWithFilename");
 		
 		// damit das Ding auch sauber dargestellt wird
-		$Height = $cfg['HighChart']['Height'] + 216;
+		$Height = $cfg['HighChart']['Height'] ;
 
 		$ChartType = $cfg['Ips']['ChartType'];
 		
@@ -79,7 +79,7 @@
 		else
 		{
 			// damit das Ding auch sauber dargestellt wird
-			$Height = $cfg['HighChart']['Height'] + 216;
+			$Height = $cfg['HighChart']['Height'] ;
 			SetValue($cfg['ContentVarableId'],
 					"<iframe src='./User/Plugwise/$ChartType/IPS_Template.php?ScriptId="	. $scriptId .
 					"' width='100%' height='". $Height .
@@ -570,7 +570,7 @@
 				$Serie['AggregatedValues']['YearValues'] *= $MinPerTag;
 			if ($Serie['AggregatedValues']['NoLoggedValues'] != -1)
 				$Serie['AggregatedValues']['NoLoggedValues'] *= $MinPerTag;
-
+ips_logmessage("...",$Serie['AggregatedValues']['HourValues']);
 			// geänderte Werte wieder zurückschreiben
 			$series[] = $Serie;
 		}
@@ -656,13 +656,13 @@
 		$cfgArr['xAxis'] = CreateArrayForXAxis($cfg);
 		$cfgArr['yAxis'] = CreateArrayForYAxis($cfg);
 
-		if ($cfg['Ips']['Debug']['ShowJSON'])
-			DebugString(my_json_encode($cfgArr));
+//		if ($cfg['Ips']['Debug']['ShowJSON'])
+//			DebugString(my_json_encode($cfgArr));
 
 		$cfgArr['series'] = CreateArrayForSeries($cfg) ;
 
-		if ($cfg['Ips']['Debug']['ShowJSON_Data'])
-			DebugString(my_json_encode($cfgArr));
+		//if ($cfg['Ips']['Debug']['ShowJSON_Data'])
+		//	DebugString(my_json_encode($cfgArr));
 
 		// Array in JSON wandeln
 		$s = my_json_encode($cfgArr);
@@ -859,7 +859,7 @@
 	function ReadPieDataById($cfg, $serie)
 	{
 		$id_AH = $cfg['ArchiveHandlerId'];
-
+      
 		$tempData = @AC_GetAggregatedValues($id_AH, $serie['Id'], $serie['AggType'], $serie['StartTime'], $serie['EndTime'], 0);
 		$tempData = array_reverse($tempData);
 
@@ -1474,6 +1474,7 @@
 		$cfg['subtitle']['text'] = ReplaceToGermanDate($s);
 
 		unset($cfg['subtitle']['Ips']);
+		
 		
 		return $cfg['subtitle'];
 	}

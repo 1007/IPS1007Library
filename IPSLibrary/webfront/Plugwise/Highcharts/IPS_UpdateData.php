@@ -7,6 +7,8 @@
 	 $VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA2";
    $IdData2   		= get_ObjectIDByPath($VisuPath);
 
+	$HighchartsPath    = "Visualization.WebFront.Hardware.Plugwise.Highcharts";
+	$HighchartsId      = get_ObjectIDByPath($HighchartsPath);
     
     if(!isset($_GET['Request'])) return false;
     
@@ -33,7 +35,11 @@
   //IPS_logMessage("-----",$startTime);
   
   if ( $request == "HC" )
-    {        
+    {           
+    	$nowid   = IPS_GetVariableIDByName('Now',$HighchartsId);
+      $now = GetValue($nowid);
+      if ( $now == false )
+        return;
     // ScriptId wurde übergeben -> aktuelle Daten werden geholt
     if ($iScriptId != false) 
       {
@@ -69,7 +75,7 @@
     $html = $html . "</tr>";    
     $html = $html . "</table>";
 
-    echo $html;
+    //echo $html;
     }
 
     

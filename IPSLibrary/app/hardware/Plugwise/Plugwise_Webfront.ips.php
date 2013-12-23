@@ -299,6 +299,7 @@
 	foreach ( IPS_GetChildrenIDs($StromzaehlerIdData) as $child )
 		if ( GetValue($child) > 0 )
 	   	{
+	   	resetHCTimeline();
 	   	show_status_in_menu($child);
          update_webfront_123("ZAEHLER",$child,true);
 			return;
@@ -381,6 +382,40 @@ function start_script($self)
 
 	}
 
+
+/***************************************************************************//**
+*	Reset Zeiteinstellunge fuer Highcharts
+*******************************************************************************/
+function resetHCTimeline()
+	{
+	$HighchartsPath    = "Visualization.WebFront.Hardware.Plugwise.Highcharts";
+	$HighchartsId      = get_ObjectIDByPath($HighchartsPath);
+
+	//***************************************************************************
+	// Zeitraum welcher dargestellt werden soll
+	//***************************************************************************
+	$startid = IPS_GetVariableIDByName('StartTime',$HighchartsId);
+	$endeid  = IPS_GetVariableIDByName('EndTime',$HighchartsId);
+	$nowid   = IPS_GetVariableIDByName('Now',$HighchartsId);
+
+
+	if ( defined('HIGHCHARTS_ZEITRAUM') )
+		$zeitrum_stunden = HIGHCHARTS_ZEITRAUM;
+	else
+		$zeitrum_stunden = 24;
+
+	$starttime = time() - (60*60*$zeitrum_stunden );
+
+	SetValue($startid,$starttime);
+
+	$endetime = time() ;
+
+	SetValue($endeid,$endetime);
+
+	SetValue($nowid,true);
+
+
+	}
 /***************************************************************************//**
 *	VersionsInfo mit Changelog zurueckgeben
 *******************************************************************************/
