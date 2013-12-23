@@ -570,7 +570,7 @@
 				$Serie['AggregatedValues']['YearValues'] *= $MinPerTag;
 			if ($Serie['AggregatedValues']['NoLoggedValues'] != -1)
 				$Serie['AggregatedValues']['NoLoggedValues'] *= $MinPerTag;
-ips_logmessage("...",$Serie['AggregatedValues']['HourValues']);
+
 			// geänderte Werte wieder zurückschreiben
 			$series[] = $Serie;
 		}
