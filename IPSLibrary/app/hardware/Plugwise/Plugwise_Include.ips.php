@@ -134,8 +134,11 @@ function PW_SendCommand($cmd,$CircleId=false)
 	   {
 	   //IPS_Logmessage("Plugwise_Include","An nur einen Stick senden");
 	   	
+		if (IPS_ObjectExists($REGVAR))
+			RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
+		else
+			IPS_LogMessage(__File__,"Registervariable ".$REGVAR." existiert nicht");
 
-		RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
 	   }
 	else
 	   {

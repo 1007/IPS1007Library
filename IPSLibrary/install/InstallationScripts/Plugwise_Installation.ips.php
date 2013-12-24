@@ -126,14 +126,14 @@
   //****************************************************************************
   // Registervariable erstellen
   //****************************************************************************  
-  $registerid = IPS_GetInstanceIDByName('PlugwiseRegisterVariable',$CategoryIdHw);
+  $registerid = @IPS_GetInstanceIDByName('PlugwiseRegisterVariable',$CategoryIdHw);
   echo "\nRegVar gefunden " . $registerid;
   
   if ( !$registerid )
     {
     $Name     = "PlugwiseRegisterVariable";
   
-    $id = CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
+    $id = @CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
     
     if ( !$id )
       {
