@@ -424,14 +424,14 @@
       	       $aggtype = AGGTYPELEISTUNG;
 
             AC_SetLoggingStatus($archive_id, $id2, True); // Logging einschalten
-            AC_SetAggregationType($archive_id, $id2, 1); // Logging auf Zähler setzen
+            AC_SetAggregationType($archive_id, $id2, $aggtype); // Logging auf x setzen
             IPS_ApplyChanges($archive_id);
 
             if ( defined('AGGTYPEVERBRAUCH') )
       	       $aggtype = AGGTYPEVERBRAUCH;
 
             AC_SetLoggingStatus($archive_id, $id3, True); // Logging einschalten
-            AC_SetAggregationType($archive_id, $id3, 1); // Logging auf Zähler setzen
+            AC_SetAggregationType($archive_id, $id3, $aggtype); // Logging auf x setzen
             IPS_ApplyChanges($archive_id);
 
   		      AC_SetLoggingStatus($archive_id  , $id4, True); 	// Logging einschalten
