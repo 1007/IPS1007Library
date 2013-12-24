@@ -133,6 +133,8 @@ function PW_SendCommand($cmd,$CircleId=false)
 	if ( $CircleId != false )
 	   {
 	   //IPS_Logmessage("Plugwise_Include","An nur einen Stick senden");
+	   	
+
 		RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
 	   }
 	else

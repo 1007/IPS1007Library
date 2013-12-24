@@ -3,9 +3,14 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 
 	 $VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA1";
-   $IdData1   		= get_ObjectIDByPath($VisuPath);
+   $IdData1   		= @get_ObjectIDByPath($VisuPath,true);
 	 $VisuPath  		= "Visualization.WebFront.Hardware.Plugwise.DATA2";
-   $IdData2   		= get_ObjectIDByPath($VisuPath);
+   $IdData2   		= @get_ObjectIDByPath($VisuPath,true);
+
+  if ( !$IdData1 )
+    return;
+  if ( !$IdData2 )
+    return;
 
 	$HighchartsPath    = "Visualization.WebFront.Hardware.Plugwise.Highcharts";
 	$HighchartsId      = get_ObjectIDByPath($HighchartsPath);
