@@ -461,28 +461,38 @@
   //****************************************************************************
   $WFC_Enabled        = $moduleManager->GetConfigValue('Enabled', 		 'WFC10');
   $WFC_Path           = $moduleManager->GetConfigValue('Path', 			   'WFC10');
-  $WFC_WebFrontID     = $moduleManager->GetConfigValueInt('WebFrontID','WFC10');
-  $WFC_TabPaneParent  = $moduleManager->GetConfigValue('TabParent', 	 'WFC10');
-  $WFC_TabPaneName    = $moduleManager->GetConfigValue('TabName', 		 'WFC10');
-  $WFC_TabPaneItem    = $moduleManager->GetConfigValue('TabItem', 		 'WFC10');
-  $WFC_TabPaneIcon    = $moduleManager->GetConfigValue('TabIcon', 		 'WFC10');
-  $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabOrder',  'WFC10');
+  $WFC_TabPaneParent  = $moduleManager->GetConfigValue('TabPaneParent', 	 'WFC10');
+  $WFC_TabPaneName    = $moduleManager->GetConfigValue('TabPaneName', 		 'WFC10');
+  $WFC_TabPaneItem    = $moduleManager->GetConfigValue('TabPaneItem', 		 'WFC10');
+  $WFC_TabPaneIcon    = $moduleManager->GetConfigValue('TabPaneIcon', 		 'WFC10');
+  $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder',  'WFC10');
   $WFC_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 	   'WFC10', GetWFCIdDefault());
-	if ( $WFC_WebFrontID > 0 )
-      $WFC_ConfigId = $WFC_WebFrontID;
+  
+  if ( $WFC_TabPaneItem == "" )
+    $WFC_TabPaneItem = "IPSLibraryPlugwise";
+
+  if ( $WFC_TabPaneParent == "" )
+    $WFC_TabPaneItem = "roottp";
+
+  if ( $WFC_TabPaneName == "" )
+    $WFC_TabPaneName = "Plugwise";
+
+
+	if ( $WFC_ConfigId == 0 )
+      $WFC_ConfigId = GetWFCIdDefault();
 
   $ItemList = WFC_GetItems($WFC_ConfigId);
 	foreach ($ItemList as $Item)
     {
-    $pos = strpos($Item['ID'], $WFC_TabPaneItem);
+    $pos = @strpos($Item['ID'], $WFC_TabPaneItem);
     if ($pos === false)
 	 	 {
-      echo "\nNicht gefunden".$Item['ID'];
+      //echo "\nNicht gefunden".$Item['ID'];
       
 		  }
 	 else
 	 	{	
-      echo "\nGefunden".$Item['ID'];
+      //echo "\nGefunden".$Item['ID'];
      
      DeleteWFCItem($WFC_ConfigId, $Item['ID']);
 		}
@@ -557,12 +567,13 @@
       $cssmenu = CSS3MENU ;
 
   if ( $cssmenu == false )
-    {  
+    {       
+
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 //     CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem, 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
-	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANEMAIN", $WFC_TabPaneItem , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 0 , 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
+	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANEMAIN", $WFC_TabPaneItem , 20 , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 0 , 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANESUB", $WFC_TabPaneItem."-SPLITPANEMAIN" , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
 
     $WebfrontTitle = "Titel";
