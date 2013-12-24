@@ -466,6 +466,7 @@
   $WFC_TabPaneItem    = $moduleManager->GetConfigValue('TabPaneItem', 		 'WFC10');
   $WFC_TabPaneIcon    = $moduleManager->GetConfigValue('TabPaneIcon', 		 'WFC10');
   $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder',  'WFC10');
+  $WFC_TabOrder       = $moduleManager->GetConfigValueInt('TabOrder',  'WFC10');
   $WFC_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 	   'WFC10', GetWFCIdDefault());
   
   if ( $WFC_TabPaneItem == "" )
@@ -571,10 +572,9 @@
 
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
-//     CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-GRAPH", $WFC_TabPaneItem, 40, "Titel", $Icon="", $VisuID_graph , $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
 
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANEMAIN", $WFC_TabPaneItem , 20 , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 0 , 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
-	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANESUB", $WFC_TabPaneItem."-SPLITPANEMAIN" , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
+	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem."-SPLITPANESUB", $WFC_TabPaneItem."-SPLITPANEMAIN" , $WFC_TabOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 , 50 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'false');
 
     $WebfrontTitle = "Titel";
     $WebfrontItemId = $WFC_TabPaneItem."-SPLITPANESUB";
