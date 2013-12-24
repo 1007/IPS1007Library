@@ -111,15 +111,29 @@
   //****************************************************************************
   $WFC_Enabled        = $moduleManager->GetConfigValue('Enabled', 		 'WFC10');
   $WFC_Path           = $moduleManager->GetConfigValue('Path', 			   'WFC10');
-  $WFC_WebFrontID     = $moduleManager->GetConfigValueInt('WebFrontID','WFC10');
-  $WFC_TabPaneParent  = $moduleManager->GetConfigValue('TabParent', 	 'WFC10');
-  $WFC_TabPaneName    = $moduleManager->GetConfigValue('TabName', 		 'WFC10');
-  $WFC_TabPaneItem    = $moduleManager->GetConfigValue('TabItem', 		 'WFC10');
-  $WFC_TabPaneIcon    = $moduleManager->GetConfigValue('TabIcon', 		 'WFC10');
-  $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabOrder',  'WFC10');
+  //$WFC_WebFrontID     = $moduleManager->GetConfigValueInt('WebFrontID','WFC10');
+  $WFC_TabPaneParent  = $moduleManager->GetConfigValue('TabPaneParent', 	 'WFC10');
+  $WFC_TabPaneName    = $moduleManager->GetConfigValue('TabPaneName', 		 'WFC10');
+  $WFC_TabPaneItem    = $moduleManager->GetConfigValue('TabPaneItem', 		 'WFC10');
+  $WFC_TabPaneIcon    = $moduleManager->GetConfigValue('TabPaneIcon', 		 'WFC10');
+  $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder',  'WFC10');
   $WFC_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 	   'WFC10', GetWFCIdDefault());
-	if ( $WFC_WebFrontID > 0 )
-      $WFC_ConfigId = $WFC_WebFrontID;
+
+   if ( $WFC_TabPaneItem == "" )
+    $WFC_TabPaneItem = "Geofency";
+
+  if ( $WFC_TabPaneParent == "" )
+    $WFC_TabPaneItem = "roottp";
+
+  if ( $WFC_TabPaneName == "" )
+    $WFC_TabPaneName = "Geofency";
+
+
+	if ( $WFC_ConfigId == 0 )
+      $WFC_ConfigId = GetWFCIdDefault();
+
+
+
 
   $ItemList = WFC_GetItems($WFC_ConfigId);
 
