@@ -63,6 +63,8 @@
 *                       ( Standard FALSE ) 
 * UEBERSICHTSPALTEN   - Anzahl der Spalten pro Uebersichtsseite ( default = 3 )
 * UEBERSICHTZEILEN    - Anzahl der Zeilen pro Uebersichtsseite ( default = 9 )
+* ALTERNATIVCOMPORT   - Alternative Kommunikationsport ( Name ). Dieser wird nicht
+*                       automatisch erstellt. zb PlugwiseFTDI
 *******************************************************************************/
 	define ( 'COMPORT'           , 'COM4' );       	
 	define ( 'REFRESH_TIME'      , 1      );         
@@ -76,6 +78,8 @@
   define ( 'AUTORESTORESWITCH' , false  ); 	
   define ( 'UEBERSICHTSPALTEN' , 3      );
   define ( 'UEBERSICHTZEILEN'  , 9      );
+  define ( 'ALTERNATIVCOMPORT' , false  );
+  
 
 /***************************************************************************//**
 * Circle Gruppen ( bei Aenderungen Update ausfuehren )

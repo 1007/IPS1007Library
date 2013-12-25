@@ -21,7 +21,7 @@
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
  	IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
 
-//create_css3menu();
+//createMenueSystemsteuerung();
 
 /***************************************************************************//**
 *  Plugwise Protocol
@@ -61,13 +61,24 @@ function PW_SendCommand($cmd,$CircleId=false)
 {
 	GLOBAL $CircleGroups;
 
-		
-
 	$comid = @IPS_GetInstanceIDByName('PlugwiseCOM',0);
+
+	if ( defined("ALTERNATIVCOMPORT" ) )
+		if ( ALTERNATIVCOMPORT != false )
+		   {
+		   //IPS_LogMessage(__File__,"Alternativ Comport OK ");
+			$comid = @IPS_GetInstanceIDByName( ALTERNATIVCOMPORT ,0);
+			if ( !$comid )
+			   {
+		   	IPS_LogMessage(__File__,"Alternativ Comport nicht gefunden :  ".ALTERNATIVCOMPORT );
+				return;
+			   }
+			}
+
 	$i = (IPS_GetInstance($comid));
 	$i = $i['InstanceStatus'];
 
-	if ( $i != 102 ) { echo "\nCOMPort nicht offen"; return ; }
+	if ( $i != 102 ) { echo "\nKommunikationsport: ". $comid ." nicht offen"; return ; }
 
 	// Erst mal alte Registervariable - fuer einen Stick
 	$REGVAR = get_ObjectIDByPath('Hardware.Plugwise.PlugwiseRegisterVariable');
@@ -462,8 +473,6 @@ function update_data1_data2_old()
 	$idkosten 	 = intval($result['IDKOSTEN']);
 	$parent   	 = intval($result['PARENT']);
 
-
-	//IPS_logMessage("....",$type."-".$parent."-".$idleistung."-".$idgesamt);
 	update_data1data2_sub($parent,$idleistung,$idgesamt);
 	
 	}
@@ -477,8 +486,6 @@ function update_data1data2()
    update_data1_data2();
 	update_uebersicht_circles();
 	}
-
-
 
 /***************************************************************************//**
 *	Update Uebersicht Circles Systemsteuerung
@@ -511,7 +518,7 @@ function update_uebersicht_circles()
 	$object = IPS_GetObject($id);
   	$ident = intval($object['ObjectIdent']);
 
-	
+	$csspath    = "/user/Plugwise/";
    $hintergrundfarbe = "#9B9B9B";
 
    $imggroesse = "width='90' height='50'";
@@ -589,6 +596,8 @@ function update_uebersicht_circles()
 	//***************************************************************************
 
 	$menu = $menu . "Seite ". ($ident + 1);
+	
+	$menu = createMenueSystemsteuerung();
 
 	// Erstelle Datenarray
 	$data_array = array();
@@ -792,7 +801,10 @@ function update_uebersicht_circles()
 
 	$hintergrundfarbe = '#FFFFFF';
 	$text = "";
-	$text = $text . "<table border='0' cellspacing='1' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
+	$text = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
+//	$menu = $menu . "<table border='0' class='table'>";
+
+	$text = $text . "<table class='table' border='0' cellspacing='5' bgcolor=$hintergrundfarbe width='100%' height='200' cellspacing='0'  >";
 	$hintergrundfarbe = '#000000';
 
 	for($x=0;$x<$anzahlzeilen;$x++)
@@ -817,7 +829,7 @@ function update_uebersicht_circles()
 		   $c_pingrssi2 = $data_array[$start_data]['CIRCLEPINGRSSI2'];
 			$c_livecount = $data_array[$start_data]['CIRCLELIVECOUNTER'];
 
-			$text = $text . "<td width='25%'  bgcolor=$hintergrundfarbe >";
+			$text = $text . "<td  width='25%'  bgcolor=$hintergrundfarbe >";
 			$circletext = "";
 
 			if ( $data_array[$start_data]['EXIST'] == false )
@@ -1010,6 +1022,8 @@ function update_uebersicht_circles()
 			
 
 	$text = $text . "</table>";
+	$text = $text . "</body>";
+	$text = $text . "</html>";
 
 /*
 	$text = "";
@@ -1113,7 +1127,8 @@ function update_uebersicht_circles()
 
 	$id = IPS_GetObjectIDByIdent('Uebersicht',$IdGraph);  // Uebersicht Circles
 
-	$html = $menu . "<br>" . $text;
+	//$html = $menu . "<br>" . $text;
+	$html = $text;
 
 	SetValueString($id,$html);
 	
@@ -1136,6 +1151,11 @@ function update_uebersicht1()
    $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
 	$AllgPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Allgemeines";
    $IdAllg    = get_ObjectIDByPath($AllgPath);
+
+	$Data1Path = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1   = @get_ObjectIDByPath($Data1Path,true);
+	$Data2Path = "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2   = @get_ObjectIDByPath($Data2Path,true);
 
 	$SystemstPath  = "Visualization.WebFront.Hardware.Plugwise.MENU.Systemsteuerung";
    $IdSystemst    = get_ObjectIDByPath($SystemstPath);
@@ -2069,9 +2089,6 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 				}
 			}
 
-
-
-
 		$sql = "";
 		$sql = $sql . "INSERT INTO ".$table." ";
 		$sql = $sql . "(`SSID`,`DATUMUHRZEIT`,`GERAETENAME`,`GESAMTVERBRAUCH`,`GERAETEID`,`GERAETEGRUPPE`,`LOGADRESSE`) ";
@@ -2087,9 +2104,6 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
  	   }
 
    mysql_close($server);
-
-
-	
 
 	}
 	
@@ -2307,6 +2321,7 @@ function update_webfront_123($was="",$id=0,$clear=false)
 		{
 		hide_data1data2();
 		IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),true);
+		
 		}
 	if ( $was == "ANTWORTZEITEN" )
 		{
@@ -2323,11 +2338,24 @@ function update_webfront_123($was="",$id=0,$clear=false)
 		$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
 		IPS_RunScript($id);
 		}
+
+	$GraphPath	 = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+	$IdGraph     = get_ObjectIDByPath($GraphPath);
+	$childs = IPS_GetChildrenIDs($IdGraph);
+	foreach($childs as $child)
+	   {
+		$obj = IPS_GetObject($child);
+		
+		if ( $obj['ObjectIsHidden'] )
+	   	{
+			//kein Refresh da Systemsteuerung
+			return;
+			}
+		}
+		
 	if ( $was == "REFRESH" )
 		{
       update_data1data2();
-		//$id = IPS_GetScriptIDByName('Plugwise_Config_Highcharts',$IdApp);
-		//IPS_RunScript($id);
 		}
 
 	}
@@ -2844,12 +2872,13 @@ function create_css3menu()
 	$html = $html . '<li class="toplast"><a class="pressed"  style="'.$widthpx.';"> </a></li>';
 	$html = $html . '</ul>';
 	
-	
-	
 	SetValueString($webfrontid,$html);
 	return $html;
 	}
 
+/***************************************************************************//**
+*	Kosten hoch zaehlen
+*******************************************************************************/
 function zaehleKostenhoch($myCat,$diff_stunden_preis)
 	{
 	
@@ -2875,6 +2904,102 @@ function zaehleKostenhoch($myCat,$diff_stunden_preis)
 	
 	}
 	
+function createMenueSystemsteuerung()
+	{
+	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
+   $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+
+	$csspath    = "/user/Plugwise/";
+	$imgpath = "/user/Plugwise/images/";
+
+
+
+	$id = IPS_GetObjectIDByName('Auswahl',$IdGraph);
+	$menupunkt = GetValue($id);
+
+	$imageheight = 30;
+	$imagewidth = 30;
+   $imggroesse = "width='90' height='50' ";
+
+
+	$data1 = 51531;
+	
+	$menuarray = array
+	   (
+	   array(true ,"menu_uebersicht.png"		,"menu_uebersicht_grau.png"		,0),
+	   array(true ,"menu_letztedaten.png"		,"menu_letztedaten_grau.png"		,1),
+	   array(true ,"menu_softwareversion.png"	,"menu_softwareversion_grau.png"	,2),
+	   array(true ,"menu_hardwareversion.png"	,"menu_hardwareversion_grau.png"	,3),
+	   array(true ,"menu_leistung.png"			,"menu_leistung_grau.png"			,4),
+	   array(true ,"menu_verbrauch.png"			,"menu_verbrauch_grau.png"			,5),
+	   array(true ,"menu_ping.png"				,"menu_ping_grau.png"				,6),
+	   );
+
+
+	$menu = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
+	$menu = $menu . "<table border='0' class='table'>";
+
+	$menu = $menu . "<tr>";
+
+	$spaltencounter = 0;
+	
+	foreach ( $menuarray as $menuitem )
+	   {
+		$menu = $menu . "<td align='center'>";
+
+		if ( $menuitem[0] == true and $menuitem[3] != $menupunkt)
+		   {
+		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   if ( file_exists($altfile) )
+		      $file = $imgpath . "alt_" . $menuitem[2];
+			else
+			   $file = $imgpath . $menuitem[2];
+
+         	
+			$menu = $menu . "<img  style='display: block; text-align: center;' src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+			$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+			$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+			}
+
+		if ( $menuitem[3] == $menupunkt )
+		   {
+		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   if ( file_exists($altfile) )
+		      $file = $imgpath . "alt_" . $menuitem[1];
+			else
+			   $file = $imgpath . $menuitem[1];
+
+			
+			
+			$menu = $menu ."<img style='display: block; text-align: center;' src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+			$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+			$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+			}
+		$menu = $menu . "</td>";
+		$spaltencounter = $spaltencounter + 1;
+		if ( $spaltencounter > 2 )
+		   {
+		   $spaltencounter = 0;
+		   $menu = $menu . "</tr><tr>";
+		   }
+
+		}
+	
+	$menu = $menu . "</tr>";
+	
+	$menu = $menu . "</table>";
+	//***************************************************************************
+
+
+	$menuold = GetValue ($data1 );
+	if ( $menu != $menuold )
+		SetValue ($data1, $menu);
+	
+
+	}
+	
+
+
 
 /***************************************************************************//**
 * @}

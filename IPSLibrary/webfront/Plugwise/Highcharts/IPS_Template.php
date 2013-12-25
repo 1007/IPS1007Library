@@ -3,6 +3,14 @@
 	IPSUtils_Include ("IPSInstaller.inc.php",          "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
+/*
+
+
+
+
+
+*/
+
 	// ab IPS-Highcharts Script V2.0000		 
 	// 07.05.2012 	geändert auf jquery/1.7.2
 	
@@ -97,7 +105,9 @@
       $theme = HIGHCHARTS_THEME;
       $AdditionalConfigData['Theme']= 'js/themes/'.$theme;
       }
-
+  
+  //$AdditionalConfigData['Width']  = "100%";
+  //$AdditionalConfigData['Height'] = "100px";
 
 			
 	}
@@ -147,17 +157,7 @@
                 // online request data when the chart is already instantiated
                 if(typeof chart !== "undefined")
                    {
-                    $.ajax({
-                        url: 'IPS_UpdateData.php',
-                        data: {"scriptId": scriptId,
-                                "Request": "HC",
-                               "lastTimeStamp": lastTimeStamp
-                              },
-                        success: function(points) {
-                            renderData(points);
-                        },
-                        cache: false
-                    });
+                    
                     $.ajax({
                         url: 'IPS_UpdateData.php',
                         data: {"scriptId": scriptId,
@@ -190,17 +190,14 @@
 		
 	<body>
 	
-		<!-- 3. Add the container
-	<table border="1" width=100% height=600px>	
-	<tr height=210px><td> 
-  <div id="data1data2" style="width: 100% height:200"></div> 
-  </td>
-  </tr>   -->
+		<!-- 3. Add the container  -->
+	<table border="0" width=100% height=300px>	
 	<tr height=216px><td> 		
-  <div id="container"  style="width: <?php echo $AdditionalConfigData['Width'] ?>; height: <?php echo $AdditionalConfigData['Height'] ?>; margin: 0 auto"></div>
+  <div class=".graphdiv" id="container"  style="width:  <?php echo $AdditionalConfigData['Width']; ?>; height: <?php echo $AdditionalConfigData['Height'] ?>; margin: 0 auto"></div>
   
   </td></tr>
   </table>
+  
 
 	</body>
 </html>
