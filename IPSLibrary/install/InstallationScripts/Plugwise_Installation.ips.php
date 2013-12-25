@@ -79,13 +79,31 @@
   EmptyCategory($CategoryIdMobile);
 
   //****************************************************************************
-  // Serial Port erstellen
+  // Serial Port erstellen wenn kei nAlternativ-Port
   //****************************************************************************
-  $comid = CreateSerialPort('PlugwiseCOM', COMPORT , 115200, 1, 8, 'None');
+  $AlternativPortExist = false;
+  $comid = false;
 
+	if ( defined("ALTERNATIVCOMPORT" ) )
+		if ( ALTERNATIVCOMPORT != false )
+      $AlternativPortExist = true;
+
+
+  if ( $AlternativPortExist == false )
+    $comid = CreateSerialPort('PlugwiseCOM', COMPORT , 115200, 1, 8, 'None');
+  else
+    {
+    echo "\nAlternativCOMPort definiert.COMPort wird nicht erstellt !!!!!";
+    $comid = @IPS_GetInstanceIDByName( ALTERNATIVCOMPORT ,0);    
+
+    }
+    
   if ( !$comid )
+    {
     echo "\nCOM-Port konnte nicht angelegt werden ";
-
+    return;
+    }
+    
   //****************************************************************************
   // Cutter erstellen
   //****************************************************************************  
