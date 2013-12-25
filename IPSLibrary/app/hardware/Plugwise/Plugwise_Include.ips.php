@@ -2908,6 +2908,8 @@ function createMenueSystemsteuerung()
 	{
 	$VisuPath  = "Visualization.WebFront.Hardware.Plugwise.GRAPH";
    $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
+	$Data1Path = "Visualization.WebFront.Hardware.Plugwise.DATA1";
+   $IdData1   = @get_ObjectIDByPath($Data1Path,true);
 
 	$csspath    = "/user/Plugwise/";
 	$imgpath = "/user/Plugwise/images/";
@@ -2922,7 +2924,13 @@ function createMenueSystemsteuerung()
    $imggroesse = "width='90' height='50' ";
 
 
-	$data1 = 51531;
+	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
+		{
+      $dataid = $child;
+		
+		}
+		
+	$data1 = $dataid;
 	
 	$menuarray = array
 	   (
