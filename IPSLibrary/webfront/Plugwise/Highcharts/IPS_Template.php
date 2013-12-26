@@ -157,17 +157,18 @@
                 // online request data when the chart is already instantiated
                 if(typeof chart !== "undefined")
                    {
-                    
                     $.ajax({
                         url: 'IPS_UpdateData.php',
                         data: {"scriptId": scriptId,
-                               "Request": "DATA1DATA2",
+                                "Request": "HC",
                                "lastTimeStamp": lastTimeStamp
                               },
-                        success: function(data) { document.getElementById("data1data2").innerHTML = data;} ,
+                        success: function(points) {
+                            renderData(points);
+                        },
                         cache: false
                     });
-                    
+                   
                     
                     setTimeout(requestData, 10000);
                     } 

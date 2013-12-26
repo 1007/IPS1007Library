@@ -66,7 +66,6 @@ function PW_SendCommand($cmd,$CircleId=false)
 	if ( defined("ALTERNATIVCOMPORT" ) )
 		if ( ALTERNATIVCOMPORT != false )
 		   {
-		   //IPS_LogMessage(__File__,"Alternativ Comport OK ");
 			$comid = @IPS_GetInstanceIDByName( ALTERNATIVCOMPORT ,0);
 			if ( !$comid )
 			   {
@@ -787,7 +786,7 @@ function update_uebersicht_circles()
 
 
 	
-	$anzahlzeilen  = 8 ;
+	$anzahlzeilen  = 6 ;
 	$anzahlspalten = 3;
 	if (defined('UEBERSICHTSPALTEN'))
 	   $anzahlspalten = UEBERSICHTSPALTEN;
@@ -2910,6 +2909,8 @@ function createMenueSystemsteuerung()
    $IdGraph   = @get_ObjectIDByPath($VisuPath,true);
 	$Data1Path = "Visualization.WebFront.Hardware.Plugwise.DATA1";
    $IdData1   = @get_ObjectIDByPath($Data1Path,true);
+	$Data2Path = "Visualization.WebFront.Hardware.Plugwise.DATA2";
+   $IdData2   = @get_ObjectIDByPath($Data2Path,true);
 
 	$csspath    = "/user/Plugwise/";
 	$imgpath = "/user/Plugwise/images/";
@@ -2927,10 +2928,17 @@ function createMenueSystemsteuerung()
 	foreach ( IPS_GetChildrenIDs($IdData1) as $child )
 		{
       $dataid = $child;
-		
 		}
-		
 	$data1 = $dataid;
+
+
+	foreach ( IPS_GetChildrenIDs($IdData2) as $child )
+		{
+      $dataid = $child;
+		}
+	$data2 = $dataid;
+
+
 	
 	$menuarray = array
 	   (
@@ -3000,9 +3008,19 @@ function createMenueSystemsteuerung()
 
 
 	$menuold = GetValue ($data1 );
+
 	if ( $menu != $menuold )
 		SetValue ($data1, $menu);
 	
+
+	$menu = "<head><link rel='stylesheet' type='text/css' href='".$csspath."Plugwise.css'></head><body>";
+	$menu = $menu . "<table border='0' class='table'>";
+
+	$menu = $menu . "</table>";
+	$menu = $menu . "</body>";
+	//***************************************************************************
+
+	SetValue ($data2,$menu);
 
 	}
 	
