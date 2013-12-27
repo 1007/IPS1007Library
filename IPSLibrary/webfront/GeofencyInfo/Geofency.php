@@ -29,7 +29,7 @@
   if ( isset( $_POST["id"] ) )       $GEOid           =$_POST["id"] ;        else $GEOid="";
   if ( isset( $_POST["longitude"] ) )$GEOlongitude    =$_POST["longitude"] ; else $GEOlongitude="";
   if ( isset( $_POST["latitude"] ) ) $GEOlatitude     =$_POST["latitude"] ;  else $GEOlatitude="";
-  if ( isset( $_POST["entry"] ) )    $GEOentry        =$_POST["entry"] ;     else $GEOEntry="";
+  if ( isset( $_POST["entry"] ) )    $GEOentry        =$_POST["entry"] ;     else $GEOentry="";
   if ( isset( $_POST["device"] ) )   $GEOdevice       =$_POST["device"] ;    else $GEOdevice="";
 
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
