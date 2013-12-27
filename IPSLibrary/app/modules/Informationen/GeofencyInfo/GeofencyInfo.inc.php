@@ -40,9 +40,20 @@
 *                 2  -  Scriptausfuehrung OK
 *                 3  -  Fehler bei Scriptausfuehrung
 *******************************************************************************/
-function GEOActions($GEOentry,$IPSName,$GEOname)
+function GEOActions($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
 	{
 	GLOBAL $ActionConfig;
+
+	//***************************************************************************
+	// POST Keys umbenennen
+	//***************************************************************************
+	$RunScriptArray = array();
+	$keys = array_keys($GeofencyPOST);
+	foreach ( $keys as $key )
+			{
+			$RunScriptArray['Geofency_' . $key] = $GeofencyPOST[$key];
+			}
+			
 
 	$return = false;
 	
@@ -77,7 +88,7 @@ function GEOActions($GEOentry,$IPSName,$GEOname)
 			   {
 	   		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Run Actionscript : " . $ActionScriptID);
 
-			   $ok = IPS_RunScript($ActionScriptID);
+			   $ok = IPS_RunScriptEx($ActionScriptID,$RunScriptArray);
 			   
 			   if ( $ok )
 					$return = 2;
@@ -317,7 +328,7 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	else
 		$Id = $IdAnwesend;
 
-	IPSLogger_Dbg(__FILE__,$Id);
+	
 	$geoAnkunft = GetValue(@IPS_GetVariableIDByName('GEOAnkunft',$Id));
 	$geoAbfahrt = GetValue(@IPS_GetVariableIDByName('GEOAbfahrt',$Id));
 	$latitude   = GetValue(@IPS_GetVariableIDByName('Latitude',$Id));

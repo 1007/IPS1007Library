@@ -19,7 +19,10 @@
     return;
     }
   else
-    $IPSName      =$_GET["IPSName"];
+    {
+    $IPSName = $_GET["IPSName"];
+    $_POST["IPSName"] = $IPSName;
+    }
   
   if ( isset( $_POST["date"] ) )     $GEOdate         =$_POST["date"] ;      else $GEOdate="";
   if ( isset( $_POST["name"] ) )     $GEOname         =$_POST["name"] ;      else $GEOname="";    
@@ -105,7 +108,7 @@
   DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry);
 
   
-  $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname));
+  $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname),$_POST);
   
   HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$ActionOK);
   
