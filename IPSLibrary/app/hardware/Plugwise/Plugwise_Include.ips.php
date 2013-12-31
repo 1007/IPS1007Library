@@ -1350,6 +1350,8 @@ function update_uebersicht1()
 
    SetValueString($id,$text);
 
+	
+
 	}
 
 
@@ -2348,13 +2350,14 @@ function update_webfront_123($was="",$id=0,$clear=false)
 		if ( $obj['ObjectIsHidden'] )
 	   	{
 			//kein Refresh da Systemsteuerung
-			return;
+			//return;
 			}
 		}
 		
 	if ( $was == "REFRESH" )
 		{
       update_data1data2();
+      
 		}
 
 	}
