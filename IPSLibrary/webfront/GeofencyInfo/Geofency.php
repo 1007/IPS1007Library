@@ -82,10 +82,10 @@
     SetValue($IDankunftIPS,time());
     $t = strtotime($GEOdate);
     SetValue($IDankunftGEO,$t);
-    SetValue($IDabfahrtGEO,0);
-    
+    SetValue($IDabfahrtGEO,0);    
     $loc = str_pad ( $GEOname, 15 , ' ' );     
     $out = "Ankunft: " . $IPSName . " - " . $loc  ;
+    $richtung = "Ankunft";
     }
   else
     {
@@ -94,6 +94,7 @@
     SetValue($IDabfahrtGEO,$t);
     $loc = str_pad ( $GEOname, 15 , ' ' );     
     $out = "Abfahrt: " . $IPSName . " - " . $loc  ; ;
+    $richtung = "Abfahrt";
     }
     
    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$out);
@@ -112,6 +113,11 @@
   
   HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$ActionOK);
   
-  CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);      
+  CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);
+
+ 
+  $out = ";".$IPSName.";".$GEOname.";".$richtung.";".$ActionOK; 
+  Logging($Parent,$out,'Device_'.$IPSName.'.log');
+        
       
 ?>

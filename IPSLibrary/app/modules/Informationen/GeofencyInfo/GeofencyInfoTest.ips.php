@@ -56,7 +56,7 @@
     				),));
 
 	$return = file_get_contents(TESTLOCALWEBSERVER.'user/GeofencyInfo/Geofency.php?IPSName=GeofencyTestDevice', false, $context);
-
+	
 	IPS_Sleep(10000);
 
 	$data = array ('date' => $now ,

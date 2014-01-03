@@ -33,6 +33,72 @@
  	IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
 
 /***************************************************************************//**
+*	Auto Leaving/Entering
+*
+*******************************************************************************/
+function AutoLeaving($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
+	{
+
+   $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$IPSName, true );
+	if ( !$DeviceID )
+		return;
+		
+   if ( AUTO_LEAVING_LOCATION )
+      {
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Autoleaving ON - ".$IPSName."-".$GEOname."-".$DeviceID);
+		}
+	else
+	   {
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Autoleaving OFF - ".$IPSName."-".$GEOname."-".$DeviceID);
+		return;
+		}
+		
+	if ( $GEOentry  == true )  	// Location betreten
+		$sollStatus = false;
+	else
+		$sollStatus = true;
+
+	$array = IPS_GetChildrenIDs($DeviceID);
+	foreach($array as $location)
+		{
+			
+		$name = IPS_GetName($location);
+		if ( $name != $GEOname)
+			{
+			$entryID = @IPS_GetVariableIDByName('Entry',$location);
+			$geoAbID = @IPS_GetVariableIDByName('GEOAbfahrt',$location);
+			$geoAnID = @IPS_GetVariableIDByName('GEOAnkunft',$location);
+
+			if ( $entryID )
+			   {
+			   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$name);
+			   
+			   $istStatus = GetValueBoolean($entryID);
+			   if ( $istStatus != $sollStatus )
+			      {
+			      SetValueBoolean($entryID,$sollStatus);
+			      
+			      if ( !$sollStatus )   // Ankunft an einem anderen Ort
+			         {
+			      	SetValue($geoAbID,false);
+
+			         }
+					else
+			         {
+			      	//SetValue($geoAbID,false);
+
+			         }
+
+			      
+			      }
+			   }
+			}
+		}
+	   
+
+	}
+	
+/***************************************************************************//**
 *	Ausfuehren von Aktion bei Erreichen oder Verlassen
 *  Returnwert
 *              false -  Fehler
@@ -43,6 +109,8 @@
 function GEOActions($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
 	{
 	GLOBAL $ActionConfig;
+
+	AutoLeaving($GEOentry,$IPSName,$GEOname,$GeofencyPOST);
 
 	//***************************************************************************
 	// POST Keys umbenennen
@@ -121,7 +189,7 @@ function DoGoogleMaps($HTMLBoxID,$latitude,$longitude,$hoehe='100%',$breite='100
     $zoomlevel = GOOGLEMAPS_ZOOM ;
 
     $s  = "<iframe width='".$breite."' height='".$hoehe."' ";
-    $s .= "src='http://maps.google.de/maps?hl=de";
+    $s .= "src='https://maps.google.de/maps?hl=de";
     $s .= "&q=".$latitude.",".$longitude."&ie=UTF8&t=&z=".$zoomlevel;
     $s .= "&output=embed' frameborder='0' scrolling='no' ></iframe>";
 
@@ -168,10 +236,30 @@ function Logging($Parent,$text,$file = 'geofency.log')
 
 	$time = date("d.m.Y H:i:s");
 	$logdatei = IPS_GetKernelDir() . "logs\\Geofency\\" . $file;
-	$datei = fopen($logdatei,"a+");
-	fwrite($datei, $time .": ". $text . chr(13));
-	fclose($datei);
+
+	$zeilen = @file ($logdatei);
+
+	$max_anzahl = 50;
 	
+	$anzahl = count($zeilen);
+
+	if ( $anzahl > $max_anzahl )
+		{
+	   $zeilen = array_slice($zeilen,$anzahl-$max_anzahl);
+	   }
+
+	$datei = fopen($logdatei,"w");
+
+	if ( $zeilen )
+	foreach ($zeilen as $zeile)
+		{
+		fwrite($datei, $zeile );
+		}
+
+	fwrite($datei, $time .": ". trim($text)  ."\n" );
+
+	fclose($datei);
+
 	}
 
 
