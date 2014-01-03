@@ -416,11 +416,12 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	else
 		$Id = $IdAnwesend;
 
-	
-	$geoAnkunft = GetValue(@IPS_GetVariableIDByName('GEOAnkunft',$Id));
-	$geoAbfahrt = GetValue(@IPS_GetVariableIDByName('GEOAbfahrt',$Id));
-	$latitude   = GetValue(@IPS_GetVariableIDByName('Latitude',$Id));
-	$longitude  = GetValue(@IPS_GetVariableIDByName('Longitude',$Id));
+	//IPSLogger_Dbg(__FILE__,$Id);
+
+	$geoAnkunft = @GetValue(@IPS_GetVariableIDByName('GEOAnkunft',$Id));
+	$geoAbfahrt = @GetValue(@IPS_GetVariableIDByName('GEOAbfahrt',$Id));
+	$latitude   = @GetValue(@IPS_GetVariableIDByName('Latitude',$Id));
+	$longitude  = @GetValue(@IPS_GetVariableIDByName('Longitude',$Id));
 	$objectinfo = IPS_GetObject($Id);
 	$IPSName = $objectinfo['ObjectName'];
 
