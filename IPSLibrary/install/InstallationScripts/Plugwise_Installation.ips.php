@@ -582,8 +582,8 @@
       }
 
   $cssmenu = false;
-	if (defined('CSS3MENU'))
-      $cssmenu = CSS3MENU ;
+//	if (defined('CSS3MENU'))
+//      $cssmenu = CSS3MENU ;
 
   if ( $cssmenu == false )
     {       
