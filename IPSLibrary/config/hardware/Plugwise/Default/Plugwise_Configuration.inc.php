@@ -95,12 +95,13 @@
 *   Feld 07   -   Tarifgruppe   - Tarifgruppe des Circles (siehe Tarife )
 *   Feld 08   -   in Gesamt     - in Gesamtanzeige enthalten
 *   Feld 09   -   in Gruppe     - in Gesamtanzeige der Gruppe enthalten
+*   Feld 10   -   REGVar        - Registervariable   
 *******************************************************************************/      
   $CircleGroups = array(
-	   array("000D6F0000B81B6E","Verbraucher1","Raum1"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true ),
-	   array("000D6F0000C3B1DA","Verbraucher2","Raum1"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true ), 
-	   array("000D6F0000B81B7E","Verbraucher3","Raum2"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true ),
-	   array("000D6F0000C3B18A","Verbraucher4","Raum2"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true ), 
+	   array("000D6F0000B81B6E","Verbraucher1","Raum1"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true , 12345 ),
+	   array("000D6F0000C3B1DA","Verbraucher2","Raum1"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true , 12345 ), 
+	   array("000D6F0000B81B7E","Verbraucher3","Raum2"	,"1","500"	,"5" 	, "Tarifgruppe Tag/Nacht" , true, true , 12345 ),
+	   array("000D6F0000C3B18A","Verbraucher4","Raum2"	,"0","200"	,"" 	, "Tarifgruppe Tag/Nacht" , true, true , 12345 ), 
 
 	// Standardtarifgruppe
 	   array(""						     ,""			      ,""				,"0",""		  ,""	  , "Tarifgruppe Tag/Nacht" , true ),
@@ -159,7 +160,7 @@
 * 
 *******************************************************************************/
 	$SystemStromzaehlerGroups = array(
-      array("Gesamt" 		,"SYSTEM_MAIN"	,"49998" , "35097"   ,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
+      array("Gesamt" 		,"SYSTEM_MAIN"	, false ,  false   ,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
       array("Sonstige"	,"SYSTEM_REST"	, false	 , false		 ,"500"	,"5" 	, "Tarifgruppe Tag/Nacht",true),
 
   			);
