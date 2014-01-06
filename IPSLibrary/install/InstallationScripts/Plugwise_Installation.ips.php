@@ -26,7 +26,7 @@
   GLOBAL $Profil_Plugwise_MenuScripte;
   GLOBAL $Profil_Plugwise_MenuUebersicht;
  
-  set_time_limit(300);
+  set_time_limit(600);
          
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
