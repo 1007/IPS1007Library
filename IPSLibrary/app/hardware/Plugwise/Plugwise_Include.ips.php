@@ -2600,11 +2600,13 @@ function check_zaehleractions()
 *******************************************************************************/
 function logging($text,$file = 'plugwise.log' ,$force = false)
 	{
-	
-	if ( $file != 'plugwiseerror.log' )
-	if ( !$force )
-		if ( !LOG_MODE )
-	   	return;
+
+   $force = false;
+   
+	//if ( $file != 'plugwiseerror.log' )
+	//		if ( !$force )
+	if ( !LOG_MODE )
+		return;
 
 	$ordner = IPS_GetKernelDir() . "logs\\Plugwise\\logs";
    if ( !is_dir ( $ordner ) )
