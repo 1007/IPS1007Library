@@ -107,7 +107,7 @@
   //****************************************************************************
   // Cutter erstellen
   //****************************************************************************  
-  $cutterid = IPS_GetInstanceIDByName('PlugwiseCUTTER',0);
+  $cutterid = @IPS_GetInstanceIDByName('PlugwiseCUTTER',0);
   if ( !$cutterid )
     $cutterid = IPS_CreateInstance ('{AC6C6E74-C797-40B3-BA82-F135D941D1A2}');
 	if ( $cutterid )
@@ -163,8 +163,10 @@
       echo "\nRegVar erstellt " . $id;
       
       }      
-    
+    $registerid = $id;
     }
+  
+  @IPS_ConnectInstance($registerid,$cutterid);
     
   //****************************************************************************
   // Timer fuer Plugwise_Controller setzten
