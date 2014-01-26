@@ -69,6 +69,7 @@
   $IDabfahrtGEO= CreateVariable('GEOAbfahrt',1,$IDLocation,3,'~UnixTimestamp',false,0);  
   $IDentry     = CreateVariable('Entry'     ,0,$IDLocation,1,'~Presence',false,false);  
   $IDdevice    = CreateVariable('Device'    ,3,$IDLocation,9);  
+  $IDAction    = CreateVariable('Action'    ,3,$IDLocation,10);  
  
 
   SetValue($IDentry,$GEOentry);
@@ -107,17 +108,33 @@
 
   $HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox'); 
   DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry);
-
   
   $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname),$_POST);
+
+  $OldActionValue = GetValue($IDAction);
+  $OldActionValues = explode(',',$OldActionValue);
+  
+  if ($GEOentry)
+    $OldActionValues[0] = $ActionOK;
+  else
+    $OldActionValues[1] = $ActionOK;
+
+  if ( !isset($OldActionValues[0]) )
+    $OldActionValues[0] = '1';
+  if ( !isset($OldActionValues[1]) )
+    $OldActionValues[1] = '1';
+        
+  $ActionValues = $OldActionValues[0] . "," . $OldActionValues[1];      
+  SetValue($IDAction,$ActionValues);
   
   HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$ActionOK);
   
-  CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);
-
+  //CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);
  
   $out = ";".$IPSName.";".$GEOname.";".$richtung.";".$ActionOK; 
   Logging($Parent,$out,'Device_'.$IPSName.'.log');
-        
-      
+
+  RefreshHTMLBoxWithMap($IPSName);
+
+              
 ?>

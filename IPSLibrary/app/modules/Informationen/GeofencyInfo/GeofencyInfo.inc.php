@@ -256,7 +256,7 @@ function Logging($Parent,$text,$file = 'geofency.log')
 		fwrite($datei, $zeile );
 		}
 
-	fwrite($datei, $time .": ". trim($text)  ."\n" );
+	fwrite($datei, $time ." ". trim($text)  ."\n" );
 
 	fclose($datei);
 
@@ -338,7 +338,7 @@ function HTMLlogging($Parent,$GEOentry,$GEOdevice,$GEOname,$GEOdate,$IPSName,$Ac
 	
 
 /***************************************************************************//**
-*	HTML Logging
+*	HTMLwithMap
 *******************************************************************************/
 function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	{
@@ -402,8 +402,6 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 					$LastTimeAbwesend = $geoAbfahrt;
 			   	$IdAbwesend = $kategorie;
 			   	}
-
-				   
 				   
 				}
 
@@ -416,7 +414,6 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	else
 		$Id = $IdAnwesend;
 
-	//IPSLogger_Dbg(__FILE__,$Id);
 
 	$geoAnkunft = @GetValue(@IPS_GetVariableIDByName('GEOAnkunft',$Id));
 	$geoAbfahrt = @GetValue(@IPS_GetVariableIDByName('GEOAbfahrt',$Id));
@@ -425,7 +422,6 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 	$objectinfo = IPS_GetObject($Id);
 	$IPSName = $objectinfo['ObjectName'];
 
-	
 	//***************************************************************************
 
 	if ( $geoAnkunft )
@@ -504,8 +500,9 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 		$img_script = $img_scriptok;
 
 	
-	// Create MAP
-	
+	//***************************************************************************
+	// Get MAP
+	//***************************************************************************
 	$map = "Keine Karte in der Konfiguration definiert";
 	
 	if ( @defined ( 'GEOFENCYIPSMAP' ) )
@@ -525,7 +522,9 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 		$MapHeight = MAPHEIGHT;
 		}
 
-
+	//***************************************************************************
+	// Create HTMLBox
+	//***************************************************************************
 	$htmlText = "<head><link rel='stylesheet' type='text/css' href='/user/GeofencyInfo/css/Geofency.css'>";
 	$htmlText = $htmlText . "<style>overflow-x:auto</style>";
 	$htmlText = $htmlText . "</head><body>";
@@ -536,7 +535,18 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 
 	$htmlText = $htmlText . "<td class='tdStyle' width='40%'>";
 	$htmlText = $htmlText . "<div class='divImgGeofency'>";
-	$htmlText = $htmlText . "<img class='imgGeofency' src='".$img_geofency."'></div>";
+	$htmlText = $htmlText . "<img class='imgGeofency' src='".$img_geofency ."'";
+
+	//$menu = $menu . "<img src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+	//$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+	//$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+
+	$htmlText = $htmlText . " onmouseover=\"this.style.cursor = 'pointer'\" ";
+	$htmlText = $htmlText . "onclick=\"new Image().src = '/user/GeofencyInfo/GeofencyWebCommand.php?Device=".$Parent."'; return false;\" ";
+	$htmlText = $htmlText . "ontouchstart=\"new Image().src = '/user/GeofencyInfo/GeofencyWebCommand.php?Device=".$Parent."'; return false;\">";
+
+	$htmlText = $htmlText . "</div>";
+
 
    if ( $geoAnkunft )
 		{
@@ -579,4 +589,474 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
 
 	}
 
+
+/***************************************************************************//**
+*	Refresh HTMLwithMap
+*******************************************************************************/
+function RefreshHTMLBoxWithMap($Device,$Switch=false)
+	{
+
+	$img_geofency = "/user/GeofencyInfo/images/geofency.png";
+	$img_red      = "/user/GeofencyInfo/images/arrowred.png";
+	$img_green    = "/user/GeofencyInfo/images/arrowgreen.png";
+	$img_empty    = "/user/GeofencyInfo/images/leer.png";
+	$img_scriptok = "/user/GeofencyInfo/images/scriptok.png";
+	$img_scriptnok= "/user/GeofencyInfo/images/scriptnok.png";
+
+
+	$str = "RefreshHTMLBoxWithMap : " . $Device;
+   if ( DEBUG_MODE ); IPSLogger_Dbg(__FILE__,$str);
+
+	// suche Contentvariable
+   $ParentID = @IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo", true );
+	$ContentId = @IPS_GetVariableIDByName($Device."Content",$ParentID);
+
+	if ( !$ContentId )
+	   {
+		IPSLogger_Dbg(__FILE__,'Keine ContentID gefunden');
+		return;
+	   }
+
+	$CategoryId = @IPS_GetCategoryIDByName($Device,$ParentID);
+	if ( !$CategoryId )
+	   {
+		IPSLogger_Dbg(__FILE__,'Keine $CategoryId gefunden');
+		return;
+	   }
+
+
+	//***************************************************************************
+	// Menu Umschaltung durch Webfront
+	//***************************************************************************
+  	$IDMenuMode = CreateVariable('Mode',1,$CategoryId,3,'',false,1);
+	$Mode = GetValue($IDMenuMode);
+	if ( $Switch )
+	   {
+		IPSLogger_Dbg(__FILE__,'Switch');
+
+		$MaxMode = 2;
+		$Mode = $Mode + 1 ;
+
+		if ( $Mode < 1 )
+		   $Mode = 1;
+		if ( $Mode > $MaxMode )
+		   $Mode = 1;
+
+		SetValue($IDMenuMode,$Mode);
+		}
+	$htmlHistory = "Wrong MenuMode";
+
+   if ( $Mode == 1 )
+		$htmlHistory = HtmlHistoryLeft($Device,$CategoryId);
+   if ( $Mode == 2 )
+		$htmlHistory = HtmlLogLeft($Device);
+
+
+
+
+
+	$AnkunftID = false;
+	//***************************************************************************
+	// suche letzte Ankunft / Abfahrt
+	//***************************************************************************
+	$LastTimeAnwesend = 0 ;   
+	$IdAnwesend = false;
+	$LastTimeAbwesend = 0 ;   
+	$IdAbwesend = false;
+
+	$array = IPS_GetChildrenIDs($CategoryId);
+	foreach ( $array as $Location )
+	   {
+		//IPSLogger_Dbg(__FILE__,$Location);
+      $childs = IPS_GetChildrenIDs($Location);
+		if ( $childs )
+			{
+			$entry = GetValue(IPS_GetVariableIDByName('Entry',$Location));
+			// Anwesend ?
+			if ( $entry )
+			   {
+				$geoAnkunft = GetValue(IPS_GetVariableIDByName('GEOAnkunft',$Location));
+				if ( $geoAnkunft > $LastTimeAnwesend )
+			   	{
+					$LastTimeAnwesend = $geoAnkunft;
+			   	$IdAnwesend = $Location;
+			   	}
+			   }
+			// Abwesend
+			if ( !$entry )
+			   {
+				$geoAbfahrt = GetValue(IPS_GetVariableIDByName('GEOAbfahrt',$Location));
+				if ( $geoAbfahrt > $LastTimeAbwesend )
+			   	{
+					$LastTimeAbwesend = $geoAbfahrt;
+			   	$IdAbwesend = $Location;
+			   	}
+
+			   }
+
+			}
+	   
+	   }
+
+
+	$geoAnkunft  = "???";
+	$geoAbfahrt  = "???";
+	$latitude    = "???";
+	$longitude   = "???";
+	$LocName 	 = "???";
+	$GEOentry   = false;
+	
+	$img_script_ankunft = $img_empty;
+	$img_script_abfahrt = $img_empty;
+
+	// Bin ich irgendwo ? Neueste Ankunft
+	if ( $IdAnwesend == true )
+	   {
+	   $ID = $IdAnwesend;
+		IPSLogger_Dbg(__FILE__,$ID);
+		$geoAnkunft = GetValue(IPS_GetVariableIDByName('GEOAnkunft',$ID));
+		$geoAnkunft = date("d.m.y H:i:s",$geoAnkunft);
+		$geoAbfahrt = GetValue(IPS_GetVariableIDByName('GEOAbfahrt',$ID));
+		$geoAbfahrt = date("d.m.y H:i:s",$geoAbfahrt);
+		$objectinfo = IPS_GetObject($ID);
+		$LocName    = $objectinfo['ObjectName'];
+		$latitude   = GetValue(IPS_GetVariableIDByName('Latitude',$ID));
+		$longitude  = GetValue(IPS_GetVariableIDByName('Longitude',$ID));
+		$latitude   = round(floatval($latitude),5);
+		$longitude  = round(floatval($longitude),5);
+		$GEOentry = true;
+
+		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
+		if ( $action )
+		   {
+		   $array = explode(",",$action);
+		   if ( isset($array[0]) )
+		      {
+		      if ( $array[0] == 2 )
+					$img_script_ankunft = "/user/GeofencyInfo/images/scriptok.png";
+		      if ( $array[0] == 3 )
+					$img_script_ankunft = "/user/GeofencyInfo/images/scriptnok.png";
+				}
+
+		   }
+		   
+		$geoAbfahrt = " ";
+	   }
+
+	// Bin ich nirgendwo ? Neueste Abfahrt
+	if ( $IdAnwesend == false and $IdAbwesend == true )
+	   {
+	   $ID = $IdAbwesend;
+		IPSLogger_Dbg(__FILE__,$ID);
+		$geoAnkunft = GetValue(IPS_GetVariableIDByName('GEOAnkunft',$ID));
+		$geoAnkunft = date("d.m.y H:i:s",$geoAnkunft);
+		$geoAbfahrt = GetValue(IPS_GetVariableIDByName('GEOAbfahrt',$ID));
+		$geoAbfahrt = date("d.m.y H:i:s",$geoAbfahrt);
+		$objectinfo = IPS_GetObject($ID);
+		$LocName    = $objectinfo['ObjectName'];
+		$latitude   = GetValue(IPS_GetVariableIDByName('Latitude',$ID));
+		$longitude  = GetValue(IPS_GetVariableIDByName('Longitude',$ID));
+		$latitude   = round(floatval($latitude),5);
+		$longitude  = round(floatval($longitude),5);
+
+		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
+		if ( $action )
+		   {
+		   $array = explode(",",$action);
+		   if ( isset($array[0]) )
+		      {
+		      if ( $array[0] == 2 )
+					$img_script_ankunft = "/user/GeofencyInfo/images/scriptok.png";
+		      if ( $array[0] == 3 )
+					$img_script_ankunft = "/user/GeofencyInfo/images/scriptnok.png";
+				}
+		   if ( isset($array[1]) )
+		      {
+		      if ( $array[1] == 2 )
+					$img_script_abfahrt = "/user/GeofencyInfo/images/scriptok.png";
+		      if ( $array[1] == 3 )
+					$img_script_abfahrt = "/user/GeofencyInfo/images/scriptnok.png";
+				}
+
+		   }
+
+
+	   }
+
+
+	//***************************************************************************
+	// Create MAPs
+	//***************************************************************************
+	$DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$Device);
+  	$HTMLBoxID = CreateVariable('GoogleMap'  ,3,$DeviceID,99,'~HTMLBox');
+  	DoGoogleMaps($HTMLBoxID,trim($latitude),trim($longitude));
+
+	$HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox');
+  	DoOSMMap($HTMLBoxID,trim($latitude),trim($longitude),$GEOentry);
+
+
+
+	//***************************************************************************
+	// Get MAP
+	//***************************************************************************
+	$map = "Keine Karte in der Konfiguration definiert";
+
+	if ( @defined ( 'GEOFENCYIPSMAP' ) )
+	   {
+		if ( GEOFENCYIPSMAP == 'GOOGLE' )
+			$mapName = "GoogleMap";
+		if ( GEOFENCYIPSMAP == 'OSM' )
+			$mapName = "OSMMap";
+
+		$map = GetValue(IPS_GetVariableIDByName($mapName,$CategoryId));
+
+		}
+
+	$MapHeight = 500;
+	if ( @defined ( 'MAPHEIGHT' ) )
+	   {
+		$MapHeight = MAPHEIGHT;
+		}
+
+	//***************************************************************************
+	// Create HTMLBox
+	//***************************************************************************
+	$htmlText = "<head><link rel='stylesheet' type='text/css' href='/user/GeofencyInfo/css/Geofency.css'>";
+	$htmlText = $htmlText . "<style>overflow-x:auto</style>";
+	$htmlText = $htmlText . "</head><body>";
+
+	$htmlText = $htmlText . "<table border = '0' width='100%' scrolling='No'>";
+
+	$htmlText = $htmlText . "<tr>";
+
+	$htmlText = $htmlText . "<td class='tdStyle' width='40%'>";
+	$htmlText = $htmlText . "<div class='divImgGeofency'>";
+	$htmlText = $htmlText . "<img class='imgGeofency' src='".$img_geofency ."'";
+
+	//$menu = $menu . "<img src='$file' ". $imggroesse ." onmouseover=\"this.style.cursor = 'pointer'\" ";
+	//$menu = $menu . "onclick=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\" ";
+	//$menu = $menu . "ontouchstart=\"new Image().src = '/user/Plugwise/PlugwiseWebMenuController.php?Button=$menuitem[3] '; return false;\">";
+
+	$htmlText = $htmlText . " onmouseover=\"this.style.cursor = 'pointer'\" ";
+	$htmlText = $htmlText . "onclick=\"new Image().src = '/user/GeofencyInfo/GeofencyWebCommand.php?Device=".$Device."'; return false;\" ";
+	$htmlText = $htmlText . "ontouchstart=\"new Image().src = '/user/GeofencyInfo/GeofencyWebCommand.php?Device=".$Device."'; return false;\">";
+
+	$htmlText = $htmlText . "</div>";
+
+
+	$htmlText = $htmlText . "<div class='divImgGreenArrow'>";
+	$htmlText = $htmlText . "<img src='".$img_green. "' hspace=10 align='ABSMIDDLE'>";
+	$htmlText = $htmlText . "".$geoAnkunft."";
+	$htmlText = $htmlText . "<img  class='floatRight' src='".$img_script_ankunft."' hspace=5 >";
+	$htmlText = $htmlText . "</div>";
+
+	$htmlText = $htmlText . "<div class='divImgRedArrow'>";
+	$htmlText = $htmlText . "<img src='".$img_red   ."' hspace=10 align='ABSMIDDLE'>";
+	$htmlText = $htmlText . "".$geoAbfahrt."";
+	$htmlText = $htmlText . "<img  class='floatRight' src='".$img_script_abfahrt."' hspace=5 >";
+	$htmlText = $htmlText . "</div></td>";
+
+	$htmlText = $htmlText . "<td class='tdStyleLocationInfo' width='60%' ><center>" . $LocName . "" ;
+	$htmlText = $htmlText . "<p  class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p></td>" ;
+
+	$htmlText = $htmlText . "</tr>";
+	$htmlText = $htmlText . "</table>";
+
+	$htmlText = $htmlText . "<table border = '0' width='100%' scrolling='No'>";
+
+	$htmlText = $htmlText . "<tr>";
+	$htmlText = $htmlText . "<td class='tdStyle' valign='top'  width='200' height='400'> " ;
+
+	$htmlText = $htmlText . "" . $htmlHistory . "</td>" ;
+
+	$htmlText = $htmlText . "<td class='tdStyle' height='".$MapHeight."'> " . $map . "</td>" ;
+
+	$htmlText = $htmlText . "</tr>";
+	$htmlText = $htmlText . "</table>";
+	$htmlText = $htmlText . "</body>";
+
+	SetValueString($ContentId,$htmlText);
+
+
+	}
+
+/***************************************************************************//**
+*	LocationHistory Left
+*******************************************************************************/
+function HtmlHistoryLeft($Device,$CategoryId)
+	{
+	$img_red      = "/user/GeofencyInfo/images/arrowred.png";
+	$img_green    = "/user/GeofencyInfo/images/arrowgreen.png";
+	$img_empty    = "/user/GeofencyInfo/images/leer.png";
+	$img_scriptok = "/user/GeofencyInfo/images/scriptok.png";
+	$img_scriptnok= "/user/GeofencyInfo/images/scriptnok.png";
+
+	$html = "";
+	
+	$img_script = $img_empty;
+	$img_scriptankunft = $img_empty;
+	$img_scriptabfahrt = $img_empty;
+
+	$array = IPS_GetChildrenIDs($CategoryId);
+
+
+
+	// Create History-Array
+	foreach($array as $kategorie)
+	   {
+		$childs = IPS_GetChildrenIDs($kategorie);
+		if ( $childs )
+			{
+			$entry      = GetValue(@IPS_GetVariableIDByName('Entry',$kategorie));
+			if ( !$entry );
+			   {
+				$geoAnkunftH = GetValue(@IPS_GetVariableIDByName('GEOAnkunft',$kategorie));
+				$geoAbfahrtH = GetValue(@IPS_GetVariableIDByName('GEOAbfahrt',$kategorie));
+
+				$objectinfo = IPS_GetObject($kategorie);
+				$IPSNameH = $objectinfo['ObjectName'];
+
+				if ( $geoAbfahrtH )
+					$index = $geoAbfahrtH;
+				else
+					$index = $geoAnkunftH;
+
+            $HistoryArray[$index] = array($IPSNameH,$geoAnkunftH,$geoAbfahrtH,);
+
+				}
+			}
+		}
+
+	$HistoryAnzahl = 6;
+	if ( @defined ( 'HISTORYLINES' ) )
+	   {
+		$HistoryAnzahl = HISTORYLINES;
+		}
+
+	ksort($HistoryArray);
+	$HistoryArray = array_reverse($HistoryArray);
+	$HistoryArray = array_slice($HistoryArray,1,$HistoryAnzahl);
+
+	// Create History-HTML
+	$htmlHistory  = "";
+	foreach ( $HistoryArray as $Location )
+	   {
+		$htmlHistory .= "<p class='tdStyleHistory'>" . $Location[0] ."</p>" ;
+
+		if ( $Location[1] )
+			$Location[1] = date("d.m.y H:i:s",$Location[1]);
+		else
+		   $Location[1] = "";
+
+		if ( $Location[2] )
+			$Location[2] = date("d.m.y H:i:s",$Location[2]);
+		else
+		   $Location[2] = "";
+
+
+		$htmlHistory = $htmlHistory . "<img class='imgGreenArrow' src='".$img_green."' height='20px' width='20px' align='ABSMIDDLE'> ".$Location[1];
+		if ( $Location[1] )
+			$htmlHistory = $htmlHistory . " <img class='imgGreenArrow' src='".$img_scriptankunft."' height='20px' width='20px' align='ABSMIDDLE'> ";
+
+		$htmlHistory = $htmlHistory . "</br>";
+
+		$htmlHistory = $htmlHistory . "<img class='imgRedArrow'   src='".$img_red."'   height='20px' width='20px' align='ABSMIDDLE'> ".$Location[2]."";
+		if ( $Location[2] )
+			$htmlHistory = $htmlHistory . " <img class='imgGreenArrow' src='".$img_scriptabfahrt."' height='20px' width='20px' align='ABSMIDDLE'> ";
+
+		}
+
+
+
+
+
+
+
+
+	return $htmlHistory;
+	}
+
+/***************************************************************************//**
+*	LogHistory Left
+*******************************************************************************/
+function HtmlLogLeft($Device)
+	{
+	$img_red      = "/user/GeofencyInfo/images/arrowred.png";
+	$img_green    = "/user/GeofencyInfo/images/arrowgreen.png";
+	$img_empty    = "/user/GeofencyInfo/images/leer.png";
+	$img_scriptok = "/user/GeofencyInfo/images/scriptok.png";
+	$img_scriptnok= "/user/GeofencyInfo/images/scriptnok.png";
+
+	$img_script = $img_empty;
+
+	$html = "";
+	
+   $ordner = IPS_GetKernelDir() . "logs\\Geofency";
+
+   if ( !is_dir ( $ordner ) )
+	   return;
+
+	$logdatei = IPS_GetKernelDir() . "logs\\Geofency\\Device_" . $Device.".log";
+
+	$zeilen = @file ($logdatei);
+	$zeilen = @array_reverse($zeilen);
+	
+	$anzahl = count($zeilen);
+
+	$HistoryAnzahl = 6;
+	if ( @defined ( 'HISTORYLINES' ) )
+	   {
+		$HistoryAnzahl = HISTORYLINES;
+		}
+   $HistoryAnzahl = $HistoryAnzahl + ( $HistoryAnzahl / 2 );
+
+
+   $HistoryArray = array();
+	for ( $x=0;$x<=$HistoryAnzahl;$x++)
+	   {
+	   $text = "";
+		if ( isset($zeilen[$x]) )
+		   {
+		   $text = "";
+			$array = explode(";",$zeilen[$x]);
+
+			if ( isset($array[2] ))
+			   $loc = trim($array[2]);
+
+			$text .= "<p class='tdStyleHistory'>" . $loc ."</p>" ;
+
+			
+			if ( isset($array[3] ))
+			   {
+			   if ( trim($array[3] == "Abfahrt") )
+					$text = $text . "<img class='imgGreenArrow' src='".$img_red."' height='20px' width='20px' align='ABSMIDDLE'> ";
+			   if ( trim($array[3] == "Ankunft") )
+					$text = $text . "<img class='imgGreenArrow' src='".$img_green."' height='20px' width='20px' align='ABSMIDDLE'> ";
+
+				}
+				
+			if ( isset($array[0] ))
+			   $text = $text . trim($array[0]);
+
+			if ( isset($array[4] ))
+			   {
+			   $ActionResult = trim($array[4]);
+				if ( $ActionResult == 2 )
+					$img_script = $img_scriptok;
+				if ( $ActionResult == 3 )
+					$img_script = $img_scriptnok;
+
+				$text = $text . " <img class='imgGreenArrow' src='".$img_script."' height='20px' width='20px' align='ABSMIDDLE'>";
+
+				}
+				
+		   }
+
+		$html = $html . $text;
+		}
+		
+	return $html;
+	}
+
+	
 ?>
