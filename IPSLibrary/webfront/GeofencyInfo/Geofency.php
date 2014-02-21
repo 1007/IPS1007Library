@@ -32,7 +32,14 @@
   if ( isset( $_POST["entry"] ) )    $GEOentry        =$_POST["entry"] ;     else $GEOentry="";
   if ( isset( $_POST["device"] ) )   $GEOdevice       =$_POST["device"] ;    else $GEOdevice="";
 
+  if ( isset( $_POST["radius"] ))    $GEOradius       =$_POST["radius"]  ;   else $GEOradius = ""; 
+  if ( isset( $_POST["beaconUUID"])) $GEObeaconUUID   =$_POST["beaconUUID"]; else $GEObeaconUUID ="";
+  if ( isset( $_POST["major"] ))     $GEOmajor        =$_POST["major"];      else $GEOmajor ="";
+  if ( isset( $_POST["minor"] ))     $GEOminor        =$_POST["minor"];      else $GEOminor ="";
+  
+
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
+  $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor;
   logging(false,$out,'incoming.log');
 
 
@@ -70,6 +77,7 @@
   $IDentry     = CreateVariable('Entry'     ,0,$IDLocation,1,'~Presence',false,false);  
   $IDdevice    = CreateVariable('Device'    ,3,$IDLocation,9);  
   $IDAction    = CreateVariable('Action'    ,3,$IDLocation,10);  
+  $IDradius    = CreateVariable('Radius'    ,3,$IDLocation,11);  
  
 
   SetValue($IDentry,$GEOentry);
@@ -77,6 +85,7 @@
   SetValue($IDlongitude,$GEOlongitude);
   SetValue($IDlocID,$GEOid);
   SetValue($IDdevice,$GEOdevice);
+  SetValue($IDradius,$GEOradius);
   
   if ($GEOentry)
     {
@@ -107,7 +116,8 @@
   DoGoogleMaps($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude));
 
   $HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox'); 
-  DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry);
+  IPS_Logmessage("..............",$GEOradius);
+  DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry,$GEOradius);
   
   $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname),$_POST);
 

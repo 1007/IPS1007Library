@@ -37,6 +37,7 @@
   if (isset($_GET["lon"]))    $longitude = $_GET["lon"];   else { IPSLogger_Dbg(__FILE__,"Kein Longitude"); return; };
   if (isset($_GET["lat"]))    $latitude  = $_GET["lat"];   else { IPSLogger_Dbg(__FILE__,"Kein Latitude");  return; };
   if (isset($_GET["entry"]))  $entry     = $_GET["entry"]; else { IPSLogger_Dbg(__FILE__,"Kein Entry");     return; };
+  if (isset($_GET["radius"])) $radius    = $_GET["radius"];else { IPSLogger_Dbg(__FILE__,"Kein Radius"); $radius = 100;};
   
     
   
@@ -64,9 +65,10 @@
      <script src="OpenLayers/OpenLayers.js"></script>
      <script>
        function init() {
-           var lat            = <?php echo $latitude; ?>;
+           var lat            = <?php echo $latitude;  ?>;
            var lon            = <?php echo $longitude; ?>;
            var zoom           = <?php echo $zoomlevel; ?>;
+           var radius         = <?php echo $radius;    ?>;
 
           var circleStyleOnline = {
                          strokeColor: "<?php echo $circleColor; ?>",
@@ -93,7 +95,7 @@
 
  
          var Point  = new OpenLayers.Geometry.Point( position.lon,position.lat );
-         var Circle = OpenLayers.Geometry.Polygon.createRegularPolygon(Point, 100, 50, 0 );
+         var Circle = OpenLayers.Geometry.Polygon.createRegularPolygon(Point, radius, 50, 0 );
          var addCircul = new OpenLayers.Feature.Vector(Circle, null,circleStyleOffline);
          vectorLayer.addFeatures([ addCircul ]);
  

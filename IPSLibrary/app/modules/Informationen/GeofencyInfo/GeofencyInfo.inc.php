@@ -186,6 +186,9 @@ function DoGoogleMaps($HTMLBoxID,$latitude,$longitude,$hoehe='100%',$breite='100
     {
     if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Create New Googlemap");
 
+   $longitude = str_replace(",",".",$longitude);
+   $latitude  = str_replace(",",".",$latitude);
+
     $zoomlevel = GOOGLEMAPS_ZOOM ;
 
     $s  = "<iframe width='".$breite."' height='".$hoehe."' ";
@@ -200,20 +203,51 @@ function DoGoogleMaps($HTMLBoxID,$latitude,$longitude,$hoehe='100%',$breite='100
 /***************************************************************************//**
 *	Erstellen einen OSMMap
 *******************************************************************************/
-function DoOSMMap($HTMLBoxID,$latitude,$longitude,$entry,$hoehe='100%',$breite='100%',$zoomlevel=14)
+function DoOSMMap($HTMLBoxID,$latitude,$longitude,$entry,$radius,$hoehe='100%',$breite='100%',$zoomlevel=14)
 	{
 
+   $longitude = str_replace(",",".",$longitude);
+   $latitude  = str_replace(",",".",$latitude);
+   
 	$zoomlevel = OSM_ZOOM ;
 
 	if ($entry)
 	   $entry = "1";
 	else
 	   $entry = "0";
+
+   if (defined("USE_APP_RADIUS"))
+		if ( USE_APP_RADIUS == true )
+	   	{
+			$intRadius = intval($radius);
+	
+			$zoomlevel = 17;
+	
+			if ( $intRadius >= 200 )
+	   		$zoomlevel = 16 ;
+			if ( $intRadius >= 500 )
+	   		$zoomlevel = 15 ;
+			if ( $intRadius >= 1000 )
+	   		$zoomlevel = 14 ;
+			if ( $intRadius >= 2000 )
+	   		$zoomlevel = 13 ;
+			if ( $intRadius >= 4000 )
+	   		$zoomlevel = 12 ;
+			}
+		else
+		   $radius = 100;
+	else
+	   $radius = 100;
 	   
 	$s  = "<iframe width='".$breite."' height='".$hoehe."' ";
 	$s .= "src='./User/GeofencyInfo/osmTemplate.php";
 	$s .= "?zoom=".$zoomlevel;
 	$s .= "&lat=".$latitude."&lon=".$longitude."&entry=".$entry;
+	if ( $radius != "" )
+	   {
+	   $s .= "&radius=".$radius ;
+	   }
+	   
 	$s .= "' frameborder='0' scrolling='no' ></iframe>";
 
 	SetValue($HTMLBoxID,$s);
@@ -705,7 +739,8 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	$longitude   = "???";
 	$LocName 	 = "???";
 	$GEOentry   = false;
-	
+	$GEOradius  = "";
+
 	$img_script_ankunft = $img_empty;
 	$img_script_abfahrt = $img_empty;
 
@@ -725,6 +760,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$latitude   = round(floatval($latitude),5);
 		$longitude  = round(floatval($longitude),5);
 		$GEOentry = true;
+		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
@@ -758,6 +794,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$longitude  = GetValue(IPS_GetVariableIDByName('Longitude',$ID));
 		$latitude   = round(floatval($latitude),5);
 		$longitude  = round(floatval($longitude),5);
+		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
@@ -792,7 +829,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
   	DoGoogleMaps($HTMLBoxID,trim($latitude),trim($longitude));
 
 	$HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox');
-  	DoOSMMap($HTMLBoxID,trim($latitude),trim($longitude),$GEOentry);
+  	DoOSMMap($HTMLBoxID,trim($latitude),trim($longitude),$GEOentry,$GEOradius);
 
 
 

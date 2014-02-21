@@ -166,7 +166,9 @@
   define  ( 'MAPS_OSM_CREATE'         , TRUE  );
   define  ( 'TESTLOCALWEBSERVER'      , 'http://localhost:82/' );
   define  ( 'HTMLLOGLINES'            , 15 );
-  
+  //define  ( 'HISTORYLINES'            , 6 );
+  //define  ( 'MAPHEIGHT'               , 480 );
+  define  ( 'USE_APP_RADIUS'          , FALSE ) ;  
 
       
 /***************************************************************************//**
