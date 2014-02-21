@@ -467,6 +467,9 @@ function CreateHTMLBoxWithMap($Parent,$IPSName,$ActionResult)
    $latitude   = round(floatval($latitude) ,5);
 	$longitude  = round(floatval($longitude),5);
 
+   $longitude = str_replace(",",".",$longitude);
+   $latitude  = str_replace(",",".",$latitude);
+
 	// Create History-Array
 	foreach($array as $kategorie)
 	   {
@@ -819,6 +822,9 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 
 
 	   }
+
+   $longitude = str_replace(",",".",$longitude);
+   $latitude  = str_replace(",",".",$latitude);
 
 
 	//***************************************************************************
