@@ -116,7 +116,7 @@
   DoGoogleMaps($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude));
 
   $HTMLBoxID = CreateVariable('OSMMap'  ,3,$DeviceID,99,'~HTMLBox'); 
-  IPS_Logmessage("..............",$GEOradius);
+  
   DoOSMMap($HTMLBoxID,trim($GEOlatitude),trim($GEOlongitude),$GEOentry,$GEOradius);
   
   $ActionOK = GEOActions($GEOentry,trim($IPSName),trim($GEOname),$_POST);

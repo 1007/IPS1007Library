@@ -639,7 +639,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 
 
 	$str = "RefreshHTMLBoxWithMap : " . $Device;
-   if ( DEBUG_MODE ); IPSLogger_Dbg(__FILE__,$str);
+   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$str);
 
 	// suche Contentvariable
    $ParentID = @IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo", true );
@@ -666,7 +666,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	$Mode = GetValue($IDMenuMode);
 	if ( $Switch )
 	   {
-		IPSLogger_Dbg(__FILE__,'Switch');
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,'Switch');
 
 		$MaxMode = 2;
 		$Mode = $Mode + 1 ;
@@ -748,7 +748,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	if ( $IdAnwesend == true )
 	   {
 	   $ID = $IdAnwesend;
-		IPSLogger_Dbg(__FILE__,$ID);
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$ID);
 		$geoAnkunft = GetValue(IPS_GetVariableIDByName('GEOAnkunft',$ID));
 		$geoAnkunft = date("d.m.y H:i:s",$geoAnkunft);
 		$geoAbfahrt = GetValue(IPS_GetVariableIDByName('GEOAbfahrt',$ID));
