@@ -48,7 +48,7 @@
   $refreshScriptId = IPS_GetScriptIDByName('withingsinforefresh', $CategoryIdApp );
   CreateTimer_CyclicByMinutes ("REFRESH",$refreshScriptId,REFRESH_TIME,true);
 
-  create_profile("WithingsInfo_cm"			," cm",2);
+  create_profile("WithingsInfo_cm"			," cm",1);
   create_profile("WithingsInfo_kg"			," kg",2,1);
   create_profile("WithingsInfo_prozent" 	," %" ,2,1);
   create_profile("WithingsInfo_bmi" 		," "  ,2,1);

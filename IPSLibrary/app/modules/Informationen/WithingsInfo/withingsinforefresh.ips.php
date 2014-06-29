@@ -75,14 +75,14 @@
 			   $gefunden = true;
 			   if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$per." wird geholt");
 
-			   if ($log) logging ("USER:".$per." wird geholt");
+			   if ($log) withingsinfologging ("USER:".$per." wird geholt");
 			   getwithingsdata($person,$x); break;
 				}
 			}
 		if ( !$gefunden )
 		   {
 		   if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." nicht in Konfiguration");
-			if ($log) logging ("USER:".$shortname." nicht in Konfiguration");
+			if ($log) withingsinfologging ("USER:".$shortname." nicht in Konfiguration");
 			}
 
 	   }
@@ -136,7 +136,7 @@ function getwithingsdata($person,$usernummer)
 	$puls          = 0;
 	
 
-	//if ( $debug ) print_r($person);
+	if ( $debug ); print_r($person);
 
 	// wenn Daten nicht public dann raus
 	// 1 	Body scale
@@ -152,7 +152,7 @@ function getwithingsdata($person,$usernummer)
 		
 	if ( $publicOK == false)
 	   {
-		if ($log) logging ("USER:".$shortname." nicht public");
+		if ($log) withingsinfologging ("USER:".$shortname." nicht public");
 		IPSLogger_Dbg(__FILE__, "USER:".$shortname." nicht public");
 	   return false;
 	   }
@@ -219,7 +219,7 @@ function getwithingsdata($person,$usernummer)
 		}
 	else
 	   {
-		if ($log) logging ("USER:" .$shortname." keine GroesseDaten ");
+		if ($log) withingsinfologging ("USER:" .$shortname." keine GroesseDaten ");
 		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine GroesseDaten ");
 		}
 	
@@ -236,7 +236,7 @@ function getwithingsdata($person,$usernummer)
 	if ( $data )
 		{ 
 		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Gewichtsdaten vorhanden ");
-
+		print_r($data);
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
@@ -274,7 +274,7 @@ function getwithingsdata($person,$usernummer)
 		}
 	else
 	   {
-		if ($log) logging ("USER:".$shortname." keine GewichtsDaten ");
+		if ($log) withingsinfologging ("USER:".$shortname." keine GewichtsDaten ");
 		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine GewichtsDaten ");
 		}
 
@@ -318,9 +318,10 @@ function getwithingsdata($person,$usernummer)
 		}
 	else
 	   {
-		if ($log) logging ("USER:".$shortname." keine BlutdruckDaten ");
+		if ($log) withingsinfologging ("USER:".$shortname." keine BlutdruckDaten ");
 		IPSLogger_Dbg(__FILE__, "USER:".$shortname." keine BlutdruckDaten");
 		}
+
 
 }
 
@@ -336,7 +337,7 @@ function decode_datum($string)
 /***************************************************************************//**
 * Logging
 *******************************************************************************/
-function logging($text)
+function withingsinfologging($text)
 	{
 	$datei = "withings.log";
 	$logdatei = IPS_GetKernelDir() . "logs\\" . $datei;
