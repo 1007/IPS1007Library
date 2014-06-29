@@ -258,7 +258,7 @@ function DoOSMMap($HTMLBoxID,$latitude,$longitude,$entry,$radius,$hoehe='100%',$
 /***************************************************************************//**
 *	Logging
 *******************************************************************************/
-function Logging($Parent,$text,$file = 'geofency.log')
+function GeofencyLogging($Parent,$text,$file = 'geofency.log')
 	{
 
 	$ordner = IPS_GetKernelDir() . "logs\\Geofency";

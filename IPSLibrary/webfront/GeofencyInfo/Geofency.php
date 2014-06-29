@@ -40,7 +40,7 @@
 
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
   $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor;
-  logging(false,$out,'incoming.log');
+  Geofencylogging(false,$out,'incoming.log');
 
 
   if ( $GEOentry == '1' )
@@ -109,7 +109,7 @@
     
    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$out);
     
-  Logging($Parent,$out,'geofency.log');
+  Geofencylogging($Parent,$out,'geofency.log');
 
   $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$IPSName);
   $HTMLBoxID = CreateVariable('GoogleMap'  ,3,$DeviceID,99,'~HTMLBox'); 
@@ -142,7 +142,7 @@
   //CreateHTMLBoxWithMap($Parent,$IPSName,$ActionOK);
  
   $out = ";".$IPSName.";".$GEOname.";".$richtung.";".$ActionOK; 
-  Logging($Parent,$out,'Device_'.$IPSName.'.log');
+  Geofencylogging($Parent,$out,'Device_'.$IPSName.'.log');
 
   RefreshHTMLBoxWithMap($IPSName);
 
