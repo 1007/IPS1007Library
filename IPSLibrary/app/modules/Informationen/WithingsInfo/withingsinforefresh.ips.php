@@ -136,7 +136,7 @@ function getwithingsdata($person,$usernummer)
 	$puls          = 0;
 	
 
-	if ( $debug ); print_r($person);
+	if ( $debug ) print_r($person);
 
 	// wenn Daten nicht public dann raus
 	// 1 	Body scale
@@ -200,8 +200,9 @@ function getwithingsdata($person,$usernummer)
 	$meastype 	= 4; 		// Groesse
 	$devtype 	= 0;
 
+	$limit      = 1;     // Anzahl
 	WBSAPI_MeasureGetmeas ( $personid, $publickey, $data, $startdate,$enddate,$devtype,$meastype,$category,$limit);
-	
+
 	if ( $data )
 		{
 		foreach ( $data[0]['measures'] as $messung )
@@ -229,14 +230,17 @@ function getwithingsdata($person,$usernummer)
 	$meastype 	= false; 		// Alles
 	$devtype 	= 1;
 	$data = array();
-
+	
 	if ( constant('USER'.$usernummer.'_WAAGE') )
+	   {
+		$limit = 4;
 		WBSAPI_MeasureGetmeas ( $personid, $publickey, $data, $startdate,$enddate,$devtype,$meastype,$category,$limit);
 	
+	   }
 	if ( $data )
 		{ 
 		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Gewichtsdaten vorhanden ");
-		print_r($data);
+		
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
@@ -250,26 +254,29 @@ function getwithingsdata($person,$usernummer)
 			if ( $messung['type'] == 11 ) $pulse 			= round ($val,2);
 	      }
 
-			$gewichtdatum = date('d.m.Y H:i:s',$data[0]['date']);
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Uhrzeit");
-			SetValueString($id,$gewichtdatum);
+			if ( $gewicht > 0 and $fettfrei > 0 and $fettprozent > 0  and $fettanteil > 0 )
+			   {
 
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Gewicht");
-			SetValueFloat($id,$gewicht);
+				$gewichtdatum = date('d.m.Y H:i:s',$data[0]['date']);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Uhrzeit");
+				SetValueString($id,$gewichtdatum);
 
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettfrei");
-			SetValueFloat($id,$fettfrei);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Gewicht");
+				SetValueFloat($id,$gewicht);
 
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettanteil");
-			SetValueFloat($id,$fettanteil);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettfrei");
+				SetValueFloat($id,$fettfrei);
 
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettprozent");
-			SetValueFloat($id,$fettprozent);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettanteil");
+				SetValueFloat($id,$fettanteil);
 
-         $bmi = round($gewicht/(($groesse/100)*($groesse/100)),2);
-      	$id = IPSUtil_ObjectIDByPath($userwaagepath . ".BMI");
-			SetValueFloat($id,$bmi);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettprozent");
+				SetValueFloat($id,$fettprozent);
 
+         	$bmi = round($gewicht/(($groesse/100)*($groesse/100)),2);
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".BMI");
+				SetValueFloat($id,$bmi);
+				}
 
 		}
 	else
@@ -287,7 +294,10 @@ function getwithingsdata($person,$usernummer)
 	$data = array();
 	
 	if ( constant('USER'.$usernummer.'_BLUTDRUCK') )
+	   {
+	   $limit      = 3;
 		WBSAPI_MeasureGetmeas ( $personid, $publickey, $data, $startdate,$enddate,$devtype,$meastype,$category,$limit);
+		}
 
 	if ( $data )
 		{
@@ -296,25 +306,28 @@ function getwithingsdata($person,$usernummer)
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
-			if ( $messung['type'] == 9 )  $diastolic 		= round ($val,2);
+			if ( $messung['type'] == 9  ) $diastolic 		= round ($val,2);
 			if ( $messung['type'] == 10 ) $systolic 		= round ($val,2);
 			if ( $messung['type'] == 11 ) $pulse 			= round ($val,2);
 	      }
 
-			$blutdruckdatum = date('d.m.Y H:i:s',$data[0]['date']);
-      	$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Uhrzeit");
-			SetValueString($id,$blutdruckdatum);
+			if ( $diastolic > 0 and $systolic > 0 and $pulse > 0 )
+			   {
+				$blutdruckdatum = date('d.m.Y H:i:s',$data[0]['date']);
+      		$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Uhrzeit");
+				SetValueString($id,$blutdruckdatum);
 
-      	$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Diastolic");
-			SetValueInteger($id,$diastolic);
+      		$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Diastolic");
+				SetValueInteger($id,$diastolic);
 
-      	$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Systolic");
-			SetValueInteger($id,$systolic);
+      		$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Systolic");
+				SetValueInteger($id,$systolic);
 
-      	$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Puls");
-			SetValueInteger($id,$pulse);
+      		$id = IPSUtil_ObjectIDByPath($userblutdruckpath . ".Puls");
+				SetValueInteger($id,$pulse);
 
-
+			}
+			
 		}
 	else
 	   {
