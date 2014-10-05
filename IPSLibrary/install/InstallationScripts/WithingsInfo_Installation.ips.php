@@ -52,7 +52,8 @@
   create_profile("WithingsInfo_kg"			," kg",2,1);
   create_profile("WithingsInfo_prozent" 	," %" ,2,1);
   create_profile("WithingsInfo_bmi" 		," "  ,2,1);
-  create_profile("WithingsInfo_mmhg" 		," mmHg"  ,2);
+  create_profile("WithingsInfo_mmhg" 		," mmHg"  ,1);
+  create_profile("WithingsInfo_puls" 		," "  ,1);
 
   for($x=1;$x<10;$x++)
     {
@@ -143,7 +144,7 @@
           CreateLink ("Systolic", $idd, $visusubid, 30);
           CreateLink ("Systolic", $idd, $mobsubid, 30);
 
-          $idd = CreateVariable("Puls"           , 1 /*Integer*/,  $subid,103 ,'~String', null, 0);
+          $idd = CreateVariable("Puls"           , 1 /*Integer*/,  $subid,103 ,'WithingsInfo_puls', null, 0);
           CreateLink ("Puls", $idd, $visusubid, 40);
           CreateLink ("Puls", $idd, $mobsubid, 40);
           }
