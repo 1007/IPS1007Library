@@ -30,10 +30,12 @@
 	if (WBSAPI_OnceProbe ())
 		{
 		if ($debug) IPSLogger_Dbg(__FILE__, "Teste API : OK");
+		if ($log) withingsinfologging ("Teste API : OK");
 		}
 	else
 		{
 		if ($debug) IPSLogger_Dbg(__FILE__, "Teste API : NOK");
+		if ($log) withingsinfologging ("Teste API : NOK");
 		exit(-1);
 		}
 	//***************************************************************************
@@ -217,6 +219,9 @@ function getwithingsdata($person,$usernummer)
       $id = IPSUtil_ObjectIDByPath($userpath . ".Groesse");
 		SetValueInteger($id,$groesse);
 
+		if ($log) withingsinfologging ("Groessedatum:".$groessedatum);
+		if ($log) withingsinfologging ("Groesse:".$groesse);
+
 		}
 	else
 	   {
@@ -240,10 +245,16 @@ function getwithingsdata($person,$usernummer)
 	if ( $data )
 		{ 
 		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Gewichtsdaten vorhanden ");
+		if ($log) withingsinfologging ("USER:".$shortname." Gewichtsdaten vorhanden ");
+
+		print_R($data);
 		
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
+	   	
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
+
+			if ($log) withingsinfologging ("Type:".$messung['type']." Wert:".$val);
 
 			if ( $messung['type'] == 1 )  $gewicht 		= round ($val,2);
 			if ( $messung['type'] == 5 )  $fettfrei 		= round ($val,2);
@@ -302,10 +313,14 @@ function getwithingsdata($person,$usernummer)
 	if ( $data )
 		{
 		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Blutdruckdatendaten vorhanden ");
+		if ($log) withingsinfologging ("USER:".$shortname." Blutdruckdatendaten vorhanden ");
 
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 			$val = floatval ( $messung['value'] ) * floatval ( "1e".$messung['unit'] );
+			
+			if ($log) withingsinfologging ("Type:".$messung['type']." Wert:".$val);
+
 			if ( $messung['type'] == 9  ) $diastolic 		= round ($val,2);
 			if ( $messung['type'] == 10 ) $systolic 		= round ($val,2);
 			if ( $messung['type'] == 11 ) $pulse 			= round ($val,2);
