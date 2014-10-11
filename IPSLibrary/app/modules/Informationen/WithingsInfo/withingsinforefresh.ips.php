@@ -247,8 +247,6 @@ function getwithingsdata($person,$usernummer)
 		if ( $debug ) IPSLogger_Dbg(__FILE__, "USER:".$shortname." Gewichtsdaten vorhanden ");
 		if ($log) withingsinfologging ("USER:".$shortname." Gewichtsdaten vorhanden ");
 
-		print_R($data);
-		
 		foreach ( $data[0]['measures'] as $messung )
 	   	{
 	   	
@@ -265,9 +263,8 @@ function getwithingsdata($person,$usernummer)
 			if ( $messung['type'] == 11 ) $pulse 			= round ($val,2);
 	      }
 
-			if ( $gewicht > 0 and $fettfrei > 0 and $fettprozent > 0  and $fettanteil > 0 )
+			if ( $gewicht > 0  )
 			   {
-
 				$gewichtdatum = date('d.m.Y H:i:s',$data[0]['date']);
       		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Uhrzeit");
 				SetValueString($id,$gewichtdatum);
@@ -275,19 +272,31 @@ function getwithingsdata($person,$usernummer)
       		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Gewicht");
 				SetValueFloat($id,$gewicht);
 
-      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettfrei");
-				SetValueFloat($id,$fettfrei);
-
-      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettanteil");
-				SetValueFloat($id,$fettanteil);
-
-      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettprozent");
-				SetValueFloat($id,$fettprozent);
-
          	$bmi = round($gewicht/(($groesse/100)*($groesse/100)),2);
       		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".BMI");
 				SetValueFloat($id,$bmi);
 				}
+
+			if ( $fettfrei > 0  )
+			   {
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettfrei");
+				SetValueFloat($id,$fettfrei);
+				}
+
+			if ( $fettprozent > 0  )
+			   {
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettprozent");
+				SetValueFloat($id,$fettprozent);
+				}
+
+			if ( $fettanteil > 0 )
+			   {
+      		$id = IPSUtil_ObjectIDByPath($userwaagepath . ".Fettanteil");
+				SetValueFloat($id,$fettanteil);
+				}
+
+
+
 
 		}
 	else
