@@ -59,7 +59,7 @@
 	if ( !$user )
 	   {
 	   IPSLogger_Dbg(__FILE__, "Fehler beim Holen der User MYMAIL und MYPASS ueberpruefen");
-		exit(-1);
+		//exit(-1);
 	   }
 	   
 	
@@ -70,7 +70,7 @@
 		
 		// nur die User holen die auch konfiguriert sind
 		for ($x=1;$x<10;$x++)
-		   {
+		   { 
 		   $per = constant('USER'.$x.'_NAME');
 			if ( $per == $shortname )
 			   {
@@ -204,7 +204,7 @@ function getwithingsdata($person,$usernummer)
 
 	$limit      = 1;     // Anzahl
 	WBSAPI_MeasureGetmeas ( $personid, $publickey, $data, $startdate,$enddate,$devtype,$meastype,$category,$limit);
-
+	
 	if ( $data )
 		{
 		foreach ( $data[0]['measures'] as $messung )

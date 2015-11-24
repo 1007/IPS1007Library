@@ -85,7 +85,7 @@ function WBSAPI_MeasureGetmeas ( $userid, $publickey , &$measuregrps, $startdate
   if ($category    ) $string.="&category=".$category;
   if ($limit       ) $string.="&limit=".$limit;
 	
-	//echo "\n[" . $string ."]\n";
+	echo "\n[" . $string ."]\n";
 	if (CurlCall ( $string,$result)===false) return ( false );
 	$measuregrps = $result['body']['measuregrps'];
 	return (true);
