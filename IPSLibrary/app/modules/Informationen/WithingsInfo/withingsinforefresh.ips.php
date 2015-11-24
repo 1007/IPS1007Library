@@ -377,7 +377,7 @@ function decode_datum($string)
 function withingsinfologging($text)
 	{
 	$datei = "withings.log";
-	$logdatei = IPS_GetKernelDir() . "logs\\" . $datei;
+	$logdatei = IPS_GetKernelDir() . "logs/" . $datei;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, date("d.m.Y H:i:s - "). $text . chr(13));
 	fclose($datei);
