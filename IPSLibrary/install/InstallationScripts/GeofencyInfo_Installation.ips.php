@@ -61,25 +61,25 @@
   
   EmptyCategory($CategoryIdVisu);
 
-  $ImgRedArrowDefault   = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\arrowred.png";
-	$ImgRedArrow          = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\arrowred.png";
-  $ImgGreenArrowDefault = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\arrowgreen.png";
-	$ImgGreenArrow        = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\arrowgreen.png";
-  $ImgGeofencyDefault   = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\geofency.png";
-	$ImgGeofency          = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\geofency.png";
-  $ImgGeoLocDefault     = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\geoloc.png";
-	$ImgGeoLoc            = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\geoloc.png";
-  $ImgClockDefault      = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\uhr.png";
-	$ImgClock             = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\uhr.png";
-  $ImgEmptyDefault      = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\leer.png";
-	$ImgEmpty             = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\leer.png";
-  $ImgScriptOKDefault   = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\scriptok.png";
-	$ImgScriptOK          = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\scriptok.png";
-  $ImgScriptNOKDefault  = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\default\scriptnok.png";
-	$ImgScriptNOK         = IPS_GetKernelDir()."webfront\user\GeofencyInfo\Images\scriptnok.png";
+  $ImgRedArrowDefault   = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/arrowred.png";
+	$ImgRedArrow          = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/arrowred.png";
+  $ImgGreenArrowDefault = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/arrowgreen.png";
+	$ImgGreenArrow        = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/arrowgreen.png";
+  $ImgGeofencyDefault   = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/geofency.png";
+	$ImgGeofency          = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/geofency.png";
+  $ImgGeoLocDefault     = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/geoloc.png";
+	$ImgGeoLoc            = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/geoloc.png";
+  $ImgClockDefault      = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/uhr.png";
+	$ImgClock             = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/uhr.png";
+  $ImgEmptyDefault      = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/leer.png";
+	$ImgEmpty             = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/leer.png";
+  $ImgScriptOKDefault   = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/scriptok.png";
+	$ImgScriptOK          = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/scriptok.png";
+  $ImgScriptNOKDefault  = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/default/scriptnok.png";
+	$ImgScriptNOK         = IPS_GetKernelDir()."webfront/user/GeofencyInfo/Images/scriptnok.png";
 
-  $cssFileDefault       = IPS_GetKernelDir()."webfront\user\GeofencyInfo\css\default\Geofency.css";
-  $cssFile              = IPS_GetKernelDir()."webfront\user\GeofencyInfo\css\Geofency.css";
+  $cssFileDefault       = IPS_GetKernelDir()."webfront/user/GeofencyInfo/css/default/Geofency.css";
+  $cssFile              = IPS_GetKernelDir()."webfront/user/GeofencyInfo/css/Geofency.css";
 
 
   //****************************************************************************

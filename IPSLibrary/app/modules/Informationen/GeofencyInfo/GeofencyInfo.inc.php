@@ -261,7 +261,7 @@ function DoOSMMap($HTMLBoxID,$latitude,$longitude,$entry,$radius,$hoehe='100%',$
 function GeofencyLogging($Parent,$text,$file = 'geofency.log')
 	{
 
-	$ordner = IPS_GetKernelDir() . "logs\\Geofency";
+	$ordner = IPS_GetKernelDir() . "logs/Geofency";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 	
@@ -269,7 +269,7 @@ function GeofencyLogging($Parent,$text,$file = 'geofency.log')
 	   return;
 
 	$time = date("d.m.Y H:i:s");
-	$logdatei = IPS_GetKernelDir() . "logs\\Geofency\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Geofency/" . $file;
 
 	$zeilen = @file ($logdatei);
 
@@ -1034,12 +1034,12 @@ function HtmlLogLeft($Device)
 
 	$html = "";
 	
-   $ordner = IPS_GetKernelDir() . "logs\\Geofency";
+   $ordner = IPS_GetKernelDir() . "logs/Geofency";
 
    if ( !is_dir ( $ordner ) )
 	   return;
 
-	$logdatei = IPS_GetKernelDir() . "logs\\Geofency\\Device_" . $Device.".log";
+	$logdatei = IPS_GetKernelDir() . "logs/Geofency/Device_" . $Device.".log";
 
 	$zeilen = @file ($logdatei);
 	$zeilen = @array_reverse($zeilen);
