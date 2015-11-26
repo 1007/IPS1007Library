@@ -91,7 +91,7 @@
 *                                 hier kann auch eine VariablenID angegeben 
 *                                 werden die den Circle entsprechend schaltet                               
 *   Feld 05   -   Watt          - max Watt Anzeige im Graph ( rot ) ( 0 = disabled )
-*   Feld 06   -   kWh           - zur Zeit ohne Funktion
+*   Feld 06   -   kWh           - Maximalwert kWh / bei Ueberschreiten wird ins Log geschrieben
 *   Feld 07   -   Tarifgruppe   - Tarifgruppe des Circles (siehe Tarife )
 *   Feld 08   -   in Gesamt     - in Gesamtanzeige enthalten
 *   Feld 09   -   in Gruppe     - in Gesamtanzeige der Gruppe enthalten

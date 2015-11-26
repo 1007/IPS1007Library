@@ -59,8 +59,8 @@
 	$GroupDataPath  = "Program.IPSLibrary.data.hardware.Plugwise.Groups";
 	$ExternDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Extern";
 
-	$cssDefault    = IPS_GetKernelDir()."webfront\user\Plugwise\Default\Plugwise.css";
-	$cssFile       = IPS_GetKernelDir()."webfront\user\Plugwise\Plugwise.css";
+	$cssDefault    = IPS_GetKernelDir()."webfront/user/Plugwise/Default/Plugwise.css";
+	$cssFile       = IPS_GetKernelDir()."webfront/user/Plugwise/Plugwise.css";
 
   
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
@@ -575,8 +575,8 @@
   if ( defined('ALT_BUTTON_NORMAL') )
     if (ALT_BUTTON_NORMAL!= FALSE )
       {
-      $normal_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\".ALT_BUTTON_NORMAL;
-      $dest_file    = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\tabPane.png";
+      $normal_file  = IPS_GetKernelDir() ."webfront/user/Plugwise/".ALT_BUTTON_NORMAL;
+      $dest_file    = IPS_GetKernelDir() ."webfront/user/Plugwise/tabPane.png";
       copy ( $normal_file,$dest_file);
       $tabbutton  = "user/Plugwise/tabPane.png";
       $WFC_TabPaneName = "<img src='".$tabbutton."' height=32  width=150 align='top' alt='".$WFC_TabPaneName."'>";
@@ -750,30 +750,30 @@
 	   copy($cssDefault,$cssFile);
 		}
 
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsStunde.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsStunde.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsStunde.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsTag.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsTag.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsTag.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsWoche.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsWoche.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsWoche.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsMonat.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsMonat.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsMonat.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsJahr.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsJahr.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsJahr.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsHome.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsHome.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsHome.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsVorwaerts.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsVorwaerts.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsVorwaerts.png");
-  if ( !file_exists(IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsRueckwaerts.png"))
-    copy(IPS_GetKernelDir()."webfront\user\Plugwise\images\default\HighchartsRueckwaerts.png" ,
-            IPS_GetKernelDir()."webfront\user\Plugwise\images\HighchartsRueckwaerts.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsStunde.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsStunde.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsStunde.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsTag.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsTag.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsTag.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsWoche.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsWoche.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsWoche.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsMonat.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsMonat.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsMonat.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsJahr.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsJahr.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsJahr.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsHome.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsHome.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsHome.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsVorwaerts.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsVorwaerts.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsVorwaerts.png");
+  if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsRueckwaerts.png"))
+    copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsRueckwaerts.png" ,
+            IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsRueckwaerts.png");
             
 
   

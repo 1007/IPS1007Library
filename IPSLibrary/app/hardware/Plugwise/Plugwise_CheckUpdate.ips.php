@@ -50,7 +50,7 @@
 	   return;
 		}
 
-	$local_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\Changelog.txt";
+	$local_file  = IPS_GetKernelDir() ."webfront/user/Plugwise/Changelog.txt";
 	
 	
 	$remote_file = "https://raw.github.com/1007/IPS1007Library/master/IPSLibrary/webfront/Plugwise/Changelog.txt";
@@ -87,8 +87,8 @@
 		if ( defined('ALT_BUTTON_RED') )
 		if ( ALT_BUTTON_RED == true )
 		   {
-      	$normal_file  = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\".ALT_BUTTON_RED;
-      	$dest_file    = IPS_GetKernelDir() ."webfront\\user\\Plugwise\\tabPane.png";
+      	$normal_file  = IPS_GetKernelDir() ."webfront/user/Plugwise/".ALT_BUTTON_RED;
+      	$dest_file    = IPS_GetKernelDir() ."webfront/user/Plugwise/tabPane.png";
       	copy ( $normal_file,$dest_file);
       	IPS_logmessage("Plugwise","Neue Version vorhanden");
          if ( $IPS_SENDER != 'Timer' )

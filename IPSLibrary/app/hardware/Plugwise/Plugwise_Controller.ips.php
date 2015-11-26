@@ -121,7 +121,7 @@ function ping_circles()
 	   return;
 
    $file = 'plugwiseping.log';
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
 	if ( file_exists($logdatei) )
 		unlink($logdatei);
 		
@@ -403,13 +403,6 @@ function plugwise_0013_received($buf)
 	//IPS_LogMessage("Info","[".$string."]".$diff);
 	//*********************************************
 
-
-
-
-
-
-
-
 	If ($pulse == "FFFF")
 		{	// Circle ausgeschaltet, meldet FFFF ( nicht immer ?? )
 			// scheinbar nicht
@@ -473,9 +466,12 @@ function plugwise_0013_received($buf)
 			$offTotal = $offTotal_;
 			$offNoise = $offNoise_;
 
-
 	  
 			$verbrauch = pulsesToKwh(hexdec($totalpulse), $offNoise, $offTotal, $gainA, $gainB);
+
+         //IPS_LogMessage("GainB",$gainB."[".$verbrauch."]");
+
+
 			$type = "ZAEHLER" ;
 			$parent = 0 ;
 			$objectname = $mcID;
@@ -747,7 +743,7 @@ function plugwise_0027_received($buf)
 	   }
 
 	//$buf = substr($buf,0,24) . 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
-	//IPS_LogMessage("Plugwise Kalibrierung : ",substr($buf,0,48));
+	//IPS_LogMessage("Plugwise Kalibrierung : ",substr($buf,32,8));
 	
 	
 	$gaina    = bintofloat(substr($buf,24,8));
@@ -939,7 +935,10 @@ function plugwise_0049_received($buf)
 	//IPS_logMessage("........",$offNoise);
 
 	$verbrauch = 0;
+	$verbrauchNEW = 0;
+
 	$bufferstelle = 0;
+	$bufferstelleNEW = 0;
 
 	$time = time() - 3600;
 
@@ -947,8 +946,17 @@ function plugwise_0049_received($buf)
 	// Korrecktes Logdate aus den Vier Werten im Buffer herausfinden
 	//***************************************************************************
 	$usedlogdate = 0;
+	$usedlogdateNEW = 0;
 
 	$logdate = pwtime2unixtime(substr($buf,24,8));
+
+	$aktuelleStunde     =  date("H");
+	$aktuelleStundeLog1 =  date("H",pwtime2unixtime(substr($buf,24,8)));
+	$aktuelleStundeLog2 =  date("H",pwtime2unixtime(substr($buf,40,8)));
+	$aktuelleStundeLog3 =  date("H",pwtime2unixtime(substr($buf,56,8)));
+	$aktuelleStundeLog4 =  date("H",pwtime2unixtime(substr($buf,72,8)));
+
+
 
 	if ($logdate > $time)
 		{
@@ -984,6 +992,44 @@ function plugwise_0049_received($buf)
 		$bufferstelle = 4;
 		}
 
+
+
+	if ( $aktuelleStunde == $aktuelleStundeLog1 )
+	   {
+	   $logdateNEW = pwtime2unixtime(substr($buf,24,8));
+		$usedlogdateNEW = $logdateNEW;
+	   $bufferstelleNEW = 1;
+	   $verbrauchNEW = pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
+	   }
+	if ( $aktuelleStunde == $aktuelleStundeLog2 )
+	   {
+	   $logdateNEW = pwtime2unixtime(substr($buf,40,8));
+	   $usedlogdateNEW = $logdateNEW;
+	   $bufferstelleNEW = 2;
+		$verbrauchNEW = pulsesToKwh(hexdec(substr($buf,48,8)), $offNoise, $offTotal, $gaina, $gainb);
+	   }
+	if ( $aktuelleStunde == $aktuelleStundeLog3 )
+	   {
+	   $logdateNEW = pwtime2unixtime(substr($buf,56,8));
+	   $usedlogdateNEW = $logdateNEW;
+	   $bufferstelleNEW = 3;
+		$verbrauchNEW = pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
+	   }
+	if ( $aktuelleStunde == $aktuelleStundeLog4 )
+	   {
+	   $logdateNEW = pwtime2unixtime(substr($buf,72,8));
+	   $usedlogdateNEW = $logdateNEW;
+	   $bufferstelleNEW = 4;
+		$verbrauchNEW = pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
+	   }
+
+
+
+   $usedlogdate  = $usedlogdateNEW;
+   $verbrauch    = $verbrauchNEW;
+   $bufferstelle = $bufferstelleNEW;
+   
+   
 	//***************************************************************************
 	// Buffer gefunden
 	//***************************************************************************
@@ -1046,7 +1092,12 @@ function plugwise_0049_received($buf)
 	   
 
 	$text =  "PW0049 Buffer - ".IPS_GetName($myCat) . "[".$buf."]";
-	$text = $text . "\nLogadresse:" .$LogAddressRaw . " Logstelle:".$bufferstelle;
+	$text = $text . "\nAktuelleStunde:".$aktuelleStunde."- AktuelleStundeLog:".$aktuelleStundeLog1;
+	$text = $text . "\nAktuelleStunde:".$aktuelleStunde."- AktuelleStundeLog:".$aktuelleStundeLog2;
+	$text = $text . "\nAktuelleStunde:".$aktuelleStunde."- AktuelleStundeLog:".$aktuelleStundeLog3;
+	$text = $text . "\nAktuelleStunde:".$aktuelleStunde."- AktuelleStundeLog:".$aktuelleStundeLog4;
+	
+	$text = $text . "\nLogadresse:" .$LogAddressRaw . " Logstelle:".$bufferstelle."-".$bufferstelleNEW;
 	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,24,8))).": ";
 	$text = $text . pulsesToKwh(hexdec(substr($buf,32,8)), $offNoise, $offTotal, $gaina, $gainb);
 	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,40,8))).": ";
@@ -1055,6 +1106,8 @@ function plugwise_0049_received($buf)
 	$text = $text . pulsesToKwh(hexdec(substr($buf,64,8)), $offNoise, $offTotal, $gaina, $gainb);
 	$text = $text . date("\nd.m.Y H:i:s ", pwtime2unixtime(substr($buf,72,8))).": ";
 	$text = $text . pulsesToKwh(hexdec(substr($buf,80,8)), $offNoise, $offTotal, $gaina, $gainb);
+	$text = $text . "VerbrauchOLD:".$verbrauch."-VerbrauchNEW:".$verbrauchNEW;
+
 	logging($text,'plugwisebuffer.log' );
 
 	}

@@ -94,7 +94,7 @@
 	// ------------------------------------------------------------------------
 	function CreateConfigFile($stringForCfgFile, $id)
 	{
-		$path = "webfront\user\Highcharts";
+		$path = "webfront/user/Highcharts";
 		$filename = "HighChartsCfg$id.tmp";
 		
 		return CreateConfigFileByPathAndFilename($stringForCfgFile, $path, $filename);
@@ -109,7 +109,7 @@
 	function CreateConfigFileByPathAndFilename($stringForCfgFile, $path, $filename)
 	{
 		// Standard-Dateiname .....
-		$tmpFilename = IPS_GetKernelDir() . $path . "\\" . $filename;
+		$tmpFilename = IPS_GetKernelDir() . $path . "/" . $filename;
 
 		// schreiben der Config Daten
 		$handle = fopen($tmpFilename,"w");

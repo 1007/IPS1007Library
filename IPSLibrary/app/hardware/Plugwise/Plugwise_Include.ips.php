@@ -143,7 +143,7 @@ function PW_SendCommand($cmd,$CircleId=false)
 	if ( $CircleId != false )
 	   {
 	   //IPS_Logmessage("Plugwise_Include","An nur einen Stick senden");
-	   	
+	   //IPS_LogMessage(__File__,$REGVAR);
 		if (IPS_ObjectExists($REGVAR))
 			RegVar_SendText($REGVAR,"\x05\x05\x03\x03".$cmd."\x0D\x0A");
 		else
@@ -254,14 +254,18 @@ function pwtime2unixtime($pwdate)
 *	Binaer to Float
 *******************************************************************************/
 function bintofloat($in)
-{
-    $in=hexdec($in);
-      $binary = str_pad(decbin($in),32,"0", STR_PAD_LEFT);
-    $fb = $binary[0];
-    $exp = bindec(substr($binary, 1, 8));
-    $m = bindec(substr($binary, 9, 23));
-    return pow(-1,$fb) * (1+$m/(pow(2,23))) * pow(2,$exp-127);
-}
+	{
+	$in     = hexdec($in);
+   $binary = str_pad(decbin($in),32,"0", STR_PAD_LEFT);
+	$fb     = $binary[0];
+	$exp    = bindec(substr($binary, 1, 8));
+	$m      = bindec(substr($binary, 9, 23));
+	$float  = pow(-1,$fb) * (1+$m/(pow(2,23))) * pow(2,$exp-127);
+
+	$float = str_replace(",",".",$float);
+
+	return $float;
+	}
 
 
 /***************************************************************************//**
@@ -548,7 +552,7 @@ function update_uebersicht_circles()
 
 		if ( $menuitem[0] == false )
 		   {
-		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   $altfile = IPS_GetKernelDir()."webfront/user/Plugwise/images/alt_".$menuitem[2];
 		   if ( file_exists($altfile) )
 		      $file = $imgpath . "alt_" . $menuitem[2];
 			else
@@ -559,7 +563,7 @@ function update_uebersicht_circles()
 
 		if ( $menuitem[0] == true and $menuitem[3] != $menupunkt)
 		   {
-		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   $altfile = IPS_GetKernelDir()."webfront/user/Plugwise/images/alt_".$menuitem[2];
 		   if ( file_exists($altfile) )
 		      $file = $imgpath . "alt_" . $menuitem[2];
 			else
@@ -573,7 +577,7 @@ function update_uebersicht_circles()
 
 		if ( $menuitem[3] == $menupunkt )
 		   {
-		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   $altfile = IPS_GetKernelDir()."webfront/user/Plugwise/images/alt_".$menuitem[2];
 		   if ( file_exists($altfile) )
 		      $file = $imgpath . "alt_" . $menuitem[1];
 			else
@@ -697,7 +701,7 @@ function update_uebersicht_circles()
 
 	// unbekannte neue Circles in Array einfuegen
    $file = 'plugwise_unknowncircles.log';
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
 	if ( file_exists($logdatei) )
 		{
 		ini_set("auto_detect_line_endings", true);
@@ -744,7 +748,7 @@ function update_uebersicht_circles()
 	if ( $menupunkt == 6 )
 	   {
    	$file = 'plugwiseping.log';
-		$pingdatei = IPS_GetKernelDir() . "logs\\Plugwise\\logs\\" . $file;
+		$pingdatei = IPS_GetKernelDir() . "logs/Plugwise/logs/" . $file;
 		$pingarr = array();
 		if ( file_exists($pingdatei) )
 			{
@@ -874,10 +878,26 @@ function update_uebersicht_circles()
 						else
 							$circletext = $circletext . "<img  src='/user/Plugwise/images/status_online.png'  align='absmiddle'>";
 
-						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;".$c_ls."</FONT>";
-						$circletext = $circletext . "<FONT  SIZE='3'>&nbsp;[&nbsp;".$c_livecount."&nbsp;][&nbsp;".$c_lsms."&nbsp;]</FONT>";
+						$circletext = $circletext . "<FONT  SIZE='2'>&nbsp;".$c_ls."</FONT>";
+						$circletext = $circletext . "<FONT  SIZE='2'>&nbsp;";
 
-						$circletext = $circletext . "<br><center>" .$c_name ."</center>";
+
+						if ( $c_livecount == 60 or $c_livecount == 61 or $c_livecount == 59 )
+							$circletext = $circletext . "<span style='color:#FFFFFF'>[&nbsp;".$c_livecount."&nbsp;]</span>";
+						if ( $c_livecount < 59 )
+							$circletext = $circletext . "<span style='color:#FF0000'>[&nbsp;".$c_livecount."&nbsp;]</span>";
+						if ( $c_livecount > 61 )
+							$circletext = $circletext . "<span style='color:#FFFF00'>[&nbsp;".$c_livecount."&nbsp;]</span>";
+
+
+						if ( $c_lsms > 200 )
+							$circletext = $circletext . "<span style='color:#FFFF00'>[&nbsp;".$c_lsms."&nbsp;]</span></FONT>";
+						else
+							$circletext = $circletext . "<span style='color:#FFFFFF'>[&nbsp;".$c_lsms."&nbsp;]</span></FONT>";
+
+
+
+						$circletext = $circletext . "<center>" .$c_name ."</center>";
 						}
 					else
 						$circletext = "<img  src='/user/Plugwise/images/status_o.png' align='absmiddle' ><br>&nbsp;";
@@ -1290,7 +1310,7 @@ function update_uebersicht1()
 	if ( $menupunkt == 5 )
 	   {
    	$file = 'plugwise_unknowncircles.log';
-		$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+		$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
 		if ( file_exists($logdatei) )
 		   {
 		   ini_set("auto_detect_line_endings", true);
@@ -1689,7 +1709,7 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	
 	//$type = "-".$type."-";
 	
-	//IPS_logMessage("....",$type."-".$parent."-".$objectname."-".$leistung);
+	//IPS_logMessage(__FILE__,$type."-".$parent."-".$objectname."-".$leistung);
 
 	$debug = false;
 	
@@ -1709,6 +1729,7 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 	   $ident = $object['ObjectIdent'];
 		foreach( $CircleGroups as $circle )
 	   	{//Tarifgruppe fuer diesen Circle suchen
+	   	
 	   	if ( $circle[0] == $ident )
 	      	{
 				$tarifgruppe = $circle[6] ;
@@ -1874,14 +1895,14 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.log' )
 	{
 
-	$ordner = IPS_GetKernelDir() . "logs\\Plugwise";
+	$ordner = IPS_GetKernelDir() . "logs/Plugwise";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 
    if ( !is_dir ( $ordner ) )
 	   return;
 
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
 
 	if ( $delete )
 	   {
@@ -1921,9 +1942,11 @@ function find_group($ident="")
 *******************************************************************************/
 function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000000")
 	{
+	$debug = false;
+	
 	$text = $table."-".$geraet."-".$wert;
 	$logadresse = strtoupper($logadresse);
-	
+
 	//IPS_LogMessage("MYSQL",$text);
 	
 	$mysql = false;
@@ -1934,7 +1957,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
    $server = @mysql_connect(MYSQL_SERVER,MYSQL_USER,MYSQL_PASSWORD);
 	if ( !$server )
 	   {
-	   IPS_Logmessage("Plugwise MySql","Server nicht bereit");
+	   if ( $debug) IPS_Logmessage("Plugwise MySql","Server nicht bereit");
 		return;
 		}
 
@@ -2608,7 +2631,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	if ( !LOG_MODE )
 		return;
 
-	$ordner = IPS_GetKernelDir() . "logs\\Plugwise\\logs";
+	$ordner = IPS_GetKernelDir() . "logs/Plugwise/logs";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 
@@ -2618,7 +2641,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	list($usec, $sec) = explode(" ", microtime());
     
 	$time = date("d.m.Y H:i:s",$sec);
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\logs\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/logs/" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, $time ." ". $text . chr(13));
 	fclose($datei);
@@ -2635,7 +2658,7 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 	$max = 1440;
 	$max = (60/REFRESH_TIME) * 12;
 
-	$ordner = IPS_GetKernelDir() . "logs\\Plugwise\\data";
+	$ordner = IPS_GetKernelDir() . "logs/Plugwise/data";
 
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);               // Ordner erstellen
@@ -2645,7 +2668,7 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 
 	$time = date("d.m.Y H:i:s",time());
 	$akt_stunde = date("H",time());
-	$logdatei = IPS_GetKernelDir() . "logs\\Plugwise\\data\\" . $file;
+	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/data/" . $file;
 
 	$text = "\n".$log_type .";". $akt_stunde.";".$time . ";"  . $text .";".$myCat;
 	
@@ -2970,7 +2993,7 @@ function createMenueSystemsteuerung()
 
 		if ( $menuitem[0] == true and $menuitem[3] != $menupunkt)
 		   {
-		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   $altfile = IPS_GetKernelDir()."webfront/user/Plugwise/images/alt_".$menuitem[2];
 		   if ( file_exists($altfile) )
 		      $file = $imgpath . "alt_" . $menuitem[2];
 			else
@@ -2984,7 +3007,7 @@ function createMenueSystemsteuerung()
 
 		if ( $menuitem[3] == $menupunkt )
 		   {
-		   $altfile = IPS_GetKernelDir()."webfront\\user\\Plugwise\\images\\alt_".$menuitem[2];
+		   $altfile = IPS_GetKernelDir()."webfront/user/Plugwise/images/alt_".$menuitem[2];
 		   if ( file_exists($altfile) )
 		      $file = $imgpath . "alt_" . $menuitem[1];
 			else
