@@ -743,7 +743,8 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	$LocName 	 = "???";
 	$GEOentry   = false;
 	$GEOradius  = "";
-
+	$GEOaddress = "";
+	
 	$img_script_ankunft = $img_empty;
 	$img_script_abfahrt = $img_empty;
 
@@ -764,6 +765,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$longitude  = round(floatval($longitude),5);
 		$GEOentry = true;
 		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
+		$GEOaddress = htmlentities(GetValue(IPS_GetVariableIDByName('Address',$ID)));
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
@@ -798,6 +800,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$latitude   = round(floatval($latitude),5);
 		$longitude  = round(floatval($longitude),5);
 		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
+		$GEOaddress = htmlentities(GetValue(IPS_GetVariableIDByName('Address',$ID)));
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
@@ -900,7 +903,8 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	$htmlText = $htmlText . "</div></td>";
 
 	$htmlText = $htmlText . "<td class='tdStyleLocationInfo' width='60%' ><center>" . $LocName . "" ;
-	$htmlText = $htmlText . "<p  class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p></td>" ;
+	$htmlText = $htmlText . "<p  class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p>" ;
+	$htmlText = $htmlText . "<p  class='txtLocationInfo'>" . $GEOaddress ."</p></td>" ;
 
 	$htmlText = $htmlText . "</tr>";
 	$htmlText = $htmlText . "</table>";

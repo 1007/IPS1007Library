@@ -36,10 +36,12 @@
   if ( isset( $_POST["beaconUUID"])) $GEObeaconUUID   =$_POST["beaconUUID"]; else $GEObeaconUUID ="";
   if ( isset( $_POST["major"] ))     $GEOmajor        =$_POST["major"];      else $GEOmajor ="";
   if ( isset( $_POST["minor"] ))     $GEOminor        =$_POST["minor"];      else $GEOminor ="";
+  if ( isset( $_POST["address"] ))   $GEOaddress      =$_POST["address"];    else $GEOaddress ="";
   
-
+  
+  $GEOlogStringAddress = str_replace(chr(10), " ", $GEOaddress);
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
-  $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor;
+  $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor.",".$GEOlogStringAddress;
   Geofencylogging(false,$out,'incoming.log');
 
 
@@ -78,6 +80,7 @@
   $IDdevice    = CreateVariable('Device'    ,3,$IDLocation,9);  
   $IDAction    = CreateVariable('Action'    ,3,$IDLocation,10);  
   $IDradius    = CreateVariable('Radius'    ,3,$IDLocation,11);  
+  $IDaddress   = CreateVariable('Address'   ,3,$IDLocation,12);  
  
 
   SetValue($IDentry,$GEOentry);
@@ -86,6 +89,7 @@
   SetValue($IDlocID,$GEOid);
   SetValue($IDdevice,$GEOdevice);
   SetValue($IDradius,$GEOradius);
+  SetValue($IDaddress,$GEOlogStringAddress);
   
   if ($GEOentry)
     {
