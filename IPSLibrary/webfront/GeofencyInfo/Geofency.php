@@ -40,6 +40,10 @@
   
   
   $GEOlogStringAddress = str_replace(chr(10), " ", $GEOaddress);
+  $GEOlogStringAddress = str_replace(chr(226), "", $GEOlogStringAddress);
+  $GEOlogStringAddress = str_replace(chr(128), "", $GEOlogStringAddress);
+  $GEOlogStringAddress = str_replace(chr(142), "", $GEOlogStringAddress);
+ 
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
   $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor.",".$GEOlogStringAddress;
   Geofencylogging(false,$out,'incoming.log');

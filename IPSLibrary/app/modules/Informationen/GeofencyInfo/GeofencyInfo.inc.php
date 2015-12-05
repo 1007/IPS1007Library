@@ -763,7 +763,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$longitude  = GetValue(IPS_GetVariableIDByName('Longitude',$ID));
 		$latitude   = round(floatval($latitude),5);
 		$longitude  = round(floatval($longitude),5);
-		$GEOentry = true;
+		$GEOentry   = true;
 		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
 		$GEOaddress = htmlentities(GetValue(IPS_GetVariableIDByName('Address',$ID)));
 
@@ -923,6 +923,11 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	$htmlText = $htmlText . "</body>";
 
 	SetValueString($ContentId,$htmlText);
+
+	$datei = IPS_GetKernelDir() . "webfront/user/GeofencyInfo/GeofencyInfo.html";
+	$datei = fopen($datei,"w");
+	fwrite($datei,$htmlText );
+	fclose($datei);
 
 
 	}
