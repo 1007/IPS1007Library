@@ -39,10 +39,12 @@
   if ( isset( $_POST["address"] ))   $GEOaddress      =$_POST["address"];    else $GEOaddress ="";
   
   
-  $GEOlogStringAddress = str_replace(chr(10), " ", $GEOaddress);
-  $GEOlogStringAddress = str_replace(chr(226), "", $GEOlogStringAddress);
+  $GEOlogStringAddress = str_replace(chr(10), ",", $GEOaddress);
+  $GEOlogStringAddress = str_replace(chr(226), ",", $GEOlogStringAddress);
   $GEOlogStringAddress = str_replace(chr(128), "", $GEOlogStringAddress);
   $GEOlogStringAddress = str_replace(chr(142), "", $GEOlogStringAddress);
+
+  $GEOlogStringAddress = formatAdresse($GEOlogStringAddress);
  
   $out = $IPSName.",".$GEOdate.",".$GEOname.",".$GEOid.",".$GEOlongitude.",".$GEOlatitude.",".$GEOentry.",".$GEOdevice;
   $out = $out . "," .$GEOradius .",".$GEObeaconUUID.",". $GEOmajor.",".$GEOminor.",".$GEOlogStringAddress;
@@ -50,7 +52,7 @@
 
 
   if ( $GEOentry == '1' )
-    $GEOentry == true;
+    $GEOentry = true;
   else
     $GEOentry = false;
     
@@ -104,6 +106,8 @@
     $loc = str_pad ( $GEOname, 15 , ' ' );     
     $out = "Ankunft: " . $IPSName . " - " . $loc  ;
     $richtung = "Ankunft";
+   
+
     }
   else
     {
@@ -113,9 +117,11 @@
     $loc = str_pad ( $GEOname, 15 , ' ' );     
     $out = "Abfahrt: " . $IPSName . " - " . $loc  ; ;
     $richtung = "Abfahrt";
+    
+
     }
     
-   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$out);
+   
     
   Geofencylogging($Parent,$out,'geofency.log');
 
@@ -154,5 +160,46 @@
 
   RefreshHTMLBoxWithMap($IPSName);
 
-              
+function formatAdresse($adress)
+  {
+	$ad = explode(",",$adress);
+	
+	$adress = "";
+	foreach($ad as $a)
+		$adress = $adress .trim($a).",";
+	$adress = substr($adress,0,-1);
+	
+	$ad = explode(",",$adress);
+	
+	$a = explode(" ",$ad[0]);
+	
+	$counter = 0;
+	$match = false;
+	foreach($a as $x)
+	   {
+	   if ( @is_numeric($x[0]) )
+	      $match = $counter;
+	   $counter = $counter + 1;
+	   }
+
+	$target = "";
+	if( $match != false )
+		{
+		$counter = 0;
+		foreach($a as $x)
+	   	{
+	   	if ( $counter == $match )
+				$target = $target .",".$x ;
+			else
+				$target = $target ." ".$x ;
+			$counter = $counter + 1;
+			}
+		$ad[0] = trim($target);
+
+		}
+
+	$ad1 = implode(",",$ad);
+  
+  return $ad1;  
+  }              
 ?>

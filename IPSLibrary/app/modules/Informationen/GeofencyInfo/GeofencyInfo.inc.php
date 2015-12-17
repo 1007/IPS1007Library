@@ -38,7 +38,7 @@
 *******************************************************************************/
 function AutoLeaving($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
 	{
-
+	
    $DeviceID = IPSUtil_ObjectIDByPath("Program.IPSLibrary.data.modules.Informationen.GeofencyInfo.".$IPSName, true );
 	if ( !$DeviceID )
 		return;
@@ -54,15 +54,23 @@ function AutoLeaving($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
 		}
 		
 	if ( $GEOentry  == true )  	// Location betreten
-		$sollStatus = false;
+		{
+		$sollStatus = false; // fuer alle anderen
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Location betreten");
+		}
 	else
-		$sollStatus = true;
-
+		{
+		$sollStatus = false; // fuer alle anderen
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Location verlassen");
+		}
+		
 	$array = IPS_GetChildrenIDs($DeviceID);
+
 	foreach($array as $location)
 		{
 			
 		$name = IPS_GetName($location);
+		
 		if ( $name != $GEOname)
 			{
 			$entryID = @IPS_GetVariableIDByName('Entry',$location);
@@ -71,9 +79,15 @@ function AutoLeaving($GEOentry,$IPSName,$GEOname,$GeofencyPOST)
 
 			if ( $entryID )
 			   {
-			   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$name);
-			   
+			   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$name." EntryID:".$entryID);
+
+			   if ( $sollStatus == false )
+			   	if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Sollstatus false");
+				else
+					if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Sollstatus true");
+
 			   $istStatus = GetValueBoolean($entryID);
+
 			   if ( $istStatus != $sollStatus )
 			      {
 			      SetValueBoolean($entryID,$sollStatus);
@@ -205,11 +219,15 @@ function DoGoogleMaps($HTMLBoxID,$latitude,$longitude,$hoehe='100%',$breite='100
 *******************************************************************************/
 function DoOSMMap($HTMLBoxID,$latitude,$longitude,$entry,$radius,$hoehe='100%',$breite='100%',$zoomlevel=14)
 	{
+    if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Create New OSM map");
+
 
    $longitude = str_replace(",",".",$longitude);
    $latitude  = str_replace(",",".",$latitude);
    
 	$zoomlevel = OSM_ZOOM ;
+
+   if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$longitude.":".$latitude);
 
 	if ($entry)
 	   $entry = "1";
@@ -752,7 +770,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 	if ( $IdAnwesend == true )
 	   {
 	   $ID = $IdAnwesend;
-		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,$ID);
+		if ( DEBUG_MODE ) IPSLogger_Dbg(__FILE__,"Anwesend:".$ID);
 		$geoAnkunft = GetValue(IPS_GetVariableIDByName('GEOAnkunft',$ID));
 		$geoAnkunft = date("d.m.y H:i:s",$geoAnkunft);
 		$geoAbfahrt = GetValue(IPS_GetVariableIDByName('GEOAbfahrt',$ID));
@@ -765,7 +783,8 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$longitude  = round(floatval($longitude),5);
 		$GEOentry   = true;
 		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
-		$GEOaddress = htmlentities(GetValue(IPS_GetVariableIDByName('Address',$ID)));
+		$Adresse    = @GetValue(@IPS_GetVariableIDByName('Address',$ID));
+		$GEOaddress = htmlentities($Adresse);
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
@@ -904,7 +923,7 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 
 	$htmlText = $htmlText . "<td class='tdStyleLocationInfo' width='60%' ><center>" . $LocName . "" ;
 	$htmlText = $htmlText . "<p  class='txtLocationInfo'>Latitude:" . $latitude . "  Longitude:".$longitude."</p>" ;
-	$htmlText = $htmlText . "<p  class='txtLocationInfo'>" . $GEOaddress ."</p></td>" ;
+	$htmlText = $htmlText . "<p  class='txtLocationInfo'>" . str_replace(',',' ',$GEOaddress) ."</p></td>" ;
 
 	$htmlText = $htmlText . "</tr>";
 	$htmlText = $htmlText . "</table>";
