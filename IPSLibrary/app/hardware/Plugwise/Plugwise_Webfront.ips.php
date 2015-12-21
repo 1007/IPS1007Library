@@ -34,13 +34,13 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz‰hler";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz√§hler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	$StromzaehlerVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz‰hler";
+	$StromzaehlerVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz√§hler";
   	$StromzaehlerIdData   = get_ObjectIDByPath($StromzaehlerVisuPath);
 
 
@@ -218,9 +218,15 @@
    	foreach ( $CircleGroups as $cycle )
       	if ( $cycle[0] != "" )
 				if ( $gruppenname == $cycle[2] and !$hidecircles)
+				   {
+				   //IPS_logmessage(__FILE__,$StromzaehlerIdData."-".$cycle[1]);
 					IPS_SetHidden(IPS_GetObjectIDByName($cycle[1],$StromzaehlerIdData),false);
+					}
 				else
+				   {
+					//IPS_logmessage(__FILE__,$StromzaehlerIdData."-".$cycle[1]);
 					IPS_SetHidden(IPS_GetObjectIDByName($cycle[1],$StromzaehlerIdData),true);
+					}
 
 		//************************************************************************
 		// Externe anzeigen die in der angewaehlten Gruppe sind
@@ -248,7 +254,7 @@
 	// Stromzaehlermenu
 	// Button farblich darstellen. Alle anderen auf 0
 	//***************************************************************************
-	if ( $object['ObjectName'] == 'Stromz‰hler' )
+	if ( $object['ObjectName'] == 'Stromz√§hler' )
 	   {
 	   //hide_data1data2();
 	   $value = GetValue($IPS_VARIABLE);

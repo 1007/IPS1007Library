@@ -121,7 +121,7 @@ function PW_SendCommand($cmd,$CircleId=false)
 
     
 	$ausgabe=strtoupper(dechex(calculate_common_crc16c($cmd)));
-	$ausgabe = str_pad($ausgabe, 4 ,'0', STR_PAD_LEFT); //mit nullen auff¸llen
+	$ausgabe = str_pad($ausgabe, 4 ,'0', STR_PAD_LEFT); //mit nullen auff√ºllen
 	$cmd.= $ausgabe;
 
 	switch ( substr($cmd,0,4 ) )
@@ -235,7 +235,7 @@ function update_common_crc16c($ch, $crc16c)
 }
 
 /***************************************************************************//**
-*	Konvertiert Plugwise Zeit in lokale Zeit und gibt den Timestamp zur¸ck
+*	Konvertiert Plugwise Zeit in lokale Zeit und gibt den Timestamp zur√ºck
 *******************************************************************************/
 function pwtime2unixtime($pwdate)
 	{
@@ -304,7 +304,7 @@ function findRegVar($id) {
 
 
 /***************************************************************************//**
-*	Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zur¸ck (Zeitzone UTC!)
+*	Gibt das aktuelle Datum/Uhrzeit im Plugwise-Format zur√ºck (Zeitzone UTC!)
 *******************************************************************************/
 function unixtime2pwtime() {
 
@@ -2043,7 +2043,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 	   $result = mysql_query("SHOW COLUMNS FROM $table ");
 		if (!$result)
 			{
-    		echo 'Konnte Abfrage nicht ausf¸hren: ' . mysql_error();
+    		echo 'Konnte Abfrage nicht ausf√ºhren: ' . mysql_error();
     		exit;
 			}
 		if (mysql_num_rows($result) > 0)
@@ -2089,7 +2089,7 @@ function mysql_add($table,$time,$geraet,$wert,$id=0,$group="",$logadresse="00000
 	   $result = mysql_query("SHOW COLUMNS FROM $table ");
 		if (!$result)
 			{
-    		echo 'Konnte Abfrage nicht ausf¸hren: ' . mysql_error();
+    		echo 'Konnte Abfrage nicht ausf√ºhren: ' . mysql_error();
     		exit;
 			}
 		if (mysql_num_rows($result) > 0)
@@ -2196,7 +2196,7 @@ function find_id_toshow()
 	$objectident = "";
 
 	
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz‰hler";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromz√§hler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
@@ -2542,7 +2542,7 @@ function check_zaehleractions()
    		
    		if ( count($datas) == 0 )
 				{
-				echo "\nKeine Werte vorhanden";
+				//echo "\nKeine Werte vorhanden";
    		   continue;
    		   }
    		   

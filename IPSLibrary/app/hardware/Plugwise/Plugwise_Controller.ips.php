@@ -221,7 +221,7 @@ function plugwise_0000_received($buf)
 		case "00DD":  	// Antwort auf 0008 - Anfrage nach Circle+
 					   	$macplus = substr($buf,12,16);
 
-							// Dummy Instanz für Circle+ anlegen
+							// Dummy Instanz fÃ¼r Circle+ anlegen
 							$myCat = @IPS_GetObjectIDByIdent($macplus, $idCatCircles);
 							if ($myCat == false)
 								createCircle($macplus, $idCatCircles);
@@ -1544,7 +1544,7 @@ function berechne_gruppenverbrauch()
 			if ( isset($group[8]) )
 				$in_gesamt = $group[8];
 
-
+			//IPS_Logmessage($gruppe,$idCatOthers);
 			$gruppenid = IPS_GetObjectIDByIdent(Get_IdentByName($gruppe),$idCatOthers);
 		
 			$id = IPS_GetObjectIDByIdent($mac,$idCatCircles);
@@ -1577,7 +1577,7 @@ function berechne_gruppenverbrauch()
 			$id_leistung  = intval($group[2]);
 			$id_verbrauch = intval($group[3]);
 
-			echo $id_leistung;
+			
 			if ( isset($group[7]) )
 				$in_gesamt = $group[7];
 			else
