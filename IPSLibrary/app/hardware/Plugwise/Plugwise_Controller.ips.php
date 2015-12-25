@@ -66,7 +66,7 @@
 												break;
 			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;
-			Case "RegisterVariable"	:	$buf = $IPS_VALUE;
+			Case "RegisterVariable"	:	$buf = $_IPS['VALUE'];
 												switch ((substr($buf,0,4)))
 													{
 													case "0000":	plugwise_0000_received($buf);	break;
