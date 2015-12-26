@@ -884,6 +884,13 @@
 		}
 		return $ret;
 	}
+  
+  
+	function RegVar_SetRXObjectID($InstanceID, $ObjectID)
+ 	{
+		IPS_SetProperty($InstanceID, 'RXObjectID', $ObjectID);
+	}
+    
 //******************************************************************************
 //	Umlaute ersetzen
 //******************************************************************************
