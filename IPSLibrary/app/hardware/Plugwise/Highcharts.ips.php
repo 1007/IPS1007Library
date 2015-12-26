@@ -127,10 +127,13 @@
 	// ------------------------------------------------------------------------
  	function CheckCfgDaten($cfg)
 	{
+
+		//global $_IPS['SELF'];
+		//global $_IPS['SENDER'];
+
       DebugModuleName($cfg,"CheckCfgDaten");
 
-		global $IPS_SELF, $IPS_SENDER;
-
+		
 		// Debugging
 		IfNotIssetSetValue($cfg['Ips']['Debug']['Modules'], 			false);
 		IfNotIssetSetValue($cfg['Ips']['Debug']['ShowJSON'], 			false);
@@ -144,8 +147,8 @@
 		   die ("Abbruch! Es sind nur 'Highcharts' oder 'Highstock' als ChartType zulässig");
 			
 		// über WebInterface kommt der Aufruf wenn die Content-Variable aktualisiert wird
-		if ($IPS_SENDER != "WebInterface" && $cfg['RunMode'] != "popup" )
-			$cfg = Check_ContentVariable($cfg, $IPS_SELF);
+		if ($_IPS['SENDER'] != "WebInterface" && $cfg['RunMode'] != "popup" )
+			$cfg = Check_ContentVariable($cfg, $_IPS['SELF']);
 		
 	   return $cfg;
 	}
@@ -1730,9 +1733,10 @@
 	{
 		if (isset($cfg['Ips']['Debug']['Modules']) && $cfg['Ips']['Debug']['Modules'])
 		{
-			global $IPS_SENDER, $version, $versionDate;
+			//global $_IPS['SENDER'], $version, $versionDate;
+			global  $version, $versionDate;
 
-		   IPS_LogMessage($IPS_SENDER ." - " .getmicrotime(true) , "Highcharts $version ($versionDate) - $name");
+		   IPS_LogMessage($_IPS['SENDER'] ." - " .getmicrotime(true) , "Highcharts $version ($versionDate) - $name");
 		 }
 	}
 ?>

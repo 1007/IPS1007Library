@@ -1,20 +1,20 @@
 <?
 /***************************************************************************//**
-* @ingroup plugwise 
-* @{   		
+* @ingroup plugwise
+* @{
 * @defgroup plugwise_installation Plugwise Installation
 * @{
 *
 * @file       Plugwise_Installation.ips.php
-* @author     
+* @author
 * @version    Version 1.0.0
 * @date       05.05.2012
-* 
+*
 * @brief Installation fuer Plugwise
-* 
+*
 *******************************************************************************/
   GLOBAL $CircleGroups;
-	GLOBAL $SystemStromzaehlerGroups; 
+	GLOBAL $SystemStromzaehlerGroups;
   GLOBAL $ExterneStromzaehlerGroups;
 
   GLOBAL $Profil_Plugwise_Leistung;
@@ -25,9 +25,9 @@
   GLOBAL $Profil_Plugwise_MenuItem;
   GLOBAL $Profil_Plugwise_MenuScripte;
   GLOBAL $Profil_Plugwise_MenuUebersicht;
- 
+
   set_time_limit(600);
-         
+
 	if (!isset($moduleManager)) {
 		IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
 
@@ -38,7 +38,7 @@
   $moduleManager->VersionHandler()->CheckModuleVersion('IPS','2.50');
 	$moduleManager->VersionHandler()->CheckModuleVersion('IPSModuleManager','2.50.1');
   //$moduleManager->VersionHandler()->SetModuleVersion("1.0.1008");
-  
+
   IPSUtils_Include ("IPSInstaller.inc.php",                "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("IPSMessageHandler.class.php",         "IPSLibrary::app::core::IPSMessageHandler");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php",      "IPSLibrary::config::hardware::Plugwise");
@@ -46,8 +46,8 @@
 	IPSUtils_Include ("Plugwise_Profile.inc.php",      "IPSLibrary::config::hardware::Plugwise");
 
 
-  
-  
+
+
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 	$DataPath       = "Program.IPSLibrary.data.hardware.Plugwise";
 	$ConfigPath     = "Program.IPSLibrary.config.hardware.Plugwise";
@@ -62,11 +62,11 @@
 	$cssDefault    = IPS_GetKernelDir()."webfront/user/Plugwise/Default/Plugwise.css";
 	$cssFile       = IPS_GetKernelDir()."webfront/user/Plugwise/Plugwise.css";
 
-  
+
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
   echo "[". $Profil_Plugwise_Leistung[0] ."]";
   echo "--- Create Plugwise -------------------------------------------------------------------\n";
-  
+
   $CategoryIdData   = CreateCategoryPath($DataPath);
 	$CategoryIdApp    = CreateCategoryPath($AppPath);
 	$CategoryIdVisu   = CreateCategoryPath($VisuPath);
@@ -74,10 +74,10 @@
 	$CategoryIdHw     = CreateCategoryPath($HardwarePath);
   $CategoryIdCData  = CreateCategoryPath($CircleDataPath);
   $CategoryIdOData  = CreateCategoryPath($OtherDataPath);
-  
+
   EmptyCategory($CategoryIdVisu);
   EmptyCategory($CategoryIdMobile);
-
+  IPS_Logmessage(__FILE__,__LINE__);
   //****************************************************************************
   // Serial Port erstellen wenn kei nAlternativ-Port
   //****************************************************************************
@@ -87,38 +87,39 @@
 	if ( defined("ALTERNATIVCOMPORT" ) )
 		if ( ALTERNATIVCOMPORT != false )
       $AlternativPortExist = true;
-
+  IPS_Logmessage(__FILE__,__LINE__);
 
   if ( $AlternativPortExist == false )
-    $comid = CreateSerialPort('PlugwiseCOM', COMPORT , 115200, 1, 8, 'None');
+    $comid = CreateSerialPortNew('PlugwiseCOM', COMPORT , 115200, 1, 8, 'None');
   else
     {
     echo "\nAlternativCOMPort definiert.COMPort wird nicht erstellt !!!!!";
-    $comid = @IPS_GetInstanceIDByName( ALTERNATIVCOMPORT ,0);    
+    $comid = IPS_GetInstanceIDByName( ALTERNATIVCOMPORT ,0);
 
     }
-    
+  IPS_Logmessage(__FILE__,__LINE__);
   if ( !$comid )
     {
     echo "\nCOM-Port konnte nicht angelegt werden ";
     return;
     }
-    
+  IPS_Logmessage(__FILE__,__LINE__);
   //****************************************************************************
   // Cutter erstellen
-  //****************************************************************************  
+  //****************************************************************************
   $cutterid = @IPS_GetInstanceIDByName('PlugwiseCUTTER',0);
   if ( !$cutterid )
     $cutterid = IPS_CreateInstance ('{AC6C6E74-C797-40B3-BA82-F135D941D1A2}');
+  IPS_Logmessage(__FILE__,__LINE__);
 	if ( $cutterid )
 	   {
 	    IPS_SetName($cutterid,'PlugwiseCUTTER');
-      
+
       Cutter_SetParseType($cutterid,0);
       Cutter_SetLeftCutChar($cutterid,"\x05\x05\x03\x03");
       Cutter_SetRightCutChar($cutterid,"\x0D\x0A");
       Cutter_SetTimeout($cutterid,0);
-    
+
       IPS_ApplyChanges($cutterid);
       if ( $comid )
         {
@@ -127,12 +128,12 @@
      }
   else
     echo "\nCutter konnte nicht angelegt werden ";
-
+  IPS_Logmessage(__FILE__,__LINE__);
 
   $ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
   //****************************************************************************
   // alle Kinder loeschen
-  //****************************************************************************  
+  //****************************************************************************
   $childs = IPS_GetChildrenIDs($ScriptId);
   echo "\nScriptID" . $ScriptId;
   foreach( $childs as $child )
@@ -140,19 +141,19 @@
     echo $child;
     IPS_DeleteEvent($child);
     }
-  
+
   //****************************************************************************
   // Registervariable erstellen
-  //****************************************************************************  
+  //****************************************************************************
   $registerid = @IPS_GetInstanceIDByName('PlugwiseRegisterVariable',$CategoryIdHw);
   echo "\nRegVar gefunden " . $registerid;
-  
+
   if ( !$registerid )
     {
     $Name     = "PlugwiseRegisterVariable";
-  
+
     $id = @CreateRegisterVariable($Name, $CategoryIdHw , $ScriptId, $cutterid );
-    
+
     if ( !$id )
       {
       echo "\nRegVar konnte nicht angelegt werden ";
@@ -161,22 +162,22 @@
     else
       {
       echo "\nRegVar erstellt " . $id;
-      
-      }      
+
+      }
     $registerid = $id;
     }
-  
+
   @IPS_ConnectInstance($registerid,$cutterid);
-    
+
   //****************************************************************************
   // Timer fuer Plugwise_Controller setzten
   // erst auf false wegen Installation
-  //****************************************************************************  
+  //****************************************************************************
   //$TimerControllerID = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,REFRESH_TIME,false);
-  
+
   //****************************************************************************
   // Timer fuer Plugwise_ReadBuffer
-  //****************************************************************************  
+  //****************************************************************************
   $ScriptId = IPS_GetScriptIDByName('Plugwise_ReadBuffer', $CategoryIdApp );
   $id = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,60,true);
   IPS_SetEventCyclic($id, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,60/*Minutes*/);
@@ -184,14 +185,14 @@
 
   //****************************************************************************
   // Timer fuer Plugwise_Recalibrate
-  //****************************************************************************  
+  //****************************************************************************
   $ScriptId = IPS_GetScriptIDByName('Plugwise_Recalibrate', $CategoryIdApp );
   $id = CreateTimer_OnceADay ("REFRESH",$ScriptId,intval(CALIBRATION_TIME),15);
 
   //****************************************************************************
   // Timer fuer Plugwise_CheckUpdate
-  //****************************************************************************  
-  if ( defined('CHECK_VERSION') and defined('CHECK_VERSION_TIME') )                                           
+  //****************************************************************************
+  if ( defined('CHECK_VERSION') and defined('CHECK_VERSION_TIME') )
     if (CHECK_VERSION != FALSE )
       {
       $ScriptId = IPS_GetScriptIDByName('Plugwise_CheckUpdate', $CategoryIdApp );
@@ -213,12 +214,12 @@
                                 $Profil_Plugwise_Verbrauch[1],
                                 $Profil_Plugwise_Verbrauch[2],
                                 $Profil_Plugwise_Verbrauch[3]);
-  
+
   @IPS_DeleteVariableProfile("Plugwise_Kosten");
   @IPS_CreateVariableProfile("Plugwise_Kosten", 2);
   IPS_SetVariableProfileText("Plugwise_Kosten", "", " Euro");
   IPS_SetVariableProfileDigits("Plugwise_Kosten", 2);
-                                
+
   if ( substr($Profil_Plugwise_Switch[0],0,1) != "~" )
     CreateProfile_Switch ($Profil_Plugwise_Switch[0],
                                 $Profil_Plugwise_Switch[1],
@@ -233,19 +234,19 @@
                                 $Profil_Plugwise_MenuItem[1],
                                 $Profil_Plugwise_MenuItem[2],
                                 $Profil_Plugwise_MenuItem[3]);
- 
+
   if ( substr($Profil_Plugwise_MenuScripte[0],0,1) != "~" )
     CreateProfile_Associations ($Profil_Plugwise_MenuScripte[0],
                                 $Profil_Plugwise_MenuScripte[1],
                                 $Profil_Plugwise_MenuScripte[2],
                                 $Profil_Plugwise_MenuScripte[3]);
-  
+
   if ( substr($Profil_Plugwise_MenuUebersicht[0],0,1) != "~" )
     CreateProfile_Associations ($Profil_Plugwise_MenuUebersicht[0],
                                 $Profil_Plugwise_MenuUebersicht[1],
                                 $Profil_Plugwise_MenuUebersicht[2],
                                 $Profil_Plugwise_MenuUebersicht[3]);
- 
+
 
   //****************************************************************************
   //  CircleGroups in Data erstellen anhand der Liste im Configurationsfile
@@ -253,12 +254,12 @@
   foreach ( $CircleGroups as $cycle )
       {
       if ( $cycle[0] != "" )
-        { 
+        {
         echo "\nCreate Circle". $cycle[0];
-        createCircle($cycle[0],$CategoryIdCData);        
+        createCircle($cycle[0],$CategoryIdCData);
         }
-      } 
- 
+      }
+
   //****************************************************************************
   //  Archive Control finden
   //****************************************************************************
@@ -266,19 +267,19 @@
     {
     $archive_id = false;
 		$instance = IPS_GetInstance($modul);
-		if ( $instance['ModuleInfo']['ModuleName'] == "Archive Control" ) 
+		if ( $instance['ModuleInfo']['ModuleName'] == "Archive Control" )
       { $archive_id = $modul; break; }
 	  }
-   
+
   //****************************************************************************
   //  Gesamt  Sonstiges(Gesamt-Rest)
   //****************************************************************************
-  if ( isset($SystemStromzaehlerGroups) )       
+  if ( isset($SystemStromzaehlerGroups) )
   foreach( $SystemStromzaehlerGroups as $systemzaehler )
     {
     $name  = $systemzaehler[0];
     $ident = $systemzaehler[1];
-   
+
     $item = CreateDummyInstance ($name, $CategoryIdOData , 0);
 
     $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
@@ -287,7 +288,7 @@
 
     $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
     if ( $id2 == false )
-      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0); 
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0, $Profil_Plugwise_Verbrauch[0], 0, 0);
 
     $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
     if ( $id4 == false )
@@ -297,8 +298,8 @@
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
-    
-    
+
+
     if ( $archive_id )
       {
       $aggtype = 1;   // Zaehler
@@ -308,16 +309,16 @@
       $archivlogging = true;
       if ( defined('ARCHIVLOGGING') )
         $archivlogging = ARCHIVLOGGING;
-    
+
       if ($archivlogging == true)
-        {     
+        {
         if ( defined('AGGTYPELEISTUNG') )
       	   $aggtype = AGGTYPELEISTUNG;
-   
+
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
-        
+
         if ( defined('AGGTYPEVERBRAUCH') )
       	   $aggtype = AGGTYPEVERBRAUCH;
 
@@ -329,23 +330,23 @@
   		  //AC_SetAggregationType($archive_id, $id4, $aggtype);// Logging auf Type setzen
         IPS_ApplyChanges($archive_id);
 
-        
+
         }
 
       }
     }
 
-   
+
   //****************************************************************************
   //  Externe Zaehler anlegen
   //****************************************************************************
   if ( isset($ExterneStromzaehlerGroups) )
-  if ( TRUE == FALSE )       
+  if ( TRUE == FALSE )
   foreach( $ExterneStromzaehlerGroups as $externzaehler )
     {
     $name  = $externzaehler[0];
     $ident = $externzaehler[0];
-   
+
     $item = CreateDummyInstance ($name, $CategoryIdEData , 0);
 
     $id1 = @IPS_GetVariableIDByName("Leistung",$item) ;
@@ -354,7 +355,7 @@
 
     $id2 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
     if ( $id2 == false )
-      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
+      $id2  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0);
 
     $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
     if ( $id4 == false )
@@ -364,8 +365,8 @@
     IPS_SetIdent($item,$ident);
     IPS_SetIdent($id1,"Leistung");
     IPS_SetIdent($id2,"Gesamtverbrauch");
-    
-    
+
+
     if ( $archive_id )
       {
       $aggtype = 1;   // Zaehler
@@ -375,12 +376,12 @@
       $archivlogging = true;
       if ( defined('ARCHIVLOGGING') )
         $archivlogging = ARCHIVLOGGING;
-    
+
       if ($archivlogging == true)
-        {  
+        {
         if ( defined('AGGTYPELEISTUNG') )
       	   $aggtype = AGGTYPELEISTUNG;
-      
+
         AC_SetLoggingStatus($archive_id,  $id1, True); // Logging einschalten
         AC_SetAggregationType($archive_id,$id1,$aggtype); // Logging auf  setzen
         IPS_ApplyChanges($archive_id);
@@ -408,7 +409,7 @@
 	//***************************************************************************
    $array = array();
    foreach ( $CircleGroups as $group ) array_push($array,$group[2]);
-   if ( isset($ExterneStromzaehlerGroups) ) 
+   if ( isset($ExterneStromzaehlerGroups) )
    foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);  // Externe
 
    $groups = array_unique($array);
@@ -425,7 +426,7 @@
 
         $id3 = @IPS_GetVariableIDByName("Gesamtverbrauch",$item) ;
         if ( $id3 == false )
-          $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0); 
+          $id3  = CreateVariable("Gesamtverbrauch", 2, $item, 0,  $Profil_Plugwise_Verbrauch[0], 0, 0);
 
         $id4 = @IPS_GetVariableIDByName("Kosten",$item) ;
         if ( $id4 == false )
@@ -433,13 +434,13 @@
 
 
         if ( $archive_id )
-          { 
+          {
           $archivlogging = true;
           if ( defined('ARCHIVLOGGING') )
             $archivlogging = ARCHIVLOGGING;
 
           if ($archivlogging == true)
-            {        
+            {
             if ( defined('AGGTYPELEISTUNG') )
       	       $aggtype = AGGTYPELEISTUNG;
 
@@ -473,7 +474,7 @@
   //****************************************************************************
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
   //PW_SendCommand("0008");   // deaktiviert
-  
+
 
 
   //****************************************************************************
@@ -488,7 +489,7 @@
   $WFC_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder',  'WFC10');
   $WFC_TabOrder       = $moduleManager->GetConfigValueInt('TabOrder',  'WFC10');
   $WFC_ConfigId       = $moduleManager->GetConfigValueIntDef('ID', 	   'WFC10', GetWFCIdDefault());
-  
+
   if ( $WFC_TabPaneItem == "" )
     $WFC_TabPaneItem = "IPSLibraryPlugwise";
 
@@ -509,26 +510,26 @@
     if ($pos === false)
 	 	 {
       //echo "\nNicht gefunden".$Item['ID'];
-      
+
 		  }
 	 else
-	 	{	
+	 	{
       //echo "\nGefunden".$Item['ID'];
-     
+
      DeleteWFCItem($WFC_ConfigId, $Item['ID']);
 		}
 	 }
-  
+
   IPS_ApplyChanges($WFC_ConfigId);
 
   ReloadAllWebFronts() ;
-  
+
 
 
 	if ($WFC_Enabled)
 	{
 
-    
+
    $VisuID_menu  = CreateCategory("MENU",$CategoryIdVisu,10);
    $VisuID_data  = CreateCategory("DATA",$CategoryIdVisu,10);
    $VisuID_data1 = CreateCategory("DATA1",$CategoryIdVisu,10);
@@ -555,22 +556,25 @@
     SetValue($id,true);
 
    $ActionScriptId = IPS_GetScriptIDByName('Plugwise_Webfront', $CategoryIdApp );
-   
-  $graphid  = CreateVariable("�bersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, "");
+	IPS_Logmessage(__FILE__,__LINE__);
+  $graphid  = CreateVariable("Uebersicht", 3, $VisuID_graph, 0, "~HTMLBox", false, "");
   $graphid1 = CreateVariable("Auswahl", 1, $VisuID_graph, 0, "Plugwise_MenuUebersicht", $ActionScriptId, false);
   IPS_SetHidden($graphid1,true);
   
+
   $IDAllgemein = CreateDummyInstance("Allgemeines",$VisuID_menu,10);
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
-	$IDCircles   = CreateDummyInstance("Stromz�hler",$VisuID_menu,20);
+  $IDCircles   = CreateDummyInstance("Stromzaehler",$VisuID_menu,20);
+  IPS_SetName($IDCircles,"Stromzähler");
+	
   IPS_SetHidden($IDCircles,true);
 	$IDSystemst  = CreateDummyInstance("Systemsteuerung",$VisuID_menu,30);
   IPS_SetHidden($IDSystemst,true);
 	//$IDAuswert   = CreateDummyInstance("Auswertungen",$VisuID_menu,30);
   //IPS_SetHidden($IDAuswert,true);
- 
+
   $htmlboxid  = CreateVariable("Webfront", 3, $CategoryIdVisu, 0, "~HTMLBox", false, false);
-  
+
   // alternativer button ?
   if ( defined('ALT_BUTTON_NORMAL') )
     if (ALT_BUTTON_NORMAL!= FALSE )
@@ -588,7 +592,7 @@
 //      $cssmenu = CSS3MENU ;
 
   if ( $cssmenu == false )
-    {       
+    {
 
 	   CreateWFCItemSplitPane ($WFC_ConfigId, $WFC_TabPaneItem, $WFC_TabPaneParent , $WFC_TabPaneOrder , $WFC_TabPaneName   , $WFC_TabPaneIcon  , 1 /*Horizontal*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0 /*UsePercentage*/, 'true');
 	   CreateWFCItemCategory  ($WFC_ConfigId, $WFC_TabPaneItem."-MENU", $WFC_TabPaneItem, 10, "Titel", $Icon="", $VisuID_menu, $BarBottomVisible='true' , $BarColums=9, $BarSteps=5, $PercentageSlider='true');
@@ -620,13 +624,13 @@
   else
     {
     $WebfrontTitle  = "Plugwise";
-    $WebfrontItemId = $htmlboxid; 
-    $WebfrontIcon = '';                                                      
+    $WebfrontItemId = $htmlboxid;
+    $WebfrontIcon = '';
     $Configuration = "{\"title\":\"$WebfrontTitle\",\"name\":\"$WebfrontItemId\",\"baseID\":\"$htmlboxid\"}";
     CreateWFCItem($WFC_ConfigId,$WFC_TabPaneItem."-WEBFRONT", $WFC_TabPaneParent, $WFC_TabPaneOrder , "Plugwise CSS", '' , 'ContentChanger' ,$Configuration );
     IPS_ApplyChanges($WFC_ConfigId);
     }
-    
+
 	//***************************************************************************
 	// Systemsteuerung und Auswertung erstellen
 	//***************************************************************************
@@ -638,13 +642,16 @@
 	//***************************************************************************
    $array = array();
    foreach ( $CircleGroups as $group )              array_push($array,$group[2]);  // Circles
-   if ( isset($ExterneStromzaehlerGroups) ) 
+   if ( isset($ExterneStromzaehlerGroups) )
    foreach ( $ExterneStromzaehlerGroups as $group ) array_push($array,$group[1]);  // Externe
-   
+
    $groups = array_unique($array);
 	 $x = 10;
    foreach ( $groups as $group )
    	{
+  		IPS_Logmessage(__FILE__,__LINE__);
+      IPS_Logmessage(__FILE__,$group);
+
       if ( $group != "" )
       	{
          $id = CreateVariable($group, 1, $IDGroups, 0, "Plugwise_MenuItem", $ActionScriptId, false);
@@ -652,8 +659,8 @@
          $x = $x + 10;
          }
       }
-      
-    // Sonstiges / Rest  
+
+    // Sonstiges / Rest
     $id = CreateVariable("Sonstige", 1, $IDGroups, 9999, "Plugwise_MenuItem", $ActionScriptId, false);
     IPS_SetInfo($id,"SYSTEM_REST");
     IPS_SetIdent($id,"SYSTEM_REST");
@@ -664,7 +671,7 @@
 	// Externsmenu erstellen
 	//***************************************************************************
 	$x = 10;
-	if ( isset($ExterneStromzaehlerGroups) ) 
+	if ( isset($ExterneStromzaehlerGroups) )
 	foreach ( $ExterneStromzaehlerGroups as $extern )
 		{
 		if ( $extern[0] != "" )
@@ -683,6 +690,8 @@
 		{
 		if ( $circle[1] != "" )
 		   {
+		   //$circle[1] = Umlaute_ersetzen_new($circle[1]);
+		   
          $id = CreateVariable($circle[1], 1, $IDCircles, 0, "Plugwise_MenuItem", $ActionScriptId, false);
          IPS_SetInfo($id,$circle[0]);
 			   IPS_SetHidden($id,true);
@@ -709,10 +718,10 @@
     IPS_SetInfo($id,"Script");
     $id = CreateVariable("Update vorhanden?", 1, $IDSystemst, 20, "Plugwise_MenuScripte", $ActionScriptId, false);
     IPS_SetInfo($id,"Script");
-    
 
-  
-    
+
+
+
 	//***************************************************************************
 	// HTML Daten linken
 	//***************************************************************************
@@ -727,7 +736,7 @@
 			   {
 			   $id = IPS_GetObjectIDByName("Status",$parent);
 			   if ( $id )
-			      {                                                      
+			      {
       			//$id = CreateLink($circle[1]." Status",$id,$VisuID_data1,$x+200);
       			$id = CreateLink($circle[1],$id,$VisuID_menu,$x+200);
 					  IPS_SetHidden($id , true );
@@ -774,21 +783,21 @@
   if ( !file_exists(IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsRueckwaerts.png"))
     copy(IPS_GetKernelDir()."webfront/user/Plugwise/images/default/HighchartsRueckwaerts.png" ,
             IPS_GetKernelDir()."webfront/user/Plugwise/images/HighchartsRueckwaerts.png");
-            
 
-  
+
+
   ReloadAllWebFronts() ;
 
   //****************************************************************************
   // Timer fuer Plugwise_Controller setzten
   // jetzt auf true wegen Installation
-  //****************************************************************************  
+  //****************************************************************************
   $ScriptId = IPS_GetScriptIDByName('Plugwise_Controller', $CategoryIdApp );
 
   $TimerControllerID = CreateTimer_CyclicByMinutes ("REFRESH",$ScriptId,REFRESH_TIME,true);
   IPS_SetEventCyclic($TimerControllerID, 2 /*Daily*/, 1 /*Unused*/,0 /*Unused*/,0/*Unused*/,2/*TimeType Minutes*/,REFRESH_TIME/*Minutes*/);
   //IPS_ApplyChanges($TimerControllerID);
-  
+
   $error = error_get_last() ;
   $error = false;
   if ( !$error )
@@ -806,6 +815,83 @@
     echo "\n<br>" . $error['file'];
     echo "\n<br>" . $error['line'];
     echo "\n<br>*********************************************************************";
-    echo "\n<br>";    
+    echo "\n<br>";
     }
+    
+	/** Anlegen einer IO Instanze mit seriellem Port
+	 *
+	 * Die Funktion legt eine Serielle IO Instanze an. Wenn unter der ParentId bereits eine Instanze mit selbem
+	 * Namen existiert, werden alle Parameter auf den aktuellen Wert gesetzt.
+	 *
+	 * @param string $Name Name der IO Instanze
+	 * @param string $ComPort Name des Com Ports
+	 * @param integer $Baud Baud Rate des seriellen Ports
+	 * @param integer $StopBits Einstellung Stop Bits des seriellen Ports
+	 * @param integer $DataBits Parity Data Bits des seriellen Ports
+	 * @param string $Parity Parity Einstellung des seriellen Ports
+	 * @param integer $Position Positions Wert des Objekts
+	 * @param boolean $IgnoreError Ignoriren von Fehlern bei der Generierung der Instanz, andernfalls wird das Script abgebrochen
+	 * @return integer ID der seriellen Port Instanze
+	 *
+	 */
+	function CreateSerialPortNew($Name, $ComPort, $Baud=9600, $StopBits=1, $DataBits=8, $Parity='None', $Position=0, $IgnoreError=true)
+		{
+
+		$InstanceID = CreateInstance($Name, 0, "{6DC3D946-0D31-450F-A8C6-C42DB8D7D4F1}",$Position);
+		IPS_SetProperty($InstanceID, 'BaudRate', $Baud);
+		IPS_SetProperty($InstanceID, 'StopBits', $StopBits);
+		IPS_SetProperty($InstanceID, 'DataBits', $DataBits);
+		IPS_SetProperty($InstanceID, 'Parity', $Parity);
+		IPS_SetProperty($InstanceID, 'Port', $ComPort);
+		IPS_SetProperty($InstanceID, 'Open', true);
+
+		if (!@IPS_ApplyChanges($InstanceID) and !$IgnoreError) {
+			Error ("Error applying Changes to ComPort Instance --> Abort Script");
+		};
+		return $InstanceID;
+	}
+	
+	function Cutter_SetParseType($InstanceID, $_Type)
+ 	{
+		IPS_SetProperty($InstanceID, 'ParseType', $_Type);
+	}
+	function Cutter_SetLeftCutChar($InstanceID, $Value)
+ 	{
+		IPS_SetProperty($InstanceID, 'LeftCutChar', $Value);
+	}
+	function Cutter_SetRightCutChar($InstanceID, $Value)
+ 	{
+		IPS_SetProperty($InstanceID, 'RightCutChar', $Value);
+	}
+	
+	function Cutter_SetTimeout($InstanceID, $Milliseconds)
+ 	{
+		IPS_SetProperty($InstanceID, 'Timeout', $Milliseconds);
+	}
+	
+	function IPS_SetEventCyclicTimeBounds($EventID, $FromTime, $ToTime)
+	{
+		$ret = true;
+		if($FromTime == 0) {
+			$ret = $ret & IPS_SetEventCyclicTimeFrom($EventID, 0, 0, 0);
+		} else {
+			$ret = $ret & IPS_SetEventCyclicTimeFrom($EventID, (int)date("H", $FromTime), (int)date("i", $FromTime), (int)date("s", $FromTime));
+		}
+		if($ToTime == 0) {
+			$ret = $ret & IPS_SetEventCyclicTimeTo($EventID, 0, 0, 0);
+		} else {
+			$ret = $ret & IPS_SetEventCyclicTimeTo($EventID, (int)date("H", $ToTime), (int)date("i", $ToTime), (int)date("s", $ToTime));
+		}
+		return $ret;
+	}
+//******************************************************************************
+//	Umlaute ersetzen
+//******************************************************************************
+function Umlaute_ersetzen_new($text)
+	{
+	$such_array     = array ('ä'	, 'ö'	, 'ü'	, 'ß'	 , 'Ä'  , 'Ö'  , 'Ü' );
+	$ersetzen_array = array ('ae'	, 'oe', 'ue', 'ss' , 'Ae' , 'Oe' , 'Ue');
+	$neuer_text  = str_replace($such_array, $ersetzen_array, $text);
+	return $neuer_text;
+	}
 ?>

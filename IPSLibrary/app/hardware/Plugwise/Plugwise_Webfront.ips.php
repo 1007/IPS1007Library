@@ -28,7 +28,7 @@
 ********************************************************************************/
 
 
-	if ( $IPS_SENDER != 'WebFront' ) return;
+	if ( $_IPS['SENDER'] != 'WebFront' ) return;
 	
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
@@ -62,10 +62,10 @@
 //	$AuswPath     	= "Visualization.WebFront.Hardware.Plugwise.MENU.Antwortzeiten";
 //   $IdAusw       	= get_ObjectIDByPath($AuswPath);
 
-	$parent = IPS_GetParent($IPS_VARIABLE);
+	$parent = IPS_GetParent($_IPS['VARIABLE']);
 	$object = IPS_GetObject($parent);
 	
-	$self = IPS_GetObject($IPS_VARIABLE);
+	$self = IPS_GetObject($_IPS['VARIABLE']);
 
 	
 	
@@ -76,7 +76,7 @@
 //	if ( $self['ObjectIdent'] == 'Auswahl' )
 //	   {
 //
-//		SetValue($IPS_VARIABLE, $IPS_VALUE);
+//		SetValue($_IPS['VARIABLE'], $_IPS['VALUE']);
 //		update_uebersicht_circles();
 //		return;
 //		}
@@ -88,7 +88,7 @@
 	//***************************************************************************
 	if ( $self['ObjectName'] == 'Systemsteuerung' )
 	   {	// Systemsteuerung
-	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
+	   if ( GetValue($_IPS['VARIABLE']) == 0 )  // ist abgewaehlt
 			{
 			//IPS_LogMessage($IPS_VALUE,"Systemsteuerung ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
@@ -97,7 +97,7 @@
 			//SetValue(IPS_GetVariableIDByName("Antwortzeiten",$IdAllg),0);
 			//IPS_SetHidden($IdAusw,true);
 			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
-			SetValue($IPS_VARIABLE,1);
+			SetValue($_IPS['VARIABLE'],1);
 			
 			}
 		else // ist angewaehlt angewaehlt
@@ -109,7 +109,7 @@
          //SetValue(IPS_GetVariableIDByName("Antwortzeiten",$IdAllg),0);
          //IPS_SetHidden($IdAusw,true);
 			IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
-			SetValue($IPS_VARIABLE,0);
+			SetValue($_IPS['VARIABLE'],0);
 		   }
 		}
 	//***************************************************************************
@@ -119,7 +119,7 @@
 	//***************************************************************************
 	if ( $self['ObjectName'] == 'Antwortzeiten' )
 	   {	
-	   if ( GetValue($IPS_VARIABLE) == 0 )  // ist abgewaehlt
+	   if ( GetValue($_IPS['VARIABLE']) == 0 )  // ist abgewaehlt
 			{
 			//IPS_LogMessage($IPS_VALUE,"Auswertungen ist abgewaehlt soll angewaehlt werden");
 			reset_menu_stromzaehler();
@@ -128,7 +128,7 @@
 			SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
 			IPS_SetHidden($IdSystemst,true);
 			//IPS_SetHidden(IPS_GetVariableIDByName("Auswahl",$IdGraph),false);
-			SetValue($IPS_VARIABLE,1);
+			SetValue($_IPS['VARIABLE'],1);
 			}
 		else // ist angewaehlt angewaehlt
 		   {
@@ -138,7 +138,7 @@
 		   IPS_SetHidden($IdAusw,true);
          SetValue(IPS_GetVariableIDByName("Systemsteuerung",$IdAllg),0);
          IPS_SetHidden($IdSystemst,true);
-			SetValue($IPS_VARIABLE,0);
+			SetValue($_IPS['VARIABLE'],0);
 		   }
 
 		}
@@ -148,8 +148,8 @@
 	//***************************************************************************
 	if ( $self['ObjectInfo'] == 'Script' )
 	   {
-	   start_script($self,$IPS_VARIABLE);
-	   SetValue($IPS_VARIABLE, 0);
+	   start_script($self,$_IPS['VARIABLE']);
+	   SetValue($_IPS['VARIABLE'], 0);
 	   return;
 		}
 
@@ -161,7 +161,7 @@
 	$sonstige = false;
 	if ( $object['ObjectName'] == 'Gruppen' )
 	   {
-	   if ( GetValue($IPS_VARIABLE) == 1 )
+	   if ( GetValue($_IPS['VARIABLE']) == 1 )
 	      {  // wenn bereits eine Gruppe gewaehlt dann alle Gruppen abwaehlen
 				reset_gruppen(true);
 				$hidecircles = true;
@@ -174,9 +174,9 @@
 	   			SetValue($child, 0);
 					IPS_SetHidden($child,true);
 	   			}
-			SetValue($IPS_VARIABLE, $IPS_VALUE);
-			IPS_SetHidden($IPS_VARIABLE,false);
-			$object = IPS_GetObject ($IPS_VARIABLE);
+			SetValue($_IPS['VARIABLE'], $_IPS['VALUE']);
+			IPS_SetHidden($_IPS['VARIABLE'],false);
+			$object = IPS_GetObject ($_IPS['VARIABLE']);
 			
 			if ( $object['ObjectIdent'] == "SYSTEM_REST" )
 			   $sonstige = true;
@@ -209,7 +209,7 @@
 		//************************************************************************
 		// Circles anzeigen die in der angewaehlten Gruppe sind
 		//************************************************************************
-		$gruppenname = IPS_GetObject($IPS_VARIABLE);
+		$gruppenname = IPS_GetObject($_IPS['VARIABLE']);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
 	
@@ -231,7 +231,7 @@
 		//************************************************************************
 		// Externe anzeigen die in der angewaehlten Gruppe sind
 		//************************************************************************
-		$gruppenname = IPS_GetObject($IPS_VARIABLE);
+		$gruppenname = IPS_GetObject($_IPS['VARIABLE']);
 		$gruppenname = $gruppenname['ObjectName'];
 		$array = array();
 
@@ -257,15 +257,15 @@
 	if ( $object['ObjectName'] == 'Stromzähler' )
 	   {
 	   //hide_data1data2();
-	   $value = GetValue($IPS_VARIABLE);
+	   $value = GetValue($_IPS['VARIABLE']);
 		$childs = IPS_GetChildrenIDs($parent);
 		foreach ( $childs as $child )
 	   		SetValue($child, 0);
 
 	   if ( $value == 0 )
-      	SetValue($IPS_VARIABLE, 1);
+      	SetValue($_IPS['VARIABLE'], 1);
 		else
-      	SetValue($IPS_VARIABLE, 0);
+      	SetValue($_IPS['VARIABLE'], 0);
 
          
 		}

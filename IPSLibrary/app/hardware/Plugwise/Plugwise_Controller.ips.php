@@ -64,7 +64,7 @@
 												request_circle_data();
 												check_zaehleractions();
 												break;
-			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$IPS_VALUE);break;
+			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$_IPS['VALUE']);break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;
 			Case "RegisterVariable"	:	$buf = $_IPS['VALUE'];
 												switch ((substr($buf,0,4)))

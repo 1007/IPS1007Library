@@ -91,7 +91,7 @@
       	$dest_file    = IPS_GetKernelDir() ."webfront/user/Plugwise/tabPane.png";
       	copy ( $normal_file,$dest_file);
       	IPS_logmessage("Plugwise","Neue Version vorhanden");
-         if ( $IPS_SENDER != 'Timer' )
+         if ( $_IPS['SENDER'] != 'Timer' )
       		ReloadAllWebFronts() ;
 			}
 		}

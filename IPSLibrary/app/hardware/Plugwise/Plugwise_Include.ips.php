@@ -3053,7 +3053,17 @@ function createMenueSystemsteuerung()
 	}
 	
 
+function GetMainVisuPath()
+	{
+	IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
 
+	$moduleManager  = new IPSModuleManager('Plugwise');
+   $CircleVisuPath = $moduleManager->GetConfigValue('Path','WFC10');
+
+	return $CircleVisuPath;
+
+	}
+	
 
 /***************************************************************************//**
 * @}

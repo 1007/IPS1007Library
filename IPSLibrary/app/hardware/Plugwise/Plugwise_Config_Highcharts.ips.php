@@ -91,8 +91,8 @@
 	// *** Highcharts Options ***
 	// **************************************************************************************
 	// Ab hier werden die Bereiche des Highchart-Objektes parametriert.
-	// Dieser Bereich wurde (soweit möglich) identisch der Originalstruktur gehalten.
-	// Informationen über die Parametrierung findet man unter http://www.highcharts.com/ref/
+	// Dieser Bereich wurde (soweit mÃ¶glich) identisch der Originalstruktur gehalten.
+	// Informationen Ã¼ber die Parametrierung findet man unter http://www.highcharts.com/ref/
 	
    $CfgDaten['chart']['animation'] = false;
 //	$CfgDaten['title']['text'] = "Leistung " .$objectname ;
@@ -122,7 +122,7 @@
 		}
 
 	//***************************************************************************
-	// Serienübergreifende Einstellung für das Laden von Werten
+	// SerienÃ¼bergreifende Einstellung fÃ¼r das Laden von Werten
 	// Systematik funktioniert jetzt additiv.
 	// D.h. die angegebenen Werte gehen ab dem letzten Wert
 	//
@@ -131,12 +131,12 @@
 	// |           |DayValue = 2     |HourValues = 3          |
 	// |Tageswerte |Stundenwerte     |jeder geloggte Wert     |
 	//***************************************************************************
-	$CfgDaten['AggregatedValues']['HourValues'] 		= 2;      	// ist der Zeitraum größer als X Tage werden Stundenwerte geladen
-	$CfgDaten['AggregatedValues']['DayValues'] 		= 35;       // ist der Zeitraum größer als X Tage werden Tageswerte geladen
-	$CfgDaten['AggregatedValues']['WeekValues'] 		= -1;      	// ist der Zeitraum größer als X Tage werden Wochenwerte geladen
-	$CfgDaten['AggregatedValues']['MonthValues'] 	= -1;      	// ist der Zeitraum größer als X Tage werden Monatswerte geladen
-	$CfgDaten['AggregatedValues']['YearValues'] 		= -1;     	// ist der Zeitraum größer als X Tage werden Jahreswerte geladen
-	$CfgDaten['AggregatedValues']['NoLoggedValues'] = 1000; 		// ist der Zeitraum größer als X Tage werden keine Boolean Werte mehr geladen,
+	$CfgDaten['AggregatedValues']['HourValues'] 		= 2;      	// ist der Zeitraum grÃ¶ÃŸer als X Tage werden Stundenwerte geladen
+	$CfgDaten['AggregatedValues']['DayValues'] 		= 35;       // ist der Zeitraum grÃ¶ÃŸer als X Tage werden Tageswerte geladen
+	$CfgDaten['AggregatedValues']['WeekValues'] 		= -1;      	// ist der Zeitraum grÃ¶ÃŸer als X Tage werden Wochenwerte geladen
+	$CfgDaten['AggregatedValues']['MonthValues'] 	= -1;      	// ist der Zeitraum grÃ¶ÃŸer als X Tage werden Monatswerte geladen
+	$CfgDaten['AggregatedValues']['YearValues'] 		= -1;     	// ist der Zeitraum grÃ¶ÃŸer als X Tage werden Jahreswerte geladen
+	$CfgDaten['AggregatedValues']['NoLoggedValues'] = 1000; 		// ist der Zeitraum grÃ¶ÃŸer als X Tage werden keine Boolean Werte mehr geladen,
 																					//	diese werden zuvor immer als Einzelwerte geladen
 	$CfgDaten['AggregatedValues']['MixedMode'] 		= true;    // alle Zeitraumbedingungen werden kombiniert
 //	$CfgDaten['AggregatedValues']['MixedMode'] 		= false;    // alle Zeitraumbedingungen werden kombiniert
@@ -294,12 +294,12 @@
    if ( isset($CfgDaten['RefreshID'] ) )
 	 	$TimeControl = $CfgDaten['RefreshID'];
 
-  	// hier werden die CfgDaten geprüft und bei Bedarf vervollständigt
-	$CfgDaten = CheckCfgDaten($CfgDaten);								// hier werden die CfgDaten geprüft und bei Bedarf vervollständigt
+  	// hier werden die CfgDaten geprÃ¼ft und bei Bedarf vervollstÃ¤ndigt
+	$CfgDaten = CheckCfgDaten($CfgDaten);								// hier werden die CfgDaten geprÃ¼ft und bei Bedarf vervollstÃ¤ndigt
 	//IPSLogger_Dbg(__FILE__,date('d.m.Y h:i:s',$CfgDaten['StartTime'])."+++++++++++".date('d.m.Y h:i:s',$CfgDaten['EndTime']));
 
 
-		if ($IPS_SENDER != "WebInterface" or $TimeControl == true )
+		if ($_IPS['SENDER'] != "WebInterface" or $TimeControl == true )
 			{
 			$CfgDaten = CheckCfgDaten($CfgDaten);
 
@@ -307,7 +307,7 @@
 			return;                                               	// Ende, weil durch die Zuweisung des Script sowieso nochmals aufgerufen wird
 			}
 
-		$sConfig = CreateConfigString($CfgDaten);             		// erzeugen und zurückgeben des Config Strings
+		$sConfig = CreateConfigString($CfgDaten);             		// erzeugen und zurÃ¼ckgeben des Config Strings
 
 
 
