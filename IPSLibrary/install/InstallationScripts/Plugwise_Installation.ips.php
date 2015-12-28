@@ -45,7 +45,7 @@
 	IPSUtils_Include ("Plugwise_Include.ips.php",      "IPSLibrary::app::hardware::Plugwise");
 	IPSUtils_Include ("Plugwise_Profile.inc.php",      "IPSLibrary::config::hardware::Plugwise");
 
-  $KompatibelFile = IPS_GetKernelDir()."scripts/IPSLibraryapp/hardware/Plugwise/Plugwise_Once.ips.php";
+  $KompatibelFile = IPS_GetKernelDir()."scripts/IPSLibrary/app/hardware/Plugwise/Plugwise_Once.ips.php";
   require_once($KompatibelFile);
 
 
