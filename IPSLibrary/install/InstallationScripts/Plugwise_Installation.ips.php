@@ -850,24 +850,42 @@
 		};
 		return $InstanceID;
 	}
-	
+
+
+if (!function_exists('Cutter_SetParseType'))
+{	
 	function Cutter_SetParseType($InstanceID, $_Type)
  	{
 		IPS_SetProperty($InstanceID, 'ParseType', $_Type);
 	}
+}
+
+if (!function_exists('Cutter_SetLeftCutChar'))
+{
 	function Cutter_SetLeftCutChar($InstanceID, $Value)
  	{
 		IPS_SetProperty($InstanceID, 'LeftCutChar', $Value);
 	}
+}
+
+if (!function_exists('Cutter_SetRightCutChar'))
+{
 	function Cutter_SetRightCutChar($InstanceID, $Value)
  	{
 		IPS_SetProperty($InstanceID, 'RightCutChar', $Value);
 	}
+}
 	
+if (!function_exists('Cutter_SetTimeout'))
+{
 	function Cutter_SetTimeout($InstanceID, $Milliseconds)
  	{
 		IPS_SetProperty($InstanceID, 'Timeout', $Milliseconds);
 	}
+}
+
+
+if (!function_exists('IPS_SetEventCyclicTimeBounds')) {
 	
 	function IPS_SetEventCyclicTimeBounds($EventID, $FromTime, $ToTime)
 	{
@@ -884,12 +902,16 @@
 		}
 		return $ret;
 	}
+}
+
   
-  
+if (!function_exists('RegVar_SetRXObjectID'))
+{  
 	function RegVar_SetRXObjectID($InstanceID, $ObjectID)
  	{
 		IPS_SetProperty($InstanceID, 'RXObjectID', $ObjectID);
 	}
+}
     
 //******************************************************************************
 //	Umlaute ersetzen
