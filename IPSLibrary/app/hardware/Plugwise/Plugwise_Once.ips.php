@@ -1,3 +1,5 @@
+<?
+
 	/** Anlegen einer IO Instanze mit seriellem Port
 	 *
 	 * Die Funktion legt eine Serielle IO Instanze an. Wenn unter der ParentId bereits eine Instanze mit selbem
@@ -92,3 +94,6 @@ if (!function_exists('RegVar_SetRXObjectID'))
 		IPS_SetProperty($InstanceID, 'RXObjectID', $ObjectID);
 	}
 }
+
+
+?>
