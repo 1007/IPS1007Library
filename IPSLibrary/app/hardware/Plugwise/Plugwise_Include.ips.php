@@ -701,7 +701,7 @@ function update_uebersicht_circles()
 
 	// unbekannte neue Circles in Array einfuegen
    $file = 'plugwise_unknowncircles.log';
-	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
+	$logdatei = IPS_GetLogDir() . "Plugwise/" . $file;
 	if ( file_exists($logdatei) )
 		{
 		ini_set("auto_detect_line_endings", true);
@@ -748,7 +748,7 @@ function update_uebersicht_circles()
 	if ( $menupunkt == 6 )
 	   {
    	$file = 'plugwiseping.log';
-		$pingdatei = IPS_GetKernelDir() . "logs/Plugwise/logs/" . $file;
+		$pingdatei = IPS_GetLogDir() . "Plugwise/logs/" . $file;
 		$pingarr = array();
 		if ( file_exists($pingdatei) )
 			{
@@ -1310,7 +1310,7 @@ function update_uebersicht1()
 	if ( $menupunkt == 5 )
 	   {
    	$file = 'plugwise_unknowncircles.log';
-		$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
+		$logdatei = IPS_GetLogDir() . "Plugwise/" . $file;
 		if ( file_exists($logdatei) )
 		   {
 		   ini_set("auto_detect_line_endings", true);
@@ -1895,14 +1895,14 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.log' )
 	{
 
-	$ordner = IPS_GetKernelDir() . "logs/Plugwise";
+	$ordner = IPS_GetLogDir() . "Plugwise";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 
    if ( !is_dir ( $ordner ) )
 	   return;
 
-	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
+	$logdatei = IPS_GetLogDir() . "Plugwise/" . $file;
 
 	if ( $delete )
 	   {
@@ -2631,7 +2631,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	if ( !LOG_MODE )
 		return;
 
-	$ordner = IPS_GetKernelDir() . "logs/Plugwise/logs";
+	$ordner = IPS_GetLogDir() . "Plugwise/logs";
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);
 
@@ -2641,7 +2641,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 	list($usec, $sec) = explode(" ", microtime());
     
 	$time = date("d.m.Y H:i:s",$sec);
-	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/logs/" . $file;
+	$logdatei = IPS_GetLogDir() . "Plugwise/logs/" . $file;
 	$datei = fopen($logdatei,"a+");
 	fwrite($datei, $time ." ". $text . chr(13));
 	fclose($datei);
@@ -2658,8 +2658,8 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 	$max = 1440;
 	$max = (60/REFRESH_TIME) * 12;
 
-	$ordner = IPS_GetKernelDir() . "logs/Plugwise/data";
-
+	$ordner = IPS_GetLogDir() . "Plugwise/data";
+	
    if ( !is_dir ( $ordner ) )
 		mkdir($ordner);               // Ordner erstellen
 
@@ -2668,7 +2668,7 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 
 	$time = date("d.m.Y H:i:s",time());
 	$akt_stunde = date("H",time());
-	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/data/" . $file;
+	$logdatei = IPS_GetLogDir() . "Plugwise/data/" . $file;
 
 	$text = "\n".$log_type .";". $akt_stunde.";".$time . ";"  . $text .";".$myCat;
 	

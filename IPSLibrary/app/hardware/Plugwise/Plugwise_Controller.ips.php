@@ -121,7 +121,7 @@ function ping_circles()
 	   return;
 
    $file = 'plugwiseping.log';
-	$logdatei = IPS_GetKernelDir() . "logs/Plugwise/" . $file;
+	$logdatei = IPS_GetLogDir() . "Plugwise/" . $file;
 	if ( file_exists($logdatei) )
 		unlink($logdatei);
 		
