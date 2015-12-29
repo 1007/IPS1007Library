@@ -2848,7 +2848,7 @@ function create_css3menu()
 	$html = $html . '<head>';
 	$html = $html . '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
 //	$html = $html . '<!-- Start css3menu.com HEAD section -->';
-	$html = $html . '<link rel="stylesheet" href="/User/Plugwise/css3menu/'.$CSS3_Plugwise_CSSFile.'" type="text/css" />';
+	$html = $html . '<link rel="stylesheet" href="/user/Plugwise/css3menu/'.$CSS3_Plugwise_CSSFile.'" type="text/css" />';
 	$html = $html . '<!-- End css3menu.com HEAD section -->';
 	$html = $html . '</head>';
 	$html = $html . '<body style="background-color:#EBEBEB">';

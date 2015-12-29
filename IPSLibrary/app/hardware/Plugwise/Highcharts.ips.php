@@ -50,7 +50,7 @@
 		
 		if ($tmpFilename != "")
 			SetValue($cfg['ContentVarableId'],
-						"<iframe src='./User/$ChartType/IPS_Template.php?CfgFile=" . $tmpFilename .
+						"<iframe src='./user/$ChartType/IPS_Template.php?CfgFile=" . $tmpFilename .
 					"' width='100%' height='". $Height .
 					"' frameborder='0' scrolling='no'></iframe>");
 		else
@@ -73,7 +73,7 @@
 		{
 			WFC_SendPopup($cfg['WebFrontConfigId'],
 						$cfg['WFCPopupTitle'] ,
-						"<iframe src='./User/$ChartType/IPS_Template.php?ScriptId=" . $scriptId .
+						"<iframe src='./user/$ChartType/IPS_Template.php?ScriptId=" . $scriptId .
 						"' width='100%' height='616' frameborder='0' scrolling='no'></iframe>");
 		}
 		else
@@ -81,7 +81,7 @@
 			// damit das Ding auch sauber dargestellt wird
 			$Height = $cfg['HighChart']['Height'] ;
 			SetValue($cfg['ContentVarableId'],
-					"<iframe src='./User/Plugwise/$ChartType/IPS_Template.php?ScriptId="	. $scriptId .
+					"<iframe src='./user/Plugwise/$ChartType/IPS_Template.php?ScriptId="	. $scriptId .
 					"' width='100%' height='". $Height .
 					"' frameborder='0' scrolling='no'></iframe>");
 		}
