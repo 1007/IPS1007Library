@@ -95,5 +95,12 @@ if (!function_exists('RegVar_SetRXObjectID'))
 	}
 }
 
+if (!function_exists('IPS_GetLogDir'))
+{
+	function IPS_GetLogDir()
+ 	{
+		return IPS_GetKernelDir() . "logs/";
+	}
+}
 
 ?>

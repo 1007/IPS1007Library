@@ -20,6 +20,8 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Profile.inc.php","IPSLibrary::config::hardware::Plugwise");
  	IPSUtils_Include ("IPSLogger.inc.php","IPSLibrary::app::core::IPSLogger");
+  $KompatibelFile = IPS_GetKernelDir()."scripts/IPSLibrary/app/hardware/Plugwise/Plugwise_Once.ips.php";
+  require_once($KompatibelFile);
 
 //createMenueSystemsteuerung();
 
@@ -2196,7 +2198,7 @@ function find_id_toshow()
 	$objectident = "";
 
 	
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzaehler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";

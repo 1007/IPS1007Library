@@ -42,6 +42,8 @@
 	IPSUtils_Include("Plugwise_Include.ips.php","IPSLibrary::app::hardware::Plugwise");
   	IPSUtils_Include("IPSInstaller.inc.php","IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include ("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
+   $KompatibelFile = IPS_GetKernelDir()."scripts/IPSLibrary/app/hardware/Plugwise/Plugwise_Once.ips.php";
+   require_once($KompatibelFile);
 
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
    $idCatCircles   = get_ObjectIDByPath($CircleDataPath);

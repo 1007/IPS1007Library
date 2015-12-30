@@ -567,7 +567,7 @@
   $IDAllgemein = CreateDummyInstance("Allgemeines",$VisuID_menu,10);
   $IDGroups    = CreateDummyInstance("Gruppen",$VisuID_menu,10);
   $IDCircles   = CreateDummyInstance("Stromzaehler",$VisuID_menu,20);
-  IPS_SetName($IDCircles,"Stromzähler");
+  //IPS_SetName($IDCircles,"Stromzähler");
 	
   IPS_SetHidden($IDCircles,true);
 	$IDSystemst  = CreateDummyInstance("Systemsteuerung",$VisuID_menu,30);

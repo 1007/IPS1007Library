@@ -34,13 +34,13 @@
 	IPSUtils_Include("IPSInstaller.inc.php",    "IPSLibrary::install::IPSInstaller");
 	IPSUtils_Include("Plugwise_Configuration.inc.php","IPSLibrary::config::hardware::Plugwise");
 
-	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
+	$CircleVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzaehler";
   	$CircleIdCData  = get_ObjectIDByPath($CircleVisuPath);
 	$AppPath        = "Program.IPSLibrary.app.hardware.Plugwise";
 
 	$IdApp     = get_ObjectIDByPath($AppPath);
 
-	$StromzaehlerVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzähler";
+	$StromzaehlerVisuPath = "Visualization.WebFront.Hardware.Plugwise.MENU.Stromzaehler";
   	$StromzaehlerIdData   = get_ObjectIDByPath($StromzaehlerVisuPath);
 
 
@@ -254,7 +254,7 @@
 	// Stromzaehlermenu
 	// Button farblich darstellen. Alle anderen auf 0
 	//***************************************************************************
-	if ( $object['ObjectName'] == 'Stromzähler' )
+	if ( $object['ObjectName'] == 'Stromzaehler' )
 	   {
 	   //hide_data1data2();
 	   $value = GetValue($_IPS['VARIABLE']);
