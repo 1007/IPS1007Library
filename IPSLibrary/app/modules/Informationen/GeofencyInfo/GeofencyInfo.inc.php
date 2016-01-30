@@ -819,7 +819,9 @@ function RefreshHTMLBoxWithMap($Device,$Switch=false)
 		$latitude   = round(floatval($latitude),5);
 		$longitude  = round(floatval($longitude),5);
 		$GEOradius  = GetValue(IPS_GetVariableIDByName('Radius',$ID));
-		$GEOaddress = htmlentities(GetValue(IPS_GetVariableIDByName('Address',$ID)));
+		$Adresse    = @GetValue(@IPS_GetVariableIDByName('Address',$ID));
+		$GEOaddress = htmlentities($Adresse);
+
 
 		$action     = @GetValue(@IPS_GetVariableIDByName('Action',$ID));
 		if ( $action )
