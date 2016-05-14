@@ -222,7 +222,7 @@ function plugwise_0000_received($buf)
 
 		case "00DD":  	// Antwort auf 0008 - Anfrage nach Circle+
 					   	$macplus = substr($buf,12,16);
-
+							logging( "R - ".$buf ." DD Anfrage nach Circle+");
 							// Dummy Instanz für Circle+ anlegen
 							$myCat = @IPS_GetObjectIDByIdent($macplus, $idCatCircles);
 							if ($myCat == false)

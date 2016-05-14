@@ -550,11 +550,11 @@
     //****************************************************************************
     //  Highcharts Variablen erstellen
     //****************************************************************************
-    $id = CreateVariable("StartTime", 1,$VisuID_hc, 0, "~UnixTimestamp" , time() - 86400, 0);
+    $id = CreateVariable("StartTime", 1,$VisuID_hc, 0, "~UnixTimestamp" ,false, 0);
     SetValue($id, time() - 86400);
-    $id = CreateVariable("EndTime",   1,$VisuID_hc, 0 , "~UnixTimestamp" ,time() , 0);
+    $id = CreateVariable("EndTime",   1,$VisuID_hc, 0 , "~UnixTimestamp" ,false , 0);
     SetValue($id, time() );
-    $id = CreateVariable("Now",       0,$VisuID_hc, 0, "~Switch" , true, 0);
+    $id = CreateVariable("Now",       0,$VisuID_hc, 0, "~Switch" , false , 0);
     SetValue($id,true);
 
    $ActionScriptId = IPS_GetScriptIDByName('Plugwise_Webfront', $CategoryIdApp );
