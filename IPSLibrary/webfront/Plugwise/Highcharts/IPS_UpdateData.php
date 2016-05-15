@@ -50,7 +50,7 @@
       {
         // Id des Config Scripts
         $ConfigScript = IPS_GetScript($iScriptId);
-        include_once(IPS_GetKernelDir() . "scripts\\" .$ConfigScript['ScriptFile']);
+        include_once(IPS_GetKernelDir() . "scripts/" .$ConfigScript['ScriptFile']);
         global $instances;
         
         $data = getLoggedData($CfgDaten['series'], $instances[0], $startTime, $endTime);
