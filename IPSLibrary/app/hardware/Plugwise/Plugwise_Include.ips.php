@@ -1899,7 +1899,7 @@ function unknowncircles($text,$delete = false,$file = 'plugwise_unknowncircles.l
 
 	$ordner = IPS_GetLogDir() . "Plugwise";
    if ( !is_dir ( $ordner ) )
-		mkdir($ordner);
+		mkdir($ordner,0777,true); // Ordner erstellen
 
    if ( !is_dir ( $ordner ) )
 	   return;
@@ -2635,7 +2635,7 @@ function logging($text,$file = 'plugwise.log' ,$force = false)
 
 	$ordner = IPS_GetLogDir() . "Plugwise/logs";
    if ( !is_dir ( $ordner ) )
-		mkdir($ordner);
+		mkdir($ordner,0777,true); // Ordner erstellen
 
    if ( !is_dir ( $ordner ) )
 	   return;
@@ -2663,7 +2663,7 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 	$ordner = IPS_GetLogDir() . "Plugwise/data";
 	
    if ( !is_dir ( $ordner ) )
-		mkdir($ordner);               // Ordner erstellen
+		mkdir($ordner,0777,true); // Ordner erstellen
 
    if ( !is_dir ( $ordner ) )
 	   return;                       // Ordner konnte nicht erstellt werden
