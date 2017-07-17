@@ -380,11 +380,14 @@ function plugwise_0013_received($buf)
 	$obj = IPS_GetObject(IPS_GetObjectIDByIdent("LastMessage",$myCat));
 	$string = $obj['ObjectInfo'];
 	$string_array = explode(";", $string);
-
-	$start_timestamp = @$string_array[0];
-	$ende_timestamp  = @$string_array[1];
+   
+	$start_timestamp = (float)@$string_array[0];
+	$ende_timestamp  = (float)@$string_array[1];
 	$ende_timestamp  = microtime(true);
 	$string = $start_timestamp .";".$ende_timestamp;
+  
+
+  
 	$diff = round(($ende_timestamp - $start_timestamp) * 1000);
 
 	IPS_SetInfo($id,$string);
@@ -1487,10 +1490,10 @@ function berechne_restverbrauch()
 	$text = "Ergebnis:".$sonst_leistung."|".$sonst_gesamt;
    logging($text,"Gesamtleistung.log",true);
 
-	if ( $sonst_leistung < 0 )
-		$sonst_leistung = 0;
-	if ( $sonst_gesamt < 0 )
-		$sonst_gesamt = 0;
+	//if ( $sonst_leistung < 0 )
+	//	$sonst_leistung = 0;
+	//if ( $sonst_gesamt < 0 )
+	//	$sonst_gesamt = 0;
 
 
 	SetValue($sonstid_leistung,$sonst_leistung);

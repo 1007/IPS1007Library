@@ -2500,7 +2500,7 @@ function check_zaehleractions()
 		
 		
 		// suche Zaehler bei den Circles
-		if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles","");
+		if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles1",$zaehler);
 		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
 		if ( $object )
 		   {
@@ -2701,7 +2701,7 @@ function circle_data_loggen($log_type,$text,$file = 'plugwise_data.log',$myCat)
 		   }
 		$textteile = explode(';',$text);
 		
-		$diff_letzte_minute = $textteile[7] - $letzter_wert;
+		$diff_letzte_minute = floatval($textteile[7]) - floatval($letzter_wert);
 		if ( $diff_letzte_minute < 0 )
 			$diff_letzte_minute = 0;
 		$preis_letzte_minute = $diff_letzte_minute*$letzter_preis;
