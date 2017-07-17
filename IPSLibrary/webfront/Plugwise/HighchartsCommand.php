@@ -95,7 +95,7 @@
   $scriptid = IPSUtil_ObjectIDByPath("Program.IPSLibrary.app.hardware.Plugwise.Plugwise_Config_Highcharts");
 
 	$s = IPS_GetScript($scriptid); 
-	$s = IPS_GetKernelDir() ."scripts\\" .  $s['ScriptFile'];
+	$s = IPS_GetKernelDir() ."scripts/" .  $s['ScriptFile'];
 
 	include($s);
 
