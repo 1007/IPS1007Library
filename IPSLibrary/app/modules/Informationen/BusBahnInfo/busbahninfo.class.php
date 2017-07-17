@@ -13,7 +13,7 @@
 * @class bahn
 ********************************************************************************/
 
-    class bahn{
+    class classbahn{
           	var $_BASEURL ="http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20&";  // aktuelle Daten ohne Ziel
           	var $_BASEURLZ="http://reiseauskunft.bahn.de/bin/query.exe/dn?maxJourneys=20&";     // aktuelle Daten mit Ziel
 
@@ -338,10 +338,16 @@ function _call($proxy)
       curl_setopt($this->_CH, CURLOPT_HTTPPROXYTUNNEL, 1);
       curl_setopt($this->_CH, CURLOPT_PROXY, $proxy);
       }
-      
+
+	 curl_setopt($this->_CH, CURLOPT_CONNECTTIMEOUT, 10);
+	 curl_setopt($this->_CH, CURLOPT_TIMEOUT, 60);
+
     curl_setopt($this->_CH,CURLOPT_RETURNTRANSFER,true);
     curl_setopt($this->_CH,CURLOPT_URL,$this->_URL);
-    $result = curl_exec($this->_CH);
+    $result = @curl_exec($this->_CH);
+	if ( $result == false )
+	   IPS_Logmessage(basename(__FILE__),"BusbahnInfo nicht erreichbar");
+	   
     curl_close($this->_CH);
     return $result;
     }
@@ -358,9 +364,9 @@ function _init($bahnhof)
         'country'=>'DEU',                   // Deutschland
         'rt'=>1,
         'GUIREQProduct_0'=>'on',            // ICE
-        'GUIREQProduct_1'=>'on',            // Intercity- und Eurocityzüge
-        'GUIREQProduct_2'=>'on',            // Interregio- und Schnellzüge
-        'GUIREQProduct_3'=>'on',            // Nahverkehr, sonstige Züge
+        'GUIREQProduct_1'=>'on',            // Intercity- und EurocityzÃ¼ge
+        'GUIREQProduct_2'=>'on',            // Interregio- und SchnellzÃ¼ge
+        'GUIREQProduct_3'=>'on',            // Nahverkehr, sonstige ZÃ¼ge
         'GUIREQProduct_4'=>'on',            // S-Bahn
         'GUIREQProduct_5'=>'on',            // BUS
         'GUIREQProduct_6'=>'on',            // Schiffe

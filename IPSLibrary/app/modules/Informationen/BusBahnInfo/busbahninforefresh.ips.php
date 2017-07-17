@@ -58,7 +58,7 @@
 			 $startt = time();
 			 
 			 // Klasse einrichten
-			 $bahn=new bahn($line[1]);
+			 $bahn=new classbahn($line[1]);
 
 			 $bahn->Type($line[2]);    // Ankunft-Abfahrt
 
@@ -83,7 +83,7 @@
 			 $html = html_head();
 			 
 			 if($bahn->fetch(PROXY_SERVER,$counter))
-				{
+				{ //print_r($bahn);
     			//$html = anzeige($bahn,$line);
     			$html = $html . html_body($bahn,$line);
 				}
@@ -342,6 +342,8 @@ function html_head()
 //	$str  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
 
 	$str .= "<html><head>";
+	
+	
 //	$str .= '<meta http-equiv="cache-control" content="no-cache">';
 	$str .= '<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1 ">';
 // $str .= '<script src="'.$csspath.'jquery.min.js" type="text/javascript"></script>';
@@ -354,8 +356,33 @@ function html_head()
 //	$str .= 'function startAjax()  {$.ajax({ url: "/user/BusBahnInfo/BusBahnInfoWebMenuController.php",cache: false , data: {"Button":"1"},success:function(data){ alert("successful"); }});}</script> ';
 //	$str .= 'function startAjax()  $.get("/user/BusBahnInfo/BusBahnInfoWebMenuController.php",{func:"getNameAndTime"},function(data){alert(data.name);},"jsonp");</script> ';
 
+	// verhindert das oeffnen von Links in neuem Fenster bei iOS
+	$str .=	"
+    <script type='text/javascript'>
 
+    if(('standalone' in window.navigator) && window.navigator.standalone){
 
+    var noddy, remotes = false;
+
+    document.addEventListener('click', function(event) {
+
+    noddy = event.target;
+
+    while(noddy.nodeName !== 'A' && noddy.nodeName !== 'HTML') {
+    noddy = noddy.parentNode;
+    }
+
+    if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+    {
+    event.preventDefault();
+    document.location.href = noddy.href;
+    }
+
+    },false);
+    }
+    </script>
+	";
+	
 	$str .= '<link rel="stylesheet" type="text/css" href="'.$csspath.'BusBahnInfo1920.css" media="only screen and (max-device-width: 1920px)" />';
 	$str .= '<link rel="stylesheet" type="text/css" href="'.$csspath.'BusBahnInfo1680.css" media="only screen and (max-device-width: 1680px)" />';
 	$str .= '<link rel="stylesheet" type="text/css" href="'.$csspath.'BusBahnInfo1024.css" media="only screen and (max-device-width: 1024px)" />';
