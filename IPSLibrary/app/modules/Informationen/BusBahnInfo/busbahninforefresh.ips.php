@@ -471,7 +471,9 @@ function html_body($bahn,$station)
    for($i=0; $i<sizeof($bahn->timetable); $i++)
    	{
       $caller = $bahn->timetable[$i]["type"];
-
+		
+		$eintrag[0] = "<img src=".$caller.">";
+		/*
 		switch($caller)
 		  		{
            	case "UBAHN": 	$eintrag[0] = "<img src=".$imagepath."ubahn_24x24.gif>"	;break;
@@ -486,7 +488,7 @@ function html_body($bahn,$station)
            	case "SCHIFF":	$eintrag[0] = "<img src=".$imagepath."faehre_24x24.gif>"	;break;
             default:			$eintrag[0] = $caller												;break;
       		}
-
+		*/
 
 		$eintrag[0]="<div class='verkehrsmittel'>".$eintrag[0]."</div>";
 

@@ -212,33 +212,40 @@ function _process_dom($dom)
 
     foreach($test as $k=>$t)
 		{
-      $tds=$t->getElementsByTagName("td");
+		
+      	$tds=$t->getElementsByTagName("td");
 		
 		foreach($tds AS $td)
 			{
-         $dtype=$td->getAttribute("class");
+         	$dtype=$td->getAttribute("class");
 
 			switch($dtype)
 				{
             case 'train':
-                        	if($a=$td->getElementsByTagName("a")->item(0))
-										{
-                              $data[$k]['train']=str_replace(" ","",$a->nodeValue);
-                              if($img=$a->getElementsByTagName("img")->item(0))
-											{
-                                 if (preg_match('%/([a-z]*)_%', $img->getAttribute("src"), $regs))
-												{
-                                    switch($regs[1])
+                        	if($a = $td->getElementsByTagName("a")->item(0))
+								{
+                              	$data[$k]['train']=str_replace(" ","",$a->nodeValue);
+								
+                              	if($img=$a->getElementsByTagName("img")->item(0))
+							  		{
+									
+									$data[$k]['type']=$img->getAttribute("src");
+									/*
+                                 	if (preg_match('%/([a-z]*)_%', $img->getAttribute("src"), $regs))
+								 		{		
+                                    			switch($regs[1])
 													{
-                                       case 'EC':
-                                             		$data[$k]['type']="IC";
-                                          			break;
-                                       default:
-                                                	$data[$k]['type']=strtoupper($regs[1]);
-                                            			break;
-                                       }
-                                 	}
-                              	}
+                                       				case 'EC':
+                                             				$data[$k]['type']="IC";
+                                          					break;
+                                       				default:
+                                                			$data[$k]['type']=strtoupper($regs[1]);
+															$data[$k]['type']="??";
+                                            				break;
+                                       				}
+                                 		}
+										*/
+                              		}
                             	}
 
                         	break;
