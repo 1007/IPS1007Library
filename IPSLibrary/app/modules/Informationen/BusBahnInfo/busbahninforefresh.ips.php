@@ -58,7 +58,7 @@
 			 $startt = time();
 			 
 			 // Klasse einrichten
-			 $bahn=new classbahn($line[1]);
+			 $bahn=new bahn($line[1]);
 
 			 $bahn->Type($line[2]);    // Ankunft-Abfahrt
 

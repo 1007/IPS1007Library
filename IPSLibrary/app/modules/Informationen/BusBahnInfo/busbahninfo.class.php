@@ -13,7 +13,7 @@
 * @class bahn
 ********************************************************************************/
 
-    class classbahn{
+    class bahn{
           	var $_BASEURL ="http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20&";  // aktuelle Daten ohne Ziel
           	var $_BASEURLZ="http://reiseauskunft.bahn.de/bin/query.exe/dn?maxJourneys=20&";     // aktuelle Daten mit Ziel
 
@@ -22,7 +22,7 @@
           	var $bahnhof	= false;
           	var $noresult	= "";
           	var $_FETCHMETHOD;
-          	function bahn($bahnhof=null)
+          	function __construct($bahnhof=null)
               {
               	$this->_init($bahnhof);
               	$this->fetchMethodCURL(true);
