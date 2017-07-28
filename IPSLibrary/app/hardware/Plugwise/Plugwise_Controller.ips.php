@@ -381,6 +381,7 @@ function plugwise_0013_received($buf)
 	$string = $obj['ObjectInfo'];
 	$string_array = explode(";", $string);
    
+   	// Anpassung PHP7
 	$start_timestamp = (float)@$string_array[0];
 	$ende_timestamp  = (float)@$string_array[1];
 	$ende_timestamp  = microtime(true);
