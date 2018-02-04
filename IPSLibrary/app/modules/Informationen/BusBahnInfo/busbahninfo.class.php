@@ -14,8 +14,8 @@
 ********************************************************************************/
 
     class bahn{
-          	var $_BASEURL ="http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20&";  // aktuelle Daten ohne Ziel
-          	var $_BASEURLZ="http://reiseauskunft.bahn.de/bin/query.exe/dn?maxJourneys=20&";     // aktuelle Daten mit Ziel
+          	var $_BASEURL ="https://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?maxJourneys=20&";  // aktuelle Daten ohne Ziel
+          	var $_BASEURLZ="https://reiseauskunft.bahn.de/bin/query.exe/dn?maxJourneys=20&";     // aktuelle Daten mit Ziel
 
           	var $_PARAMS	= array();
           	var $timetable	= array();
