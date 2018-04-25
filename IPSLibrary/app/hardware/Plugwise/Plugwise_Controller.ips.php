@@ -1185,7 +1185,7 @@ function request_circle_data()
 		else
 			$refreshtime = 1 ;
 		
-		$timeoutcircle = $refreshtime * 3 ;
+		$timeoutcircle = $refreshtime * 5 ;
       if ( $t > $timeoutcircle )  // laenger als x Minuten keine Daten
       	{
       	$id = IPS_GetVariableIDByName("Error", $item);
@@ -1236,7 +1236,7 @@ function request_circle_data()
 		
 		PW_SendCommand("0023".$id_info['ObjectIdent'],$id_info['ObjectIdent']);
 		
-
+		IPS_Sleep(1000);
 		}
 	}
   

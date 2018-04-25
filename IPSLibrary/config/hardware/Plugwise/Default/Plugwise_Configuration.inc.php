@@ -197,13 +197,13 @@
 * fuer eine bestimmte Zeit
 *
 *   Feld 01   -   CircleID oder Externer Name
-*   Feld 02   -   < Wert kleiner , > Wert groesser
+*   Feld 02   -   < Wert kleiner , > Wert groesser , <> Wert zwischen
 *   Feld 03   -   Leistungswert1 in Watt
 *   Feld 04   -   Leistungswert2 in Watt
 *   Feld 05   -   Zeitraum
 *   Feld 06   -   VariablenID oder ScriptID
-*   Feld 07   -   Wert auf welchen die Variable gesetzt wird
-*   Feld 08   -   Reserve
+*   Feld 07   -   Wert auf welchen die Variable gesetzt wird bei <,>,<>
+*   Feld 08   -   Wert auf welchen die Variable zurueckgesetzt wird bei <>
 *
 *  Beispiel
 * 	array("000D6F0000D3412E"	,"<"	,4	,false,5   ,xxxxx 	,false	,false),

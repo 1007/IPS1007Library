@@ -100,7 +100,7 @@
 	   {
 		$s = @$update[$x];
 		$s = $s ."<br>";
-		echo $s;
+		//echo $s;
 		}
 
 	dummy();

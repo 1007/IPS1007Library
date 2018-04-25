@@ -2470,37 +2470,38 @@ function hide_graph($status = true)
 function check_zaehleractions()
 	{
 	GLOBAL $Zaehleractions;
-
-	$debug  = false;
+	$debug = false;
+	
 	
 	$CircleDataPath = "Program.IPSLibrary.data.hardware.Plugwise.Circles";
-   $idCatCircles   = get_ObjectIDByPath($CircleDataPath);
+	$idCatCircles   = get_ObjectIDByPath($CircleDataPath);
 
-   $instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
+	$instances = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 	$archive   = $instances[0];
 
 
+	// wenn es keine gibt dann zurueck
 	if ( !isset($Zaehleractions) )
-	   return;
+		return;
 
 	foreach ( $Zaehleractions as $action )
-	   {
-	   
-	   $zaehler   = $action[0];
-	   $bedingung = $action[1];
-	   $wert1 	  = $action[2];
-	   $wert2 	  = $action[3];
-	   $zeitraum  = $action[4];
-		$actionid  = $action[5];
-	   $sollwert  = $action[6];
-	   $zaehler2  = $action[7];
+		{
+
+		$zaehler   = $action[0];
+	   	$bedingung = $action[1];
+	   	$wert1 	   = $action[2];
+	   	$wert2 	   = $action[3];
+	   	$zeitraum  = $action[4];
+	   	$actionid  = $action[5];
+	   	$sollwert  = $action[6];
+	   	$sollwert2 = $action[7];
 	
 		$object = false;
 		$leistung_id = false;
 		
 		
 		// suche Zaehler bei den Circles
-		if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles1",$zaehler);
+		//if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles1",$zaehler);
 		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
 		if ( $object )
 		   {
@@ -2510,105 +2511,129 @@ function check_zaehleractions()
 		if ( !$object )
 		   {
 			//echo "\nSuche Zaehler bei den Externen";
-         if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Externen",$zaehler);
-         $zaehler = intval($zaehler);
-         if ( IPS_VariableExists($zaehler) )
-            {
-         	$leistung_id = $zaehler;
-         	$object = true;
-         	}
-		   }
-	   
+         	//if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Externen",$zaehler);
+         	$zaehler = intval($zaehler);
+         	if ( IPS_VariableExists($zaehler) )
+            	{
+         		$leistung_id = $zaehler;
+         		$object = true;
+         		}
+			}
+
 		if ( !$object )
 		   {
 			echo "\nSuche Zaehler bei den Gruppen";
 
 		   }
 
+
 		// ab hier Auswertung wenn gefunden
 		if ( $leistung_id )
-		   {
-		   //echo "\ngefunden:".$leistung_id;
+			{
 			$akt_leistung = GetValue($leistung_id);
-		   //echo "\nakt:".$akt_leistung;
-
+			if ( $debug )  IPS_Logmessage("Leistung gefunden : ",$akt_leistung);
+			
 			$ende  = time();
 			$start = time() - ( $zeitraum * 60 );
 			
-			//echo "\nStart:".date("H:i:s",$start);
-			//echo "\nEnde:".date("H:i:s",$ende);
 
-			
 			$datas  = AC_GetLoggedValues($archive,$leistung_id,$start,$ende,0);
-		   //print_r($datas);
-   		
-   		if ( count($datas) == 0 )
+
+   			if ( $debug )  IPS_Logmessage("Archivdatenanzahl : ",count($datas));
+
+   			if ( count($datas) == 0 )
 				{
-				//echo "\nKeine Werte vorhanden";
-   		   continue;
-   		   }
+   				if ( $debug )  IPS_Logmessage(basename(__FILE__),"Keine Werte vorhanden. Naeschste Zaehleraction");
+				continue;
+   		   		}
+   		   
    		   
 			if ( $bedingung == "<" )      // kleiner
-		      { //echo "kleiner:";
-		      $ok = true ;
-		      foreach ( $datas as $data )
-		            { if ( $debug )  IPS_Logmessage("...",$data['Value']);
+				{ 
+		      	$ok = true ;
+		      	
+		      	foreach ( $datas as $data )
+		            { 
+		            if ( $debug )  IPS_Logmessage("Archivdaten : ",$data['Value']);
+		           	
+		           	// Wenn irgendein Wert im Zeitraum groesser als parametriert, dann zur naechsten Zaehleraction 
 		            if ( $data['Value'] >= $wert1 )
 		               $ok = false;
 		            }
 				if ( $ok == false )
-				   continue;
-		      }
+					continue;
+		      	}
+		      
+		      
 			if ( $bedingung == ">" )      // groesser
-		      { //echo "groesse:";
-		      $ok = true ;
-		      foreach ( $datas as $data )
-		            {  //echo "-".$data['Value'];
-						if ( $data['Value'] <= $wert1 )
-		               $ok = false;
-		            }
-				if ( $ok == false )
-				   continue;
-		      }
-			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
-		      {
-		      $ok = true ;
-		      foreach ( $datas as $data )
+				{
+		      	$ok = true ;
+
+		      	foreach ( $datas as $data )
 		            {
-		            if ( $data['Value'] <= $wert1 )
-		               $ok = false;
-		            if ( $data['Value'] >= $wert1 )
-		               $ok = false;
+		            if ( $debug )  IPS_Logmessage("Archivdaten : ",$data['Value']);
+
+		           	// Wenn irgendein Wert im Zeitraum kleiner als parametriert, dann zur naechsten Zaehleraction 
+					if ( $data['Value'] <= $wert1 )
+		            	$ok = false;
 		            }
 				if ( $ok == false )
-				   continue;
-		      }
+				   	continue;
+		      	}
 
-				//echo "\nMach was ";
-				$object = @IPS_GetObject($actionid);
+			
+			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
+				{
+				$ok = true ;
+		      
+				foreach ( $datas as $data )
+					{
+		            if ( $debug )  IPS_Logmessage("Archivdaten : ",$data['Value']);
+						
+		           	// Wenn irgendein Wert im Zeitraum kleiner oder groesser als parametriert, dann Variable setzen 
+		            if ( $data['Value'] <= $wert1 )
+		            	$ok = false;
+		            if ( $data['Value'] >= $wert2 )
+		            	$ok = false;
+		            }
+		            
+				if ( $ok == false )
+					{
+					if ( $debug )  IPS_Logmessage(basename(__FILE__),"Archivdaten nicht im Bereich ");
+					$sollwert = $sollwert2;	
+					}
+				else
+					if ( $debug )  IPS_Logmessage(basename(__FILE__),"Archivdaten im Bereich ");
+
+				}
+
+
+			$object = @IPS_GetObject($actionid);
 				
-				if ( $object )
-				   {
-				   if ( $object['ObjectType'] == 2 ) // Variable
-				   	{
-				   	if ( GetValue($actionid) != $sollwert )
-				      	SetValue($actionid,$sollwert);
-				      }
-				   if ( $object['ObjectType'] == 3 ) // Script
-				   	{
-				   	$actionarray = array("PWACTION_ZAEHLER" 	=> $zaehler ,
-													"PWACTION_BEDINGUNG" => $bedingung,
-													"PWACTION_WERT1" 		=> $wert1,
-													"PWACTION_WERT2" 		=> $wert2,
-													"PWACTION_ZEITRAUM" 	=> $zeitraum,
-													"PWACTION_ACTIONID" 	=> $actionid,
-													"PWACTION_SOLLWERT" 	=> $sollwert,
-													"PWACTION_ZAEHLER2" 	=> $zaehler2
+			if ( $object )
+				{
+				if ( $object['ObjectType'] == 2 ) // Variable
+					{
+					if ( GetValue($actionid) != $sollwert )
+						SetValue($actionid,$sollwert);
+					}
+				
+				if ( $object['ObjectType'] == 3 ) // Script
+					{
+					$actionarray = array(	"PWACTION_ZAEHLER" 		=> $zaehler ,
+											"PWACTION_BEDINGUNG" 	=> $bedingung,
+											"PWACTION_WERT1" 		=> $wert1,
+											"PWACTION_WERT2" 		=> $wert2,
+											"PWACTION_ZEITRAUM" 	=> $zeitraum,
+											"PWACTION_ACTIONID" 	=> $actionid,
+											"PWACTION_SOLLWERT" 	=> $sollwert,
+											"PWACTION_ZAEHLER2" 	=> $sollwert2,
+											"PWACTION_SOLLWERT2" 	=> $sollwert2
 													);
-				      IPS_RunScriptEx($actionid,$actionarray);
-				      }
+					IPS_RunScriptEx($actionid,$actionarray);
+					}
 
-				   }
+				}
 		      
 		   }
 	   
