@@ -65,6 +65,7 @@
 												update_webfront_123("REFRESH");
 												request_circle_data();
 												check_zaehleractions();
+												AdvancedInfo();
 												break;
 			Case "Variable"			:	schaltbefehl($_IPS['VARIABLE'],$_IPS['VALUE']);break;
 			Case "WebFront"			:  handle_webfront($_IPS['VARIABLE']);  break;

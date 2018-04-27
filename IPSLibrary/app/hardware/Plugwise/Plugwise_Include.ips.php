@@ -2500,6 +2500,7 @@ function check_zaehleractions()
 		$leistung_id = false;
 		
 		
+		
 		// suche Zaehler bei den Circles
 		//if ( $debug ) IPS_Logmessage("\nSuche Zaehler bei den Circles1",$zaehler);
 		$object = @IPS_GetObjectIDByIdent($zaehler,$idCatCircles);
@@ -2581,11 +2582,14 @@ function check_zaehleractions()
 				   	continue;
 		      	}
 
+			$zwischen = false;
 			
 			if ( $bedingung == "<>" )      // innerhalb eines Bereiches
 				{
 				$ok = true ;
-		      
+		      	
+				$zwischen = true;
+				
 				foreach ( $datas as $data )
 					{
 		            if ( $debug )  IPS_Logmessage("Archivdaten : ",$data['Value']);
@@ -2600,11 +2604,13 @@ function check_zaehleractions()
 				if ( $ok == false )
 					{
 					if ( $debug )  IPS_Logmessage(basename(__FILE__),"Archivdaten nicht im Bereich ");
-					$sollwert = $sollwert2;	
+					// $sollwert = $sollwert2;	
 					}
 				else
+					{
 					if ( $debug )  IPS_Logmessage(basename(__FILE__),"Archivdaten im Bereich ");
 
+					}
 				}
 
 
@@ -3089,6 +3095,56 @@ function GetMainVisuPath()
 
 	return $CircleVisuPath;
 
+	}
+	
+
+function AdvancedInfo()
+	{
+	
+	GLOBAL $CircleGroups;
+	GLOBAL $ExterneStromzaehlerGroups;
+	GLOBAL $idCatCircles;
+	
+	$debug = false;
+	
+	
+	if ( defined('ADVANCED_TARIF') )
+		if ( ADVANCED_TARIF == true )
+			{
+			foreach($CircleGroups as $Circle)
+				{
+				
+				$item = $Circle[0];
+				if ( $item == "" )
+					continue;
+					
+				$obj = IPS_GetObjectIDByIdent($item,$idCatCircles);
+				
+				
+				$akt_tk   = aktuelle_kosten("ZAEHLER",$item,false,false);
+				$akt_tarif= $akt_tk['TARIF'];
+				
+				$id = @IPS_GetVariableIDByName('Tarif',$obj);
+				
+				if ( $id == false )
+					{
+					$id =  CreateVariable('Tarif', 3 /*String*/,  $obj, 99,   '', null, null, null);
+					
+					
+					}
+				
+				if ( GetValueString($id) != $akt_tarif )		
+					SetValueString($id, $akt_tarif);
+				
+				if ( $debug )
+					IPS_logmessage(basename(__FILE__),"TARIF: ".$item."-".$akt_tarif."-".$obj);
+					
+				}
+				
+			}
+			    
+	
+	
 	}
 	
 
