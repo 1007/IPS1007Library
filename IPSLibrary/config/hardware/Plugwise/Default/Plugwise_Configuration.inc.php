@@ -294,5 +294,6 @@
 * Erweiterte Anzeige
 *******************************************************************************/
 	define ( 'ADVANCED_TARIF'         ,FALSE);
+	define ( 'ADVANCED_GRUPPIERUNG'   ,FALSE);
 
 ?>

@@ -3143,8 +3143,49 @@ function AdvancedInfo()
 				
 			}
 			    
+	if ( defined('ADVANCED_GRUPPIERUNG') )
+		if ( ADVANCED_GRUPPIERUNG == true )
+			{
+			foreach($CircleGroups as $Circle)
+				{
 	
+				$item = $Circle[0];
+				if ( $item == "" )
+					continue;
+					
+				$obj = IPS_GetObjectIDByIdent($item,$idCatCircles);
+				
+				$id = @IPS_GetVariableIDByName('Gruppe',$obj);
+				
+				if ( $id == false )
+					{
+					$id =  CreateVariable('Gruppe', 3 /*String*/,  $obj, 99,   '', null, null, null);
+					}
+				
+				if ( $Circle[8] == true )
+					$gruppe = $Circle[2];
+				else
+					$gruppe = "";
+
+
+				if ( GetValueString($id) != $gruppe )		
+					SetValueString($id, $gruppe);
+				
+				$id = @IPS_GetVariableIDByName('InGesamt',$obj);
+				
+				if ( $id == false )
+					{
+					$id =  CreateVariable('InGesamt', 0 ,  $obj, 99,   '', null, null, null);	
+					}
 	
+				$ingesamt = $Circle[7];
+				if ( GetValueBoolean($id) != $ingesamt )		
+					SetValueBoolean($id, $ingesamt);
+				
+	
+				}
+			}
+			
 	}
 	
 
