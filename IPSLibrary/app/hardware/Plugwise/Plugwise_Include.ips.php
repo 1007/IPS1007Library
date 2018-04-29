@@ -1724,11 +1724,22 @@ function aktuelle_kosten($type,$parent,$objectname,$leistung)
 			$standardtarifgruppe = $circle[6] ;   // letzter Eintrag nehmen als Standard
 
 
-
 	if ( $type == "ZAEHLER" )  // suche bei Circles
 	   {
-	   $object = IPS_GetObject($parent);
-	   $ident = $object['ObjectIdent'];
+
+	if ( is_numeric($parent) == false )
+		{
+		IPS_Logmessage(basename(__FILE__),"Parent ist keine Integer : ".$parent);
+		$akt_kt['KOSTEN']   = false;
+		$akt_kt['TARIF']    = false;
+		$akt_kt['PREISKWH'] = false;
+
+		return($akt_kt);
+		}
+		
+	   
+	    $object = IPS_GetObject($parent);
+	    $ident = $object['ObjectIdent'];
 		foreach( $CircleGroups as $circle )
 	   	{//Tarifgruppe fuer diesen Circle suchen
 	   	
@@ -3121,8 +3132,11 @@ function AdvancedInfo()
 				$obj = IPS_GetObjectIDByIdent($item,$idCatCircles);
 				
 				
-				$akt_tk   = aktuelle_kosten("ZAEHLER",$item,false,false);
+				$akt_tk   = aktuelle_kosten("ZAEHLER",$obj,false,false);
+				
 				$akt_tarif= $akt_tk['TARIF'];
+				
+				if ( $debug ) IPS_Logmessage(basename(__FILE__),$obj."-".$akt_tarif."-".$item);
 				
 				$id = @IPS_GetVariableIDByName('Tarif',$obj);
 				
